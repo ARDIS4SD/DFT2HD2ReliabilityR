@@ -1,9 +1,7 @@
-|PyPi|_ |Downloads|_ |NUMFocus|_
+|PyPi|
 
-|DiscourseBadge|_ |Gitter|_ |GitHubIssues|_ |GitTutorial|_
 
-|GitHubActions|_ |AzurePipelines|_ |AppVeyor|_ |Codecov|_ |LGTM|_
-
+|GitHubActions|
 .. image:: https://
 
 A quoi sert ce projet ?
