@@ -33,12 +33,11 @@ management sofwares are quite expensive. It would be ideal to develop an open so
 overcome the cost problem, and to develop a collaborative community which will quickly advance in 
 a playful way, the cutting-edge software tools for maintenance.
 
-
- Comment démarrer ?
+Comment démarrer ?
 ====================
 
 
- Où puis-je obtenir plus d'aide, si j'en ai besoin?
+Où puis-je obtenir plus d'aide, si j'en ai besoin?
 ====================================================
 
 En cas de besoin d'aide, bien vouloir contacter l'auteur Dr. Fotsa-Mbogne David Jaures à l'une 
