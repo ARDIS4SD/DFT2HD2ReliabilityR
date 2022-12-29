@@ -1,0 +1,10 @@
+site_name: DFT2HD2ReliabilityR
+docs_dir: Catch2/docs
+theme: readthedocs
+copyright: Copyright &copy; 2016 - 2020 Martin Donath 
+extra:
+  generator: false
+
+hide:
+  - footer
+
