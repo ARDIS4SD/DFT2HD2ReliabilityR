@@ -124,19 +124,19 @@ class FaultTree:
     
     def InOrder2(self,xx=[1,3,2],yy=[1,2,30]):
         """
-        > The function `InOrder2` takes two lists of numbers as input and returns `True` if the first list
+        The function `InOrder2` takes two lists of numbers as input and returns `True` if the first list
         is in ascending order and the second list is in descending order
         
         :param xx: the list of x-coordinates of the points in the first polygon
         :param yy: the list of the values of the nodes in the tree
         :return: True or False
+
+
         Examples:
-            -------
-            Input: 
-                self=1
-                xx=[1,3,2]
-                yy=[1,2,30]
-            Output: False
+        ---------
+
+        >>> self=(1),xx=[1,3,2],yy=[1,2,30]
+        False
         """
         res=True
         i=0

@@ -95,12 +95,12 @@ class FaultTreeR: # fault tree class
         :param xx: the first list of numbers
         :param yy: the current state of the board
         :return: True or False
+        
+        
         Examples:
-        -------
-        Input: 
-        self=1
-        xx=[1,3,2]
-        yy=[1,2,30]
+        ---------
+        
+        >>> self=(1),xx=[1,3,2],yy=[1,2,30]
         Output: True
         """
         i=min(len(xx),len(yy))-1

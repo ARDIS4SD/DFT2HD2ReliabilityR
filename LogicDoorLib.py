@@ -11,13 +11,15 @@ def Order(Times=[30,20,20]):
     :return: A list of two sublists. The first one contains the ranks corresponding to the expected
     position of each numbers in the inputed list if it was sorted from the smallest to the highest. The
     second sublist is the sorted version of the inputed list.
-     Examples:
-        -------
-        1)
-        Input: [30,20,20]
-        Output: [[3,1,2],[20,20,30]]
-        2)
-        Order([30,20,10])=[[3,2,1],[10,20,30]]
+    
+    Examples:
+    ---------
+
+
+    >>> Times=[30,20,20]
+    [[3,1,2],[20,20,30]]
+    >>> Times=[30,20,10]
+    [[3,2,1],[10,20,30]]
     """
     res=[[],[]]
     for i in range(len(Times)):
@@ -47,15 +49,15 @@ def InOrder(Orders=[1,3,2],Times=[10,20,30]):
     :param Orders: A list of numbers
     :param Times: The time at which each event occurred
     :return: a boolean.
+
+
     Examples:
-        -------
-        1)
-        Input: 
-            Orders=[1,3,2]
-            Times=[10,20,30]
-        Output: False
-        2)
-        InOrder([1,3,2],[10,30,20])=True
+    ---------
+
+    >>> Orders=[1,3,2],Times=[10,20,30]
+    False
+    >>> Order([1,3,2],[10,30,20])
+    True
     """
     Temp=[Times[int(Orders[i])-1] for i in range(len(Orders))]
     res=True
@@ -76,19 +78,12 @@ def RemoveEmpty(ValuesIn=[[],[1],[],[5]],Orders=None,Times=None,IndicesPrincipal
     :param Times: a list of numbers
     :param IndicesPrincipal: a list of numbers
     :return: A list of lists.
-     Examples:
-        -------
-        1)
-        Input: 
-            ValuesIn=[[],[1],[],[5]]
-            Orders=None
-            Times=None
-            IndicesPrincipal=None
-            
-        Output: [[[1],[5]],None,None,None]
-        2)
-        RemoveEmpty([[],[1],[],[5]],[1,2,3,4],[1,2,3,4],[1,0,1,1])=
-        [[[1], [5]], [1], [2, 4], [0, 1]]
+     
+    Examples:
+    ---------
+    
+    >>> ValuesIn=[[],[1],[],[5]],Orders=None,Times=None,IndicesPrincipal=None
+    [[[1],[5]],None,None,None]
     """
     i=0
     n=len(ValuesIn)
@@ -116,13 +111,14 @@ def Reductible(x=[1,0,1],y=[1,1,0]):
     
     :param x: the first list of numbers
     :param y: the target variable
-       Exemples:
-        -------
-        1)
-            Input: ([1,0,1],[1,1,0])    
-            Output: False  
-        2) 
-            Reductible([1,0,1],[1,0,0])=True
+
+    Exemples:
+    ---------
+    
+    >>> x=[1,0,1],y=[1,1,0])    
+    False  
+    >>> x=[1,0,1],y=[1,0,0])
+    True
     """
     res=False
     #Temp1=[x[i]-y[i] for i in range(len(x))]
@@ -149,15 +145,12 @@ def G_ID(ValuesIn=[[[1,0,1],[1,1,0]],[[0,1,0]]],Orders=None,Times=None,IndicesPr
     :param Times: a list of times at which the values are given
     :param IndicesPrincipal: The indices of the principal values
     :return: The input values.
+
     Examples:
-        -------
-        Input: 
-            ValuesIn=[[[1,0,1],[1,1,0]],[[0,1,0]]]
-            Orders=None
-            Times=None
-            IndicesPrincipal=None
-            
-        Output: [[[1, 0, 1], [1, 1, 0]], [[0, 1, 0]]]
+    ---------
+    
+    >>> ValuesIn=[[[1,0,1],[1,1,0]],[[0,1,0]]],Orders=None,Times=None,IndicesPrincipal=None
+    [[[1, 0, 1], [1, 1, 0]], [[0, 1, 0]]]
     """
 
     [ValuesIn,Orders,Times,IndicesPrincipal]=RemoveEmpty(ValuesIn,Orders,Times,IndicesPrincipal) 
@@ -185,11 +178,12 @@ The function takes as input a list of lists of vectors and returns a list of lis
     :param Times: a list of numbers
     :param IndicesPrincipal: a list of numbers
     :return: the list of lists of the reductible vectors of the given vectors.
-     Exemples:
-        -------
-       
-            Input: [1,0,1],[1,1,0]],[[0,1,0]]   
-            Output: G_OR= ([[[1,0,1],[1,1,0]],[[1,0,0]]]))
+    
+    Examples:
+    ---------
+
+    >>> [1,0,1],[1,1,0]],[[0,1,0]]   
+    [[[1,0,1],[1,1,0]],[[1,0,0]]]
    
     """
     res=[]
@@ -234,11 +228,12 @@ def G_AND(ValuesIn=[[[1,0,1],[1,1,0]],[[0,1,0]]],Orders=None,Times=None,IndicesP
     :param Times: a list of numbers
     :param IndicesPrincipal: a list of numbers
     :return: The above code is returning the list of lists.
-      Exemples:
-        -------
-       
-            Input:ValuesIn=[[[1,0,1],[1,1,0]],[[0,1,0]]]  
-            Output: G_OR= ([[[1,0,1],[1,1,0]],[[1,0,0]]]))
+    
+    Examples:
+    ---------
+
+    >>> ValuesIn=[[[1,0,1],[1,1,0]],[[0,1,0]]]  
+    [[[1,0,1],[1,1,0]],[[1,0,0]]]
    
     """
     res=[]  #res=[[1,0,0],[0,1,0]]
@@ -270,7 +265,7 @@ def G_AND(ValuesIn=[[[1,0,1],[1,1,0]],[[0,1,0]]],Orders=None,Times=None,IndicesP
     
 def G_NOT(ValuesIn=[[[1,0,1],[1,1,0]],[[0,1,0]]],Orders=None,Times=None,IndicesPrincipal=None): #NOT
     """
-    > This function takes a list of lists of lists of integers as input and returns a list of lists of
+    This function takes a list of lists of lists of integers as input and returns a list of lists of
     integers as output
     
     :param ValuesIn: The input values
@@ -278,10 +273,12 @@ def G_NOT(ValuesIn=[[[1,0,1],[1,1,0]],[[0,1,0]]],Orders=None,Times=None,IndicesP
     :param Times: The time at which the gate is applied
     :param IndicesPrincipal: The indices of the principal values
     :return: the negation of the input.
+    
     Exemples:
     -------
-    >Input:ValuesIn=[[[1,0,1],[1,1,0]],[[0,1,0]]]  
-    >Output: G_NOT= [[1,0,1],[1,1,0]]
+
+    >>> ValuesIn=[[[1,0,1],[1,1,0]],[[0,1,0]]]  
+    [[1,0,1],[1,1,0]]
     """
     [ValuesIn,Orders,Times,IndicesPrincipal]=RemoveEmpty(ValuesIn,Orders,Times,IndicesPrincipal) 
     res=ValuesIn.copy()
@@ -308,7 +305,7 @@ def G_NOT(ValuesIn=[[[1,0,1],[1,1,0]],[[0,1,0]]],Orders=None,Times=None,IndicesP
     
 def G_PAND(ValuesIn=[[[1,0,1],[1,1,0]],[[0,1,0]]],Orders=[0,0,0],Times=[0,0,0],IndicesPrincipal=None): #PAND
     """
-    > This function is a gate that is a combination of the AND gate and the PAND gate
+    This function is a gate that is a combination of the AND gate and the PAND gate
     
     :param ValuesIn: a list of lists of lists of integers. The first list is the list of inputs, the
     second list is the list of values for each input, and the third list is the list of values for each
@@ -317,16 +314,13 @@ def G_PAND(ValuesIn=[[[1,0,1],[1,1,0]],[[0,1,0]]],Orders=[0,0,0],Times=[0,0,0],I
     :param Times: a list of the times at which the inputs are applied
     :param IndicesPrincipal: This is a list of indices that you can use to specify which values in
     ValuesIn you want to use
-        Exemples:
-    -------
-       
-            Input:
-                ValuesIn=[[[1,0,1],[1,1,0]],[[0,1,0]]] 
-                Orders=[0,0,0] 
-                Times=[0,0,0]
-            Output: 
-                Porte PAND appellee 1
-                [[[1, 1, 1], [1, 1, 0]]]
+        
+    Examples:
+    ---------
+
+    >>> ValuesIn=[[[1,0,1],[1,1,0]],[[0,1,0]]],Orders=[0,0,0],Times=[0,0,0],IndicesPrincipal=None 
+    Porte PAND appellee 1
+    [[[1, 1, 1], [1, 1, 0]]]
              
     """
     res=[[]]
@@ -352,13 +346,12 @@ def G_FDEP(ValuesIn=[[[1,0,1],[1,1,0]],[[0,1,0]]],Orders=None,Times=None,Indices
     :param Orders: a list of lists of integers, each list of integers representing a gate
     :param Times: The time at which the gate is applied
     :param IndicesPrincipal: The indices of the principal qubits
-        Exemples:
-    -------
-   
-        Input:
-            ValuesIn=[[[1,0,1],[1,1,0]],[[0,1,0]]] 
+    
+    Examples:
+    ---------
 
-        Output: G_FDEP=[[1,0,1],[1,1,0]]
+    >>> ValuesIn=[[[1,0,1],[1,1,0]],[[0,1,0]]] 
+    [[1,0,1],[1,1,0]]
     """
     [ValuesIn,Orders,Times,IndicesPrincipal]=RemoveEmpty(ValuesIn,Orders,Times,IndicesPrincipal)    #Suppression des portes vides
     res=[[]]    #res=[[1,0,1],[1,1,0]]
@@ -372,7 +365,7 @@ def G_FDEP(ValuesIn=[[[1,0,1],[1,1,0]],[[0,1,0]]],Orders=None,Times=None,Indices
     
 def G_SPARE(ValuesIn=[[[1,0,1],[1,1,0]],[[0,1,0]]],Orders=None,Times=[30,20],IndicesPrincipal=[1,0]):   #SPARE
     """
-    > The function G_SPARE takes as input a list of lists of lists of integers, a list of integers, a
+    The function G_SPARE takes as input a list of lists of lists of integers, a list of integers, a
     list of integers and a list of integers. It returns a list of lists of integers
     
     :param ValuesIn: The list of the values of the variables
@@ -382,15 +375,12 @@ def G_SPARE(ValuesIn=[[[1,0,1],[1,1,0]],[[0,1,0]]],Orders=None,Times=[30,20],Ind
     length of the list of values. The 1s in this list indicate the values that are to be used in the
     final result. The 0s indicate the values that are to be used in the
     :return: the values of the variables in the order of the times of the variables.
-        Exemples:
-    -------
-   
-        Input:
-            ValuesIn=[[[1,0,1],[1,1,0]],[[0,1,0]]]
-            Times=[30,20] 
-            IndicesPrincipal=[1,0]
+    
+    Examples:
+    ---------
 
-        Output: G_SPARE=[[1,0,1],[1,1,0]]
+    >>> ValuesIn=[[[1,0,1],[1,1,0]],[[0,1,0]]],Times=[30,20],IndicesPrincipal=[1,0]
+    [[1,0,1],[1,1,0]]
 
     """
    # Removing empty values from the list.
@@ -418,7 +408,7 @@ def G_SPARE(ValuesIn=[[[1,0,1],[1,1,0]],[[0,1,0]]],Orders=None,Times=[30,20],Ind
 
 def G_Gen(n=1,ValuesIn=[[[1,0,1],[1,1,0]],[[0,1,0]]],Orders=[0,0,0],Times=[30,20,40],IndicesPrincipal=[1,0]):
     """
-    > G_Gen is a function that returns a list of lists of values of G_Input, G_ID, G_NOT, G_OR, G_AND,
+    G_Gen is a function that returns a list of lists of values of G_Input, G_ID, G_NOT, G_OR, G_AND,
     G_PAND, G_FDEP, G_SPARE
     
     :param n: the number of elements in the list, defaults to 1 (optional)
@@ -427,17 +417,12 @@ def G_Gen(n=1,ValuesIn=[[[1,0,1],[1,1,0]],[[0,1,0]]],Orders=[0,0,0],Times=[30,20
     :param Times: the time of each element
     :param IndicesPrincipal: the index of the main input
     :return: a list of lists.
-    Exemples:
-    -------
-   
-        Input:
-            n=1
-            ValuesIn=[[[1,0,1],[1,1,0]],[[0,1,0]]]
-            Orders=[0,0,0] 
-            Times=[30,20,40]
-            IndicesPrincipal=[1,0]
+    
+    Examples:
+    ---------
 
-        Output: G_GEN=[[[1, 0, 1], [1, 1, 0]], [[0, 1, 0]]]
+    >>> n=1,ValuesIn=[[[1,0,1],[1,1,0]],[[0,1,0]]],Orders=[0,0,0],Times=[30,20,40],IndicesPrincipal=[1,0]
+    [[[1, 0, 1], [1, 1, 0]], [[0, 1, 0]]]
     """
     if n==0:
         return G_ID(ValuesIn,Orders,Times,IndicesPrincipal)  
@@ -464,10 +449,12 @@ def ID_G(n=1):  #ID_G
     
     :param n: the number of inputs to the gate, defaults to 1 (optional)
     :return: The ID of the gate.
-    Exemples:
-    -------
-        Input: n=1
-        output: 'G_ID'
+    
+    Examples:
+    ---------
+
+    >>> n=1
+    G_ID
     """
     if n==0:
         return "G_Input"

@@ -21,16 +21,15 @@ class Cut: # Classe de coupes
     NCut=0    
     def __init__(self,Tree=FaultTree(2),IndivIndex=[0]):  # Constructeur
         """
-        > Décrémentation du nombre de coupes
+        Décrémentation du nombre de coupes
         
+
         And here's the full docstring:
         
-        > Dictionary of Cups
-        > 
-        > Args:
-        >     Tree (list, optional): _description_. Defaults to FaultTreeR(2).
-        >     IndivIndex (list, optional): _description_. Defaults to [0].
-        > Décrémentation du nombre de coupes
+        Dictionary of Cups 
+        :Args:Tree (list, optional): _description_. Defaults to FaultTreeR(2).
+        :Args:IndivIndex (list, optional): _description_. Defaults to [0].
+        Décrémentation du nombre de coupes
         
         The docstring is a mess. It's not clear what the function does, and it's not clear what the
         arguments are
@@ -59,18 +58,18 @@ class Cut: # Classe de coupes
         
     def InOrder2(self,xx=[1,3,2],yy=[1,2,30]):  # Traitement d'un arbre
         """
-        > As long as the function is true and the end of the list has not been reached, the function returns
+        As long as the function is true and the end of the list has not been reached, the function returns
         True if xx is in the order of yy
         
         :param xx: list of integers
         :param yy: the list of the values of the nodes of the tree
         :return: True if xx is in the order of yy
-          Examples:
-        -------
-        Input: self=1
-            xx=[1,3,2]
-            yy=[1,2,30]
-        Output: false
+        
+        Examples:
+        ---------
+
+        >>> self,xx=[1,3,2],yy=[1,2,30]
+        false
         """
         res=True    
         i=0
@@ -238,12 +237,13 @@ class Link:     # Classe liens minimaux
             :param xx: the x-coordinates of the points
             :param yy: the list of y-coordinates of the points in the polygon
             :return: True or False
-             Examples:
+            
+            
+            Examples:
             -------
-            Input: 
-                xx=[1,0,1]
-                yy=[0,-1,-1]
-            Output: false
+            
+            >>> xx=[1,0,1],yy=[0,-1,-1]
+            false
             """
             #print([xx,yy])
             res=True
@@ -263,12 +263,12 @@ class Link:     # Classe liens minimaux
             :param xx: the first input vector
             :param yy: the first input vector
             :return: a list of 1's and 0's.
+            
+            
             Examples:
             -------
-            Input: 
-                xx=[1,0]
-                yy=[0,-1]
-            Output: [1, 1]
+            >>> xx=[1,0],yy=[0,-1]
+            [1, 1]
             
             """
             res=xx.copy()
@@ -288,12 +288,12 @@ class Link:     # Classe liens minimaux
             :param yy: a list of lists of numbers. Each list of numbers is a list of coefficients of a
             polynomial
             :return: the result of the operation.
-             Examples:
-            -------
-            Input: 
-                xx=[1,0]
-                yy=[0,-1]
-            Output: [1, 1]
+            
+            Examples:
+            ---------
+
+            >>> xx=[1,0],yy=[[0,-1]]
+            [1, 1]
             """
             res=xx.copy()
             i=0
@@ -341,17 +341,18 @@ class Link:     # Classe liens minimaux
     
     def InOrder2(self,xx=[1,3,2],yy=[1,2,30]): 
         """
-        > Checking if the first vector is less than or equal to the second vector
+        Checking if the first vector is less than or equal to the second vector
         
         :param xx: the first vector
         :param yy: the vector of the current state
         :return: a boolean value.
+        
+        
         Examples:
-            -------
-            Input: 
-                xx=[1,0]
-                yy=[0,-1]
-            Output: False
+        ---------
+
+        >>> self=(1),xx=[1,3,2],yy=[1,2,30]
+        False
         
         """
         res=True
@@ -371,21 +372,21 @@ class Link:     # Classe liens minimaux
         #nn=len(Temp)     
         def InOrder3(xx=[1,0],yy=[0,-1]): # Fonction d'ordre 3
             """
-            > summary Function of order 3 
+            summary Function of order 3 
             
             Here's a longer description of the function:
             
-            > Checking if the cut is feasible
+            Checking if the cut is feasible
             
             :param xx: the list of the number of vertices in each connected component of the graph
             :param yy: the list of the number of vertices in each part of the cut
             :return: a boolean value.
+            
             Examples:
-            -------
-            Input: 
-                xx=[1,0]
-                yy=[0,-1]
-            Output: True
+            ---------
+
+            >>> xx=[1,0],yy=[0,-1]
+            True
         
             """
             res=True
@@ -398,27 +399,28 @@ class Link:     # Classe liens minimaux
         
         def InOrder4(xx=[1,0],yy=[[0,-1],[-1,0]]): # Fonction d'ordre 4
             """
-            > Checking if the list xx is in the list of lists yy
+            Checking if the list xx is in the list of lists yy
             
             Here's a longer description of the above function:
             
-            > Checking if the list xx is in the list of lists yy
+            Checking if the list xx is in the list of lists yy
             
-            > :param xx: the list to be checked
+            :param xx: the list to be checked
             
-            > :param yy: the list of lists
+            :param yy: the list of lists
             
-            > :return: a boolean value
+            :return: a boolean value
             
             :param xx: the list to be checked
             :param yy: the list of lists
             :return: The list of orders.
+            
+            
             Examples:
-            -------
-            Input: 
-                xx=[1,0]
-                yy=[[0,-1],[-1,0]]
-            Output: True
+            ---------
+
+            >>> xx=[1,0],yy=[[0,-1],[-1,0]]
+            True
             """
             res=False
             i=0
@@ -495,17 +497,7 @@ print(MyLink.MinLink)
 
 def One(x):
     """
-    Function that returns 1 if x is a positive integer
-     
-    # R
-    #' @title One
-    #' @description Function that returns 1 if x is a positive integer
-    #' @param x (int)
-    #' @return int
-    One <- function(x) {
-        return(1)
-    }
-    
+    Function that returns 1 if x is a positive integer    
     :param x: int
     :return: 1
     """
@@ -625,12 +617,13 @@ class DownHasseDiagram: # Classe des diagrammes de Hasse
             :param x: a list of integers
             :param y: [0,1]
             :return: The function InOrder2 is being returned.
+            
+            
             Examples:
             -------
-            Input: 
-                x=[0,0,1]
-                y=[0,1]
-            Output: True
+            
+            >>> x=[0,0,1],y=[0,1]
+            True
             """
             res=True
             if (x!=None) and (y!=None):
@@ -731,8 +724,6 @@ class DownHasseDiagram: # Classe des diagrammes de Hasse
         creating a list of lists. The outer list is a list of lists, where
         each inner list is a list of the reliability values for each component.
         Calculating the reliability polynomial of a system.
-
-        Returns:
             
         """
         #R=[sympy.Symbol("R"+str(self.IndIndex[i])) for i in range(self.NComponent)]
@@ -948,12 +939,13 @@ class UpHasseDiagram:
             :param x: a list of integers
             :param y: the list of values to be sorted
             :return: True
+            
+            
             Examples:
             -------
-            Input: 
-                x=[0,0,1]
-                y=[0,1]
-            Output: False
+
+            >>> x=[0,0,1],y=[0,1]
+            False
             """
             res=True
             if (x!=None) and (y!=None):
