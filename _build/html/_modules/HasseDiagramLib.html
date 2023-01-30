@@ -1,0 +1,1265 @@
+
+<!DOCTYPE html>
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>HasseDiagramLib &#8212; DFT2HD2ReliabilityR 1.0.0 documentation</title>
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/classic.css" />
+    
+    <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+    <script src="../_static/jquery.js"></script>
+    <script src="../_static/underscore.js"></script>
+    <script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
+    <script src="../_static/doctools.js"></script>
+    <script src="../_static/sphinx_highlight.js"></script>
+    
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">DFT2HD2ReliabilityR 1.0.0 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="index.html" accesskey="U">Module code</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">HasseDiagramLib</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for HasseDiagramLib</h1><div class="highlight"><pre>
+<span></span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Bibliothèques utiles</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="c1">#import plotly.graph_objects as go</span>
+<span class="c1">#from numpy import matlib # importer le module matlib </span>
+
+<span class="kn">import</span> <span class="nn">sympy</span>
+<span class="kn">import</span> <span class="nn">networkx</span> <span class="k">as</span> <span class="nn">nx</span>
+<span class="kn">import</span>  <span class="nn">matplotlib.pyplot</span>  <span class="k">as</span>  <span class="nn">plt</span>
+
+<span class="kn">from</span> <span class="nn">FaultTreeLib</span> <span class="kn">import</span> <span class="o">*</span>
+
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Construction des coupes minimales</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="n">Cuts</span><span class="o">=</span><span class="p">{}</span> <span class="c1"># Dictionary of Cups</span>
+<div class="viewcode-block" id="Cut"><a class="viewcode-back" href="../docs/HasseDiagramLib.html#HasseDiagramLib.Cut">[docs]</a><span class="k">class</span> <span class="nc">Cut</span><span class="p">:</span> <span class="c1"># Classe de coupes</span>
+    <span class="n">NCut</span><span class="o">=</span><span class="mi">0</span>    
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">Tree</span><span class="o">=</span><span class="n">FaultTree</span><span class="p">(</span><span class="mi">2</span><span class="p">),</span><span class="n">IndivIndex</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">]):</span>  <span class="c1"># Constructeur</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Décrémentation du nombre de coupes</span>
+<span class="sd">        </span>
+
+<span class="sd">        And here&#39;s the full docstring:</span>
+<span class="sd">        </span>
+<span class="sd">        Dictionary of Cups </span>
+<span class="sd">        :Args:Tree (list, optional): _description_. Defaults to FaultTreeR(2).</span>
+<span class="sd">        :Args:IndivIndex (list, optional): _description_. Defaults to [0].</span>
+<span class="sd">        Décrémentation du nombre de coupes</span>
+<span class="sd">        </span>
+<span class="sd">        The docstring is a mess. It&#39;s not clear what the function does, and it&#39;s not clear what the</span>
+<span class="sd">        arguments are</span>
+<span class="sd">        </span>
+<span class="sd">        :param Tree: the tree of failure</span>
+<span class="sd">        :param IndivIndex: list of indices of individuals</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="o">=</span><span class="nb">id</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>    <span class="c1"># Identifiant de la classe</span>
+        <span class="n">Cuts</span><span class="p">[</span><span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="p">)]</span><span class="o">=</span><span class="bp">self</span> <span class="c1"># Ajout de la classe dans le dictionnaire</span>
+        <span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="n">NCut</span><span class="o">+=</span><span class="mi">1</span> <span class="c1"># Incrémentation du nombre de coupes</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">Tree</span><span class="o">=</span><span class="n">Tree</span>  <span class="c1"># Arbre de défaillance</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">IndIndex</span><span class="o">=</span><span class="n">IndivIndex</span>    <span class="c1"># Indices des individus</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">NComponent</span><span class="o">=</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">IndIndex</span><span class="p">)</span>  <span class="c1"># Nombre de composants</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">NNode</span><span class="o">=</span><span class="mi">0</span>    <span class="c1"># Nombre de noeuds</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">Node</span><span class="o">=</span><span class="p">{}</span>    <span class="c1"># Dictionnaire des noeuds</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">NCut</span><span class="o">=</span><span class="mi">0</span>    <span class="c1"># Nombre de coupes</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">Cut</span><span class="o">=</span><span class="p">[]</span>   <span class="c1"># Liste des coupes</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">RelMat</span><span class="o">=</span><span class="p">[[],[],[],[],[],[],[],[]]</span>   <span class="c1"># Matrice de relations</span>
+        <span class="c1">#[[NumRel],[Node i],[Node j],[Door],[Orders],[Times],[IndicesPrincipal],[Result]]</span>
+        
+    <span class="k">def</span> <span class="fm">__del__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>  <span class="c1"># Destructeur</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        The __del__ method is called when the instance is about to be destroyed</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="n">NCut</span><span class="o">-=</span><span class="mi">1</span>  <span class="c1"># </span>
+        
+<div class="viewcode-block" id="Cut.InOrder2"><a class="viewcode-back" href="../docs/HasseDiagramLib.html#HasseDiagramLib.Cut.InOrder2">[docs]</a>    <span class="k">def</span> <span class="nf">InOrder2</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">xx</span><span class="o">=</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="mi">3</span><span class="p">,</span><span class="mi">2</span><span class="p">],</span><span class="n">yy</span><span class="o">=</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">30</span><span class="p">]):</span>  <span class="c1"># Traitement d&#39;un arbre</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        As long as the function is true and the end of the list has not been reached, the function returns</span>
+<span class="sd">        True if xx is in the order of yy</span>
+<span class="sd">        </span>
+<span class="sd">        :param xx: list of integers</span>
+<span class="sd">        :param yy: the list of the values of the nodes of the tree</span>
+<span class="sd">        :return: True if xx is in the order of yy</span>
+<span class="sd">        </span>
+<span class="sd">        Examples:</span>
+<span class="sd">        ---------</span>
+
+<span class="sd">        &gt;&gt;&gt; self,xx=[1,3,2],yy=[1,2,30]</span>
+<span class="sd">        false</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">res</span><span class="o">=</span><span class="kc">True</span>    
+        <span class="n">i</span><span class="o">=</span><span class="mi">0</span>
+        <span class="k">while</span> <span class="p">((</span><span class="n">res</span><span class="o">==</span><span class="kc">True</span><span class="p">)</span> <span class="ow">and</span> <span class="p">(</span><span class="n">i</span><span class="o">&lt;</span><span class="nb">min</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">xx</span><span class="p">),</span><span class="nb">len</span><span class="p">(</span><span class="n">yy</span><span class="p">)))):</span>
+            <span class="n">res</span><span class="o">=</span><span class="p">(</span><span class="n">res</span> <span class="ow">and</span> <span class="p">(</span><span class="n">xx</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">&lt;=</span><span class="n">yy</span><span class="p">[</span><span class="n">i</span><span class="p">]))</span> 
+            <span class="n">i</span><span class="o">=</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span>
+        <span class="k">return</span> <span class="n">res</span></div>
+    
+<div class="viewcode-block" id="Cut.Leaves"><a class="viewcode-back" href="../docs/HasseDiagramLib.html#HasseDiagramLib.Cut.Leaves">[docs]</a>    <span class="k">def</span> <span class="nf">Leaves</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>   
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        It takes the leaves of the tree and creates a list of lists </span>
+<span class="sd">        :return: A list of lists.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">Temp1</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">Tree</span><span class="o">.</span><span class="n">Leaves</span><span class="p">()</span>
+        <span class="c1">#print(&quot;\n DT leaves&quot;)</span>
+        <span class="c1">#print(Temp1)</span>
+        <span class="n">n</span><span class="o">=</span><span class="nb">len</span><span class="p">(</span><span class="n">Temp1</span><span class="p">)</span>
+        <span class="n">res</span><span class="o">=</span><span class="p">[]</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n</span><span class="p">):</span>
+            <span class="n">Leaf</span><span class="o">=</span><span class="p">[]</span>
+            <span class="c1">#Temp2=self.Tree.Node[Temp1[i]]</span>
+            <span class="c1">#print(&quot;\n Raw leaf :&quot;)</span>
+            <span class="c1">#print(Temp2)</span>
+            <span class="c1">#print(self.IndIndex)</span>
+            <span class="c1">#print(self.NComponent)</span>
+            <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">NComponent</span><span class="p">):</span>    <span class="c1"># Pour chaque composant</span>
+                <span class="n">Temp3</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span> <span class="k">for</span> <span class="n">l</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">NComponent</span><span class="p">)]</span>
+                <span class="n">Temp3</span><span class="p">[</span><span class="n">k</span><span class="p">]</span><span class="o">=</span><span class="mi">1</span>
+                <span class="c1">#print(&quot;\n Cutomized leaf :&quot;)</span>
+                <span class="c1">#print(Temp3)</span>
+                <span class="n">Leaf</span><span class="o">+=</span><span class="p">[[</span><span class="n">Temp3</span><span class="p">]]</span>
+            <span class="c1">#if (Leaf!=[]):</span>
+            <span class="n">res</span><span class="o">.</span><span class="n">append</span><span class="p">([</span><span class="n">Temp1</span><span class="p">[</span><span class="n">i</span><span class="p">],</span><span class="n">Leaf</span><span class="p">])</span>
+            <span class="c1">#print(&quot;\n Leaf:&quot;)</span>
+            <span class="c1">#print(Leaf)</span>
+        <span class="k">return</span> <span class="n">res</span></div>
+
+<div class="viewcode-block" id="Cut.CollectCut"><a class="viewcode-back" href="../docs/HasseDiagramLib.html#HasseDiagramLib.Cut.CollectCut">[docs]</a>    <span class="k">def</span> <span class="nf">CollectCut</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">P_Gen</span><span class="p">):</span> <span class="c1"># Collecte des coupes</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        It takes a tree and returns a list of cuts</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">Temp1</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">Leaves</span><span class="p">()</span>
+        <span class="c1">#print(&quot;\n Customized DT Leaves&quot;)</span>
+        <span class="c1">#print(Temp1)</span>
+        <span class="n">Temp2</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">Tree</span><span class="o">.</span><span class="n">IdxTable</span>
+        <span class="c1">#print(&quot;\n Index Table&quot;)</span>
+        <span class="c1">#print(Temp2)</span>
+        <span class="c1">#[[NumRel],[Node i],[Node j]]</span>
+        <span class="n">Temp3</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">Tree</span><span class="o">.</span><span class="n">RelMat</span>
+        <span class="c1">#print(&quot;\n Tree.RelMat&quot;)</span>
+        <span class="c1">#print(Temp3)</span>
+        <span class="c1">#[[Door],[NodeIn],[NodeOut],[Orders],[Times],[IndicesPrincipal]]</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">Temp1</span><span class="p">)):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">NNode</span><span class="o">+=</span><span class="mi">1</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">Node</span><span class="p">[</span><span class="n">Temp1</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="mi">0</span><span class="p">]]</span><span class="o">=</span><span class="n">Temp1</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="mi">1</span><span class="p">]</span>
+            <span class="c1">#self.Cut=P_Gen(3,[self.Cut]+Temp1[i][1])[0]</span>
+            <span class="c1">#self.NCut=len(self.Cut)</span>
+        <span class="c1">#print(&quot;\n Nodes&quot;)</span>
+        <span class="c1">#print(self.Node)   </span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">Temp2</span><span class="p">[</span><span class="mi">0</span><span class="p">])):</span>
+            <span class="c1">#[[NumRel],[Node i],[Node j],[Door],[Orders],[Times],[IndicesPrincipal],[Result]]</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">RelMat</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">Temp2</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="n">i</span><span class="p">])</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">RelMat</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">Temp2</span><span class="p">[</span><span class="mi">1</span><span class="p">][</span><span class="n">i</span><span class="p">])</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">RelMat</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">Temp2</span><span class="p">[</span><span class="mi">2</span><span class="p">][</span><span class="n">i</span><span class="p">])</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">RelMat</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">Temp3</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="n">i</span><span class="p">])</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">RelMat</span><span class="p">[</span><span class="mi">4</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">Temp3</span><span class="p">[</span><span class="mi">3</span><span class="p">][</span><span class="n">i</span><span class="p">])</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">RelMat</span><span class="p">[</span><span class="mi">5</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">Temp3</span><span class="p">[</span><span class="mi">4</span><span class="p">][</span><span class="n">i</span><span class="p">])</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">RelMat</span><span class="p">[</span><span class="mi">6</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">Temp3</span><span class="p">[</span><span class="mi">5</span><span class="p">][</span><span class="n">i</span><span class="p">])</span>
+            <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">Tree</span><span class="o">.</span><span class="n">Node</span><span class="p">:</span>
+                <span class="k">if</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">Tree</span><span class="o">.</span><span class="n">IdxNode</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">Node</span><span class="p">):</span>
+                    <span class="n">y</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">Tree</span><span class="o">.</span><span class="n">Node</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">RelMat</span><span class="p">[</span><span class="mi">1</span><span class="p">][</span><span class="o">-</span><span class="mi">1</span><span class="p">]]</span>
+                    <span class="n">Test</span><span class="o">=</span><span class="p">(</span><span class="n">x</span><span class="o">!=</span><span class="n">y</span><span class="p">)</span> <span class="ow">and</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">InOrder2</span><span class="p">(</span><span class="n">x</span><span class="p">,</span><span class="n">y</span><span class="p">))</span>
+                    <span class="n">Test</span><span class="o">=</span><span class="p">(</span><span class="n">Test</span> <span class="ow">and</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">Tree</span><span class="o">.</span><span class="n">AdjMat</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">Tree</span><span class="o">.</span><span class="n">IdxNode</span><span class="p">(</span><span class="n">y</span><span class="p">)][</span><span class="bp">self</span><span class="o">.</span><span class="n">Tree</span><span class="o">.</span><span class="n">IdxNode</span><span class="p">(</span><span class="n">x</span><span class="p">)]</span><span class="o">==</span><span class="mi">0</span><span class="p">))</span>
+                    <span class="n">Test</span><span class="o">=</span><span class="p">(</span><span class="n">Test</span> <span class="ow">and</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">Tree</span><span class="o">.</span><span class="n">AdjMat</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">Tree</span><span class="o">.</span><span class="n">IdxNode</span><span class="p">(</span><span class="n">x</span><span class="p">)][</span><span class="bp">self</span><span class="o">.</span><span class="n">Tree</span><span class="o">.</span><span class="n">IdxNode</span><span class="p">(</span><span class="n">y</span><span class="p">)]</span><span class="o">==</span><span class="mi">0</span><span class="p">))</span>
+                    <span class="k">if</span> <span class="p">(</span><span class="n">Test</span><span class="p">):</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">Node</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">RelMat</span><span class="p">[</span><span class="mi">1</span><span class="p">][</span><span class="o">-</span><span class="mi">1</span><span class="p">]]</span><span class="o">+=</span><span class="bp">self</span><span class="o">.</span><span class="n">Node</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">Tree</span><span class="o">.</span><span class="n">IdxNode</span><span class="p">(</span><span class="n">x</span><span class="p">)]</span>
+                        <span class="c1">#print(&quot;\n Added vertice&quot;)</span>
+                        <span class="c1">#print([self.Tree.IdxNode(x),self.Node[self.Tree.IdxNode(x)]])</span>
+            <span class="c1">#print(&quot;\n Actualised vertice&quot;)</span>
+            <span class="c1">#print([self.RelMat[1][-1],self.Node[self.RelMat[1][-1]]])</span>
+            <span class="c1">#print(&quot;\n Door&quot;)</span>
+            <span class="c1">#print(ID_P(self.RelMat[3][-1]))</span>
+            <span class="c1">#print(&quot;\n Input&quot;)</span>
+            <span class="c1">#print(self.Node[self.RelMat[1][-1]])</span>
+            <span class="c1">#print(&quot;\n P_Gen gives&quot;)</span>
+            <span class="c1">#print(P_Gen(self.RelMat[3][-1],self.Node[self.RelMat[1][-1]],self.RelMat[4][-1],self.RelMat[5][-1],self.RelMat[6][-1])[0])</span>
+            <span class="k">if</span> <span class="ow">not</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">RelMat</span><span class="p">[</span><span class="mi">2</span><span class="p">][</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">Node</span><span class="p">):</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">NNode</span><span class="o">+=</span><span class="mi">1</span>
+                <span class="c1"># Creating a new node in the graph, and it is a Python node.</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">Node</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">RelMat</span><span class="p">[</span><span class="mi">2</span><span class="p">][</span><span class="o">-</span><span class="mi">1</span><span class="p">]]</span><span class="o">=</span><span class="n">P_Gen</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">RelMat</span><span class="p">[</span><span class="mi">3</span><span class="p">][</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span><span class="bp">self</span><span class="o">.</span><span class="n">Node</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">RelMat</span><span class="p">[</span><span class="mi">1</span><span class="p">][</span><span class="o">-</span><span class="mi">1</span><span class="p">]],</span><span class="bp">self</span><span class="o">.</span><span class="n">RelMat</span><span class="p">[</span><span class="mi">4</span><span class="p">][</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span><span class="bp">self</span><span class="o">.</span><span class="n">RelMat</span><span class="p">[</span><span class="mi">5</span><span class="p">][</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span><span class="bp">self</span><span class="o">.</span><span class="n">RelMat</span><span class="p">[</span><span class="mi">6</span><span class="p">][</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
+                <span class="c1">#self.Cut=P_Gen(3,[self.Cut]+self.Node[self.RelMat[2][-1]])[0]</span>
+                <span class="c1">#self.NCut=len(self.Cut)</span>
+<span class="w">                </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">                if (self.Node[self.RelMat[2][-1]]==[[]]):</span>
+<span class="sd">                    print(&quot;Here Bad&quot;)</span>
+<span class="sd">                    print(self.RelMat[3][-1])</span>
+<span class="sd">                    print(self.Node[self.RelMat[1][-1]])</span>
+<span class="sd">                &quot;&quot;&quot;</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">RelMat</span><span class="p">[</span><span class="mi">7</span><span class="p">]</span><span class="o">+=</span><span class="bp">self</span><span class="o">.</span><span class="n">Node</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">RelMat</span><span class="p">[</span><span class="mi">2</span><span class="p">][</span><span class="o">-</span><span class="mi">1</span><span class="p">]]</span>
+            
+        
+        <span class="c1">#print(&quot;\n RelMat in CollectCut in &quot;)</span>
+        <span class="c1">#print(self.RelMat)</span>
+        
+        <span class="bp">self</span><span class="o">.</span><span class="n">Cut</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">RelMat</span><span class="p">[</span><span class="mi">7</span><span class="p">][</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">NCut</span><span class="o">=</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">Cut</span><span class="p">)</span></div></div>
+
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">MyTree=FaultTree(3)</span>
+<span class="sd">MyTree.NewRelation(3,[1,1,0],[0,0,1])</span>
+
+<span class="sd">MyCut=Cut(MyTree,[0])</span>
+<span class="sd">print(MyCut.NComponent)</span>
+<span class="sd">print(MyCut.Tree.Node)</span>
+<span class="sd">print(MyCut.Leaves())</span>
+
+<span class="sd">MyCut.CollectCut()</span>
+<span class="sd">print(MyCut.NCut)</span>
+<span class="sd">print(MyCut.Cut)</span>
+
+<span class="sd">print(MyCut.RelMat)</span>
+<span class="sd">print(MyCut.NNode)</span>
+<span class="sd">print(MyCut.Node)</span>
+
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Construction des liens minimaux</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="n">Links</span><span class="o">=</span><span class="p">{}</span> 
+<span class="sd">&quot;&quot;&quot;Dictionary of minimal links</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">    list: contain the minimal links of order 3</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<div class="viewcode-block" id="Link"><a class="viewcode-back" href="../docs/HasseDiagramLib.html#HasseDiagramLib.Link">[docs]</a><span class="k">class</span> <span class="nc">Link</span><span class="p">:</span>     <span class="c1"># Classe liens minimaux</span>
+    <span class="n">NLink</span><span class="o">=</span><span class="mi">0</span>    
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">P_NOT</span><span class="p">,</span><span class="n">Tree</span><span class="o">=</span><span class="n">FaultTree</span><span class="p">(</span><span class="mi">2</span><span class="p">),</span><span class="n">IndivIndex</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">]):</span> <span class="c1"># </span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        This function is used to create a new link</span>
+<span class="sd">        </span>
+<span class="sd">        :param Tree: The tree that the link is in</span>
+<span class="sd">        :param IndivIndex: The index of the individual in the tree</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="o">=</span><span class="nb">id</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="c1"># Identifiant</span>
+        <span class="n">Links</span><span class="p">[</span><span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="p">)]</span><span class="o">=</span><span class="bp">self</span> <span class="c1"># Ajout dans le dictionnaire</span>
+        <span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="n">NLink</span><span class="o">+=</span><span class="mi">1</span> <span class="c1"># Incrémentation du nombre de liens</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">Tree</span><span class="o">=</span><span class="n">Tree</span> <span class="c1"># Arbre</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">IndIndex</span><span class="o">=</span><span class="n">IndivIndex</span>    <span class="c1"># Indices des individus    </span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">NComponent</span><span class="o">=</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">IndIndex</span><span class="p">)</span>  <span class="c1"># Nombre de composants</span>
+        
+        <span class="bp">self</span><span class="o">.</span><span class="n">NNode</span><span class="o">=</span><span class="mi">0</span> <span class="c1"># Nombre de noeuds</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">Node</span><span class="o">=</span><span class="p">{}</span> <span class="c1"># Dictionnaire des noeuds</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">NLink</span><span class="o">=</span><span class="mi">0</span>    <span class="c1"># Nombre de liens</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">Link</span><span class="o">=</span><span class="p">[]</span> <span class="c1"># Liste des liens</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">NMinLink</span><span class="o">=</span><span class="mi">0</span> <span class="c1"># Nombre de liens minimaux</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">MinLink</span><span class="o">=</span><span class="p">[]</span> <span class="c1"># Liste des liens minimaux</span>
+        
+        <span class="k">def</span> <span class="nf">InOrder3</span><span class="p">(</span><span class="n">xx</span><span class="o">=</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">],</span><span class="n">yy</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span><span class="o">-</span><span class="mi">1</span><span class="p">]):</span> 
+<span class="w">            </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">            If the two lists are of equal length, then the function returns True if and only if the first</span>
+<span class="sd">            list is less than or equal to the second list in the lexicographic order</span>
+<span class="sd">            </span>
+<span class="sd">            :param xx: the x-coordinates of the points</span>
+<span class="sd">            :param yy: the list of y-coordinates of the points in the polygon</span>
+<span class="sd">            :return: True or False</span>
+<span class="sd">            </span>
+<span class="sd">            </span>
+<span class="sd">            Examples:</span>
+<span class="sd">            -------</span>
+<span class="sd">            </span>
+<span class="sd">            &gt;&gt;&gt; xx=[1,0,1],yy=[0,-1,-1]</span>
+<span class="sd">            false</span>
+<span class="sd">            &quot;&quot;&quot;</span>
+            <span class="c1">#print([xx,yy])</span>
+            <span class="n">res</span><span class="o">=</span><span class="kc">True</span>
+            <span class="n">i</span><span class="o">=</span><span class="mi">0</span>
+            <span class="k">while</span> <span class="p">((</span><span class="n">res</span><span class="o">==</span><span class="kc">True</span><span class="p">)</span> <span class="ow">and</span> <span class="p">(</span><span class="n">i</span><span class="o">&lt;</span><span class="nb">min</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">xx</span><span class="p">),</span><span class="nb">len</span><span class="p">(</span><span class="n">yy</span><span class="p">)))):</span>
+                <span class="k">if</span> <span class="p">(</span><span class="n">xx</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">*</span><span class="n">yy</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">!=</span><span class="mi">0</span><span class="p">):</span>
+                    <span class="n">res</span><span class="o">=</span><span class="p">(</span><span class="n">res</span> <span class="ow">and</span> <span class="p">(</span><span class="n">xx</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">&lt;=</span><span class="n">yy</span><span class="p">[</span><span class="n">i</span><span class="p">]))</span>
+                <span class="n">i</span><span class="o">=</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span>
+            <span class="k">return</span> <span class="n">res</span>
+        
+        <span class="k">def</span> <span class="nf">TrueVal1</span><span class="p">(</span><span class="n">xx</span><span class="o">=</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">],</span><span class="n">yy</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="o">-</span><span class="mi">1</span><span class="p">]):</span>   
+<span class="w">            </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">            If the two input vectors are in order, then the output vector is the same as the first input</span>
+<span class="sd">            vector, except that if the first input vector has a zero in a position where the second input</span>
+<span class="sd">            vector has a nonzero, then the output vector has a one in that position</span>
+<span class="sd">            </span>
+<span class="sd">            :param xx: the first input vector</span>
+<span class="sd">            :param yy: the first input vector</span>
+<span class="sd">            :return: a list of 1&#39;s and 0&#39;s.</span>
+<span class="sd">            </span>
+<span class="sd">            </span>
+<span class="sd">            Examples:</span>
+<span class="sd">            -------</span>
+<span class="sd">            &gt;&gt;&gt; xx=[1,0],yy=[0,-1]</span>
+<span class="sd">            [1, 1]</span>
+<span class="sd">            </span>
+<span class="sd">            &quot;&quot;&quot;</span>
+            <span class="n">res</span><span class="o">=</span><span class="n">xx</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+            <span class="k">if</span> <span class="n">InOrder3</span><span class="p">(</span><span class="n">xx</span><span class="p">,</span><span class="n">yy</span><span class="p">):</span>
+                <span class="n">i</span><span class="o">=</span><span class="mi">0</span>
+                <span class="k">while</span> <span class="p">(</span><span class="n">i</span><span class="o">&lt;</span><span class="nb">min</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">xx</span><span class="p">),</span><span class="nb">len</span><span class="p">(</span><span class="n">yy</span><span class="p">))):</span>
+                    <span class="k">if</span> <span class="p">(</span><span class="n">xx</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">*</span><span class="n">yy</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">==</span><span class="mi">0</span><span class="p">)</span> <span class="ow">and</span> <span class="p">(</span><span class="n">xx</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">+</span><span class="n">yy</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">!=</span><span class="mi">0</span><span class="p">):</span>
+                        <span class="n">res</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">=</span><span class="mi">1</span>
+                    <span class="n">i</span><span class="o">=</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span>
+            <span class="k">return</span> <span class="n">res</span>
+        
+        <span class="k">def</span> <span class="nf">TrueVal2</span><span class="p">(</span><span class="n">xx</span><span class="o">=</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">],</span><span class="n">yy</span><span class="o">=</span><span class="p">[[</span><span class="mi">0</span><span class="p">,</span><span class="o">-</span><span class="mi">1</span><span class="p">]]):</span>  
+<span class="w">            </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">            It takes a list of lists of numbers and returns a list of numbers</span>
+<span class="sd">            </span>
+<span class="sd">            :param xx: a list of numbers, each number is either 0 or 1</span>
+<span class="sd">            :param yy: a list of lists of numbers. Each list of numbers is a list of coefficients of a</span>
+<span class="sd">            polynomial</span>
+<span class="sd">            :return: the result of the operation.</span>
+<span class="sd">            </span>
+<span class="sd">            Examples:</span>
+<span class="sd">            ---------</span>
+
+<span class="sd">            &gt;&gt;&gt; xx=[1,0],yy=[[0,-1]]</span>
+<span class="sd">            [1, 1]</span>
+<span class="sd">            &quot;&quot;&quot;</span>
+            <span class="n">res</span><span class="o">=</span><span class="n">xx</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+            <span class="n">i</span><span class="o">=</span><span class="mi">0</span>
+            <span class="k">while</span> <span class="p">(</span><span class="n">i</span><span class="o">&lt;</span><span class="nb">len</span><span class="p">(</span><span class="n">yy</span><span class="p">)):</span>
+                <span class="n">res</span><span class="o">=</span><span class="n">TrueVal1</span><span class="p">(</span><span class="n">res</span><span class="p">,</span><span class="n">yy</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
+                <span class="n">i</span><span class="o">=</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span>
+                <span class="c1">#print(res)</span>
+            <span class="k">return</span> <span class="n">res</span>
+        
+        <span class="c1">#print(TrueVal2([0,1,0],[[0,-1,0],[0,0,-1]]))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">Cut</span><span class="o">=</span><span class="n">Cut</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">Tree</span><span class="p">,</span><span class="bp">self</span><span class="o">.</span><span class="n">IndIndex</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">Cut</span><span class="o">.</span><span class="n">CollectCut</span><span class="p">()</span> 
+        
+        <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">Cut</span><span class="o">.</span><span class="n">Cut</span><span class="p">:</span>  <span class="c1"># For each vertex of the cut</span>
+            <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">x</span><span class="p">)):</span>
+                <span class="n">x</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">=-</span><span class="n">x</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+        
+        <span class="k">if</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">Cut</span><span class="o">.</span><span class="n">Cut</span><span class="o">!=</span><span class="p">[]):</span> <span class="c1"># If the cut is not empty</span>
+            <span class="n">temp</span><span class="o">=</span><span class="n">P_NOT</span><span class="p">([</span><span class="bp">self</span><span class="o">.</span><span class="n">Cut</span><span class="o">.</span><span class="n">Cut</span><span class="p">])</span>
+            <span class="k">if</span> <span class="p">(</span><span class="n">temp</span><span class="o">!=</span><span class="p">[]):</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">Link</span><span class="o">=</span><span class="n">temp</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="k">else</span><span class="p">:</span> <span class="c1"># If the cut is empty</span>
+            <span class="n">temp</span><span class="o">=</span><span class="p">[]</span>
+            <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">NComponent</span><span class="p">):</span> <span class="c1"># For each component</span>
+                <span class="n">tempBis</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span> <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">NComponent</span><span class="p">)]</span>
+                <span class="n">tempBis</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">=</span><span class="mi">1</span>
+                <span class="n">temp</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">tempBis</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">Link</span><span class="o">=</span><span class="n">temp</span>
+            <span class="c1">#print(&quot;Here&quot;)</span>
+            <span class="c1">#print(self.Link)</span>
+        
+        <span class="bp">self</span><span class="o">.</span><span class="n">NLink</span><span class="o">=</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">Link</span><span class="p">)</span> <span class="c1"># Number of links</span>
+        
+        <span class="c1">#print(&quot;\n Minimal Cuts: &quot;)</span>
+        <span class="c1">#print(self.Cut.Cut)</span>
+        
+        <span class="c1">#print(&quot;\n Raw set of Links: &quot;)</span>
+        <span class="c1">#print(self.Link)</span>
+        
+    <span class="k">def</span> <span class="fm">__del__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span> 
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        The function __del__ is a destructor. It is called when the object is about to be destroyed</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="n">NLink</span><span class="o">-=</span><span class="mi">1</span>
+    
+<div class="viewcode-block" id="Link.InOrder2"><a class="viewcode-back" href="../docs/HasseDiagramLib.html#HasseDiagramLib.Link.InOrder2">[docs]</a>    <span class="k">def</span> <span class="nf">InOrder2</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">xx</span><span class="o">=</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="mi">3</span><span class="p">,</span><span class="mi">2</span><span class="p">],</span><span class="n">yy</span><span class="o">=</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">30</span><span class="p">]):</span> 
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Checking if the first vector is less than or equal to the second vector</span>
+<span class="sd">        </span>
+<span class="sd">        :param xx: the first vector</span>
+<span class="sd">        :param yy: the vector of the current state</span>
+<span class="sd">        :return: a boolean value.</span>
+<span class="sd">        </span>
+<span class="sd">        </span>
+<span class="sd">        Examples:</span>
+<span class="sd">        ---------</span>
+
+<span class="sd">        &gt;&gt;&gt; self=(1),xx=[1,3,2],yy=[1,2,30]</span>
+<span class="sd">        False</span>
+<span class="sd">        </span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">res</span><span class="o">=</span><span class="kc">True</span>
+        <span class="n">i</span><span class="o">=</span><span class="mi">0</span>
+        <span class="k">while</span> <span class="p">((</span><span class="n">res</span><span class="o">==</span><span class="kc">True</span><span class="p">)</span> <span class="ow">and</span> <span class="p">(</span><span class="n">i</span><span class="o">&lt;</span><span class="nb">min</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">xx</span><span class="p">),</span><span class="nb">len</span><span class="p">(</span><span class="n">yy</span><span class="p">)))):</span>
+            <span class="n">res</span><span class="o">=</span><span class="p">(</span><span class="n">res</span> <span class="ow">and</span> <span class="p">(</span><span class="n">xx</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">&lt;=</span><span class="n">yy</span><span class="p">[</span><span class="n">i</span><span class="p">]))</span>
+            <span class="n">i</span><span class="o">=</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span>
+        <span class="k">return</span> <span class="n">res</span>      </div>
+
+<div class="viewcode-block" id="Link.CollectLink"><a class="viewcode-back" href="../docs/HasseDiagramLib.html#HasseDiagramLib.Link.CollectLink">[docs]</a>    <span class="k">def</span> <span class="nf">CollectLink</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span> <span class="c1"># Collecte des liens minimaux</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        It takes a list of links and returns a list of minimal links.</span>
+<span class="sd">        Checking if the link is already in the dictionary. If not, it adds it to the dictionary.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1">#Temp=self.Node.copy()</span>
+        <span class="c1">#nn=len(Temp)     </span>
+        <span class="k">def</span> <span class="nf">InOrder3</span><span class="p">(</span><span class="n">xx</span><span class="o">=</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">],</span><span class="n">yy</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="o">-</span><span class="mi">1</span><span class="p">]):</span> <span class="c1"># Fonction d&#39;ordre 3</span>
+<span class="w">            </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">            summary Function of order 3 </span>
+<span class="sd">            </span>
+<span class="sd">            Here&#39;s a longer description of the function:</span>
+<span class="sd">            </span>
+<span class="sd">            Checking if the cut is feasible</span>
+<span class="sd">            </span>
+<span class="sd">            :param xx: the list of the number of vertices in each connected component of the graph</span>
+<span class="sd">            :param yy: the list of the number of vertices in each part of the cut</span>
+<span class="sd">            :return: a boolean value.</span>
+<span class="sd">            </span>
+<span class="sd">            Examples:</span>
+<span class="sd">            ---------</span>
+
+<span class="sd">            &gt;&gt;&gt; xx=[1,0],yy=[0,-1]</span>
+<span class="sd">            True</span>
+<span class="sd">        </span>
+<span class="sd">            &quot;&quot;&quot;</span>
+            <span class="n">res</span><span class="o">=</span><span class="kc">True</span>
+            <span class="n">i</span><span class="o">=</span><span class="mi">0</span>
+            <span class="k">while</span> <span class="p">((</span><span class="n">res</span><span class="o">==</span><span class="kc">True</span><span class="p">)</span> <span class="ow">and</span> <span class="p">(</span><span class="n">i</span><span class="o">&lt;</span><span class="nb">min</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">xx</span><span class="p">),</span><span class="nb">len</span><span class="p">(</span><span class="n">yy</span><span class="p">)))):</span> <span class="c1"># Pour chaque sommet du cut</span>
+                <span class="k">if</span> <span class="p">(</span><span class="n">xx</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">*</span><span class="n">yy</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">!=</span><span class="mi">0</span><span class="p">):</span>
+                    <span class="n">res</span><span class="o">=</span><span class="p">(</span><span class="n">res</span> <span class="ow">and</span> <span class="p">(</span><span class="n">xx</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">&lt;=</span><span class="n">yy</span><span class="p">[</span><span class="n">i</span><span class="p">]))</span>
+                <span class="n">i</span><span class="o">=</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span>
+            <span class="k">return</span> <span class="n">res</span>
+        
+        <span class="k">def</span> <span class="nf">InOrder4</span><span class="p">(</span><span class="n">xx</span><span class="o">=</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">],</span><span class="n">yy</span><span class="o">=</span><span class="p">[[</span><span class="mi">0</span><span class="p">,</span><span class="o">-</span><span class="mi">1</span><span class="p">],[</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">]]):</span> <span class="c1"># Fonction d&#39;ordre 4</span>
+<span class="w">            </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">            Checking if the list xx is in the list of lists yy</span>
+<span class="sd">            </span>
+<span class="sd">            Here&#39;s a longer description of the above function:</span>
+<span class="sd">            </span>
+<span class="sd">            Checking if the list xx is in the list of lists yy</span>
+<span class="sd">            </span>
+<span class="sd">            :param xx: the list to be checked</span>
+<span class="sd">            </span>
+<span class="sd">            :param yy: the list of lists</span>
+<span class="sd">            </span>
+<span class="sd">            :return: a boolean value</span>
+<span class="sd">            </span>
+<span class="sd">            :param xx: the list to be checked</span>
+<span class="sd">            :param yy: the list of lists</span>
+<span class="sd">            :return: The list of orders.</span>
+<span class="sd">            </span>
+<span class="sd">            </span>
+<span class="sd">            Examples:</span>
+<span class="sd">            ---------</span>
+
+<span class="sd">            &gt;&gt;&gt; xx=[1,0],yy=[[0,-1],[-1,0]]</span>
+<span class="sd">            True</span>
+<span class="sd">            &quot;&quot;&quot;</span>
+            <span class="n">res</span><span class="o">=</span><span class="kc">False</span>
+            <span class="n">i</span><span class="o">=</span><span class="mi">0</span>
+            <span class="k">while</span> <span class="p">(</span><span class="ow">not</span><span class="p">(</span><span class="n">res</span><span class="p">)</span> <span class="ow">and</span> <span class="p">(</span><span class="n">i</span><span class="o">&lt;</span><span class="nb">len</span><span class="p">(</span><span class="n">yy</span><span class="p">))):</span>
+                <span class="n">res</span><span class="o">=</span><span class="p">(</span><span class="n">res</span> <span class="ow">or</span> <span class="n">InOrder3</span><span class="p">(</span><span class="n">xx</span><span class="p">,</span><span class="n">yy</span><span class="p">[</span><span class="n">i</span><span class="p">]))</span>
+                <span class="n">i</span><span class="o">=</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span>
+            <span class="k">return</span> <span class="n">res</span>
+        
+        <span class="n">Order</span><span class="o">=</span><span class="p">[]</span> <span class="c1"># Liste des ordres</span>
+<span class="c1"># Creating a list of links that are not in order.</span>
+        <span class="k">for</span> <span class="n">y</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">Link</span><span class="p">:</span> <span class="c1"># Pour chaque lien</span>
+            <span class="k">if</span> <span class="ow">not</span><span class="p">(</span><span class="n">y</span> <span class="ow">in</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">Node</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">Node</span><span class="o">.</span><span class="n">keys</span><span class="p">()]):</span> <span class="c1"># Si le lien n&#39;est pas déjà dans le dictionnaire</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">Node</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">NNode</span><span class="p">]</span><span class="o">=</span><span class="n">y</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">NNode</span><span class="o">+=</span><span class="mi">1</span>
+                <span class="n">Order</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+                <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">Link</span><span class="p">:</span>     <span class="c1"># Pour chaque lien</span>
+                    <span class="k">if</span> <span class="p">((</span><span class="n">x</span><span class="o">!=</span><span class="n">y</span><span class="p">)</span><span class="ow">and</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">InOrder2</span><span class="p">(</span><span class="n">x</span><span class="p">,</span><span class="n">y</span><span class="p">))):</span> <span class="c1"># Si le lien est dans l&#39;ordre</span>
+                        <span class="n">Order</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">+=</span><span class="mi">1</span>
+                <span class="k">if</span> <span class="p">(</span><span class="n">Order</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">==</span><span class="mi">0</span><span class="p">):</span>  <span class="c1"># Si le lien n&#39;est pas dans l&#39;ordre</span>
+                    <span class="k">if</span> <span class="ow">not</span><span class="p">(</span><span class="n">y</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">MinLink</span><span class="p">):</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">MinLink</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">y</span><span class="p">)</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">NMinLink</span><span class="o">+=</span><span class="mi">1</span>
+                        <span class="c1">#print(&quot;\n Minimal Links step&quot;)</span>
+                        <span class="c1">#print(self.MinLink)</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        kkk=0</span>
+<span class="sd">        while ((len(Temp)&gt;0)and(kkk&lt;0)):#and(kkk&lt;10)</span>
+<span class="sd">            kkk+=1</span>
+<span class="sd">            print(kkk)</span>
+<span class="sd">            #print(&quot;\n Links&quot;)</span>
+<span class="sd">            #print(Temp)</span>
+<span class="sd">            for l in Temp.keys():</span>
+<span class="sd">                Son={}</span>
+<span class="sd">                for k in range(len(Temp[l])):</span>
+<span class="sd">                    Sonl=Temp[l].copy()</span>
+<span class="sd">                    if (Sonl[k]&gt;-1):</span>
+<span class="sd">                        Sonl[k]=-1</span>
+<span class="sd">                        if not(InOrder4(Sonl,self.Cut.Cut)):</span>
+<span class="sd">                            Son[nn]=Sonl</span>
+<span class="sd">                            nn+=1</span>
+<span class="sd">                #print(&quot;\n Son:&quot;)</span>
+<span class="sd">                #print(Son)</span>
+<span class="sd">                Temp1=Temp.copy()</span>
+<span class="sd">                if (Son=={}):</span>
+<span class="sd">                    if not(Temp1[l] in self.MinLink):</span>
+<span class="sd">                        self.MinLink.append(Temp1[l])</span>
+<span class="sd">                        self.NMinLink+=1</span>
+<span class="sd">                        print(&quot;\n Minimal Links step&quot;)</span>
+<span class="sd">                        print(self.MinLink)</span>
+<span class="sd">                    del[Temp1[l]]</span>
+<span class="sd">                else:</span>
+<span class="sd">                    for k in Son.keys():</span>
+<span class="sd">                        Temp1[k]=Son[k]</span>
+<span class="sd">            Temp=Temp1.copy()</span>
+<span class="sd">        &quot;&quot;&quot;</span>   </div></div>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">MyTree=FaultTree(3)</span>
+<span class="sd">MyTree.NewRelation(3,[1,1,0],[0,0,1])</span>
+
+<span class="sd">MyLink=Link(MyTree,2)</span>
+
+<span class="sd">MyLink.CollectLink()</span>
+
+<span class="sd">print(MyLink.NLink)</span>
+<span class="sd">print(MyLink.Link)</span>
+
+<span class="sd">print(MyLink.NMinLink)</span>
+<span class="sd">print(MyLink.MinLink)</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd"> </span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="One"><a class="viewcode-back" href="../docs/HasseDiagramLib.html#HasseDiagramLib.One">[docs]</a><span class="k">def</span> <span class="nf">One</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Function that returns 1 if x is a positive integer    </span>
+<span class="sd">    :param x: int</span>
+<span class="sd">    :return: 1</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="mi">1</span></div>
+            
+<span class="n">DownHasseDiagrams</span><span class="o">=</span><span class="p">{}</span>    <span class="c1"># Dictionnaire des diagrammes de Hasse</span>
+<div class="viewcode-block" id="DownHasseDiagram"><a class="viewcode-back" href="../docs/HasseDiagramLib.html#HasseDiagramLib.DownHasseDiagram">[docs]</a><span class="k">class</span> <span class="nc">DownHasseDiagram</span><span class="p">:</span> <span class="c1"># Classe des diagrammes de Hasse</span>
+    <span class="n">NDownHasseDiagram</span><span class="o">=</span><span class="mi">0</span>   <span class="c1"># Nombre de diagrammes de Hasse</span>
+    
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">Tree</span><span class="o">=</span><span class="n">FaultTree</span><span class="p">(</span><span class="mi">2</span><span class="p">),</span><span class="n">IndivIndex</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span><span class="n">IndivLabel</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span><span class="n">IndivReliabilityVal</span><span class="o">=</span><span class="p">[[</span><span class="mi">1</span><span class="p">]],</span><span class="n">IndivReliabilityFunc</span><span class="o">=</span><span class="p">[</span><span class="n">One</span><span class="p">],</span><span class="n">t</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span><span class="n">Option</span><span class="o">=</span><span class="mi">1</span><span class="p">):</span> <span class="c1"># Constructeur</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        The function is used to create a Hasse diagram of the system. </span>
+<span class="sd">        </span>
+<span class="sd">        Here&#39;s a more detailed explanation of the function: </span>
+<span class="sd">        </span>
+<span class="sd">        The function is used to create a Hasse diagram of the system. The function takes in the following</span>
+<span class="sd">        parameters: </span>
+<span class="sd">        </span>
+<span class="sd">        Tree: This is the tree of the system. </span>
+<span class="sd">        </span>
+<span class="sd">        IndivIndex: This is the index of the individual. </span>
+<span class="sd">        </span>
+<span class="sd">        IndivLabel: This is the label of the individual. </span>
+<span class="sd">        </span>
+<span class="sd">        IndivReliabilityVal: This is the reliability value of the individual. </span>
+<span class="sd">        </span>
+<span class="sd">        IndivReliabilityFunc: This is the reliability function of the individual. </span>
+<span class="sd">        </span>
+<span class="sd">        t: This is the time. </span>
+<span class="sd">        </span>
+<span class="sd">        Option: This is the option. </span>
+<span class="sd">        </span>
+<span class="sd">        The function returns the following: </span>
+<span class="sd">        </span>
+<span class="sd">        The function returns the Hasse diagram of the</span>
+<span class="sd">        </span>
+<span class="sd">        :param Tree: The tree that is used to generate the Hasse diagram</span>
+<span class="sd">        :param IndivIndex: The index of the individual</span>
+<span class="sd">        :param IndivLabel: The labels of the components</span>
+<span class="sd">        :param IndivReliabilityVal: The reliability of each component</span>
+<span class="sd">        :param IndivReliabilityFunc: A list of functions that will be used to calculate the reliability</span>
+<span class="sd">        of the individual</span>
+<span class="sd">        :param t: time</span>
+<span class="sd">        :param Option: 1, defaults to 1 (optional)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="o">=</span><span class="nb">id</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+        <span class="n">DownHasseDiagrams</span><span class="p">[</span><span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="p">)]</span><span class="o">=</span><span class="bp">self</span>    <span class="c1"># Ajout du diagramme dans le dictionnaire</span>
+        <span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="n">NDownHasseDiagram</span><span class="o">+=</span><span class="mi">1</span>   <span class="c1"># Incrémentation du nombre de diagrammes de Hasse</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">Tree</span><span class="o">=</span><span class="n">Tree</span>                     <span class="c1"># Arbre</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">IndIndex</span><span class="o">=</span><span class="n">IndivIndex</span>       <span class="c1"># Indices des individus</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">IndLabel</span><span class="o">=</span><span class="n">IndivLabel</span>    <span class="c1"># Labels des individus</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">IndFiabVal</span><span class="o">=</span><span class="n">IndivReliabilityVal</span> <span class="c1"># Valeurs de fiabilité des individus</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">IndFiabFunc</span><span class="o">=</span><span class="n">IndivReliabilityFunc</span> <span class="c1"># Fonctions de fiabilité des individus</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">NComponent</span><span class="o">=</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">IndLabel</span><span class="p">)</span>  <span class="c1"># Nombre de composants</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">Time</span><span class="o">=</span><span class="n">t</span> <span class="c1"># Temps</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">Option</span><span class="o">=</span><span class="n">Option</span>  <span class="c1"># Option</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">Times</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">NComponent</span><span class="p">)]</span>  <span class="c1"># Liste des temps</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">Order</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">NComponent</span><span class="p">)]</span> <span class="c1"># Liste des ordres</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">IndicesPrincipal</span><span class="o">=</span><span class="p">[</span><span class="mi">1</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">NComponent</span><span class="p">)]</span>   <span class="c1"># Liste des indices principaux</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">NNode</span><span class="o">=</span><span class="mi">0</span>    <span class="c1"># Nombre de noeuds</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">Node</span><span class="o">=</span><span class="p">{}</span>    <span class="c1"># Dictionnaire des noeuds</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">NCut</span><span class="o">=</span><span class="mi">0</span>    <span class="c1"># Nombre de cuts</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">Cut</span><span class="o">=</span><span class="p">[]</span>   <span class="c1"># Liste des cuts</span>
+        
+        <span class="n">MyCut</span><span class="o">=</span><span class="n">Cut</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">Tree</span><span class="p">,</span><span class="bp">self</span><span class="o">.</span><span class="n">IndIndex</span><span class="p">)</span> <span class="c1"># Création du cut</span>
+        <span class="n">MyCut</span><span class="o">.</span><span class="n">CollectCut</span><span class="p">()</span>  <span class="c1"># Collecte du cut</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">MinCut</span><span class="o">=</span><span class="n">MyCut</span><span class="o">.</span><span class="n">Cut</span>   <span class="c1"># Minimal cuts</span>
+        
+        <span class="c1">#print(&quot;\n Minimal Cuts&quot;)</span>
+        <span class="c1">#print(MyCut.Cut)</span>
+        
+        
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">MinCut</span><span class="p">)):</span>   <span class="c1"># Pour chaque cut</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">Node</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">MinCut</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">Cut</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">MinCut</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">copy</span><span class="p">())</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">NNode</span><span class="o">+=</span><span class="mi">1</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">NCut</span><span class="o">+=</span><span class="mi">1</span>
+        
+        <span class="bp">self</span><span class="o">.</span><span class="n">NodeGeneration</span><span class="o">=</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">MinCut</span><span class="p">]</span>
+        
+        <span class="k">while</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">NodeGeneration</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">!=</span><span class="p">[[</span><span class="mi">1</span> <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">NComponent</span><span class="p">)]]):</span> <span class="c1"># Tant que l&#39;on a pas trouvé tous les noeuds</span>
+            <span class="n">Leaves</span><span class="o">=</span><span class="p">[]</span>
+            <span class="k">for</span> <span class="n">Leaf</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">NodeGeneration</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]:</span>
+                <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">Leaf</span><span class="p">)):</span>
+                    <span class="n">NewLeaf</span><span class="o">=</span><span class="n">Leaf</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+                    <span class="k">if</span> <span class="p">(</span><span class="n">NewLeaf</span><span class="p">[</span><span class="n">k</span><span class="p">]</span><span class="o">&lt;</span><span class="mi">1</span><span class="p">):</span>
+                        <span class="n">NewLeaf</span><span class="p">[</span><span class="n">k</span><span class="p">]</span><span class="o">+=</span><span class="mi">1</span>
+                        <span class="k">if</span> <span class="p">(</span><span class="ow">not</span><span class="p">(</span><span class="n">NewLeaf</span> <span class="ow">in</span> <span class="n">Leaves</span><span class="p">)</span> <span class="ow">and</span> <span class="ow">not</span><span class="p">(</span><span class="n">NewLeaf</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">Cut</span><span class="p">)):</span>
+                            <span class="n">Leaves</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">NewLeaf</span><span class="o">.</span><span class="n">copy</span><span class="p">())</span>
+                            <span class="bp">self</span><span class="o">.</span><span class="n">Node</span><span class="p">[</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">Node</span><span class="p">)]</span><span class="o">=</span><span class="n">NewLeaf</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+                            <span class="bp">self</span><span class="o">.</span><span class="n">Cut</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">NewLeaf</span><span class="o">.</span><span class="n">copy</span><span class="p">())</span>
+                            <span class="bp">self</span><span class="o">.</span><span class="n">NNode</span><span class="o">+=</span><span class="mi">1</span>
+                            <span class="bp">self</span><span class="o">.</span><span class="n">NCut</span><span class="o">+=</span><span class="mi">1</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">NodeGeneration</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">Leaves</span><span class="p">)</span> 
+            <span class="c1">#print(&quot;\n New generation&quot;)</span>
+            <span class="c1">#print(self.NodeGeneration[-1])</span>
+
+        <span class="c1">#print(&quot;\n All cuts generated&quot;)</span>
+<span class="w">        </span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        def InOrder2(self,xx=[1,3,2],yy=[1,2,30]):</span>
+<span class="sd">            i=min(len(xx),len(yy))-1</span>
+<span class="sd">            while ((xx[i]==yy[i]) and (i&gt;=0)):</span>
+<span class="sd">                #print((xx,yy))</span>
+<span class="sd">                i=i-1</span>
+<span class="sd">            if (i&lt;0):</span>
+<span class="sd">                res=True</span>
+<span class="sd">            else:</span>
+<span class="sd">                res=(xx[i]&lt;yy[i])</span>
+<span class="sd">            return res</span>
+<span class="sd">        </span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">def</span> <span class="nf">InOrder2</span><span class="p">(</span><span class="n">x</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">],</span><span class="n">y</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">]):</span>    
+<span class="w">            </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">            Checking if x is less than or equal to y</span>
+<span class="sd">            </span>
+<span class="sd">            :param x: a list of integers</span>
+<span class="sd">            :param y: [0,1]</span>
+<span class="sd">            :return: The function InOrder2 is being returned.</span>
+<span class="sd">            </span>
+<span class="sd">            </span>
+<span class="sd">            Examples:</span>
+<span class="sd">            -------</span>
+<span class="sd">            </span>
+<span class="sd">            &gt;&gt;&gt; x=[0,0,1],y=[0,1]</span>
+<span class="sd">            True</span>
+<span class="sd">            &quot;&quot;&quot;</span>
+            <span class="n">res</span><span class="o">=</span><span class="kc">True</span>
+            <span class="k">if</span> <span class="p">(</span><span class="n">x</span><span class="o">!=</span><span class="kc">None</span><span class="p">)</span> <span class="ow">and</span> <span class="p">(</span><span class="n">y</span><span class="o">!=</span><span class="kc">None</span><span class="p">):</span>
+                <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">min</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">x</span><span class="p">),</span><span class="nb">len</span><span class="p">(</span><span class="n">y</span><span class="p">))):</span>
+                    <span class="n">res</span><span class="o">=</span><span class="n">res</span> <span class="ow">and</span> <span class="p">(</span><span class="n">x</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">&lt;=</span><span class="n">y</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
+            <span class="k">return</span> <span class="n">res</span>
+        
+        <span class="bp">self</span><span class="o">.</span><span class="n">AdjMat</span><span class="o">=</span><span class="p">{</span><span class="n">i</span><span class="p">:[</span><span class="mi">0</span> <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">Node</span><span class="p">))]</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">Node</span><span class="o">.</span><span class="n">keys</span><span class="p">()}</span> <span class="c1"># Matrice d&#39;adjacence</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">Node</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+            <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">Node</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+                <span class="k">if</span> <span class="p">((</span><span class="n">i</span><span class="o">!=</span><span class="n">j</span><span class="p">)</span> <span class="ow">and</span> <span class="n">InOrder2</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">Node</span><span class="p">[</span><span class="n">i</span><span class="p">],</span><span class="bp">self</span><span class="o">.</span><span class="n">Node</span><span class="p">[</span><span class="n">j</span><span class="p">])):</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">AdjMat</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="n">j</span><span class="p">]</span><span class="o">=</span><span class="mi">1</span>
+        
+        <span class="k">def</span> <span class="nf">UpdateGeneration</span><span class="p">():</span> <span class="c1"># Fonction qui met à jour la génération</span>
+<span class="w">            </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">            The function UpdateGeneration() is used to find the minimum cut of the graph</span>
+<span class="sd">            &quot;&quot;&quot;</span>
+            <span class="n">kk</span><span class="o">=</span><span class="nb">min</span><span class="p">([</span><span class="nb">sum</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">MinCut</span><span class="p">[</span><span class="n">i</span><span class="p">])</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">MinCut</span><span class="p">))])</span>  <span class="c1"># Nombre de noeuds dans la génération</span>
+            <span class="n">depth</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">NComponent</span><span class="o">-</span><span class="n">kk</span><span class="o">+</span><span class="mi">1</span>
+            <span class="c1">#print(&quot;\n Depth:&quot;)</span>
+            <span class="c1">#print(depth)</span>
+            <span class="n">temp</span><span class="o">=</span><span class="p">[[]</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">depth</span><span class="p">)]</span>
+            <span class="c1">#print(&quot;\n Nodes:&quot;)</span>
+            <span class="c1">#print(self.Node)</span>
+            <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">Node</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+                <span class="n">j</span><span class="o">=</span><span class="nb">sum</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">Node</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
+                <span class="n">temp</span><span class="p">[</span><span class="n">depth</span><span class="o">+</span><span class="n">kk</span><span class="o">-</span><span class="n">j</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">i</span><span class="p">)</span>
+                <span class="c1">#print(&quot;\n Generations:&quot;)</span>
+                <span class="c1">#print(temp)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">NodeGeneration</span><span class="o">=</span><span class="n">temp</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>          
+            
+        <span class="bp">self</span><span class="o">.</span><span class="n">WeightTable</span><span class="o">=</span><span class="p">[[],[],[],[],[]]</span>
+        <span class="c1">#[[Index],[minimalité], [poids], [coef poly fiab], [code coupe]]</span>
+        
+        <span class="k">def</span> <span class="nf">InitWeight</span><span class="p">():</span>   
+<span class="w">            </span><span class="sd">&quot;&quot;&quot;summary Function that initializes the weights</span>
+<span class="sd">            &quot;&quot;&quot;</span>
+            <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">Node</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">WeightTable</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">i</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">WeightTable</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">WeightTable</span><span class="p">[</span><span class="mi">4</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">Node</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
+                <span class="k">if</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">Node</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">MinCut</span><span class="p">):</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">WeightTable</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">WeightTable</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">WeightTable</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">WeightTable</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+                    <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">Node</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+                        <span class="k">if</span> <span class="p">(</span><span class="n">i</span><span class="o">!=</span><span class="n">j</span><span class="p">)</span> <span class="ow">and</span> <span class="n">InOrder2</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">Node</span><span class="p">[</span><span class="n">j</span><span class="p">],</span><span class="bp">self</span><span class="o">.</span><span class="n">Node</span><span class="p">[</span><span class="n">i</span><span class="p">])</span> <span class="ow">and</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">Node</span><span class="p">[</span><span class="n">j</span><span class="p">]</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">MinCut</span><span class="p">):</span>
+                            <span class="bp">self</span><span class="o">.</span><span class="n">WeightTable</span><span class="p">[</span><span class="mi">2</span><span class="p">][</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">+=</span><span class="mi">1</span>
+            <span class="c1">#print(&quot;\n Current weights&quot;)</span>
+            <span class="c1">#print(self.WeightTable[2])</span>
+            <span class="c1">#print(&quot;\n Current Nodes&quot;)</span>
+            <span class="c1">#print(self.Node)</span>
+        
+        <span class="k">def</span> <span class="nf">UpdatePolyDeFiab</span><span class="p">():</span> 
+<span class="w">            </span><span class="sd">&quot;&quot;&quot;Function that updates the weight of reliability polynomials</span>
+<span class="sd">            &quot;&quot;&quot;</span>
+            <span class="n">UpdateGeneration</span><span class="p">()</span>  <span class="c1"># Generation Update</span>
+            <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">NodeGeneration</span><span class="p">)</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span><span class="o">-</span><span class="mi">1</span><span class="p">):</span>   <span class="c1"># For every generation</span>
+                <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">NodeGeneration</span><span class="p">[</span><span class="n">i</span><span class="p">]:</span>
+                    <span class="k">if</span> <span class="p">((</span><span class="bp">self</span><span class="o">.</span><span class="n">Node</span><span class="p">[</span><span class="n">j</span><span class="p">]</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">MinCut</span><span class="p">)):</span><span class="c1"># and (self.WeightTable[2][j]==1)):</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">WeightTable</span><span class="p">[</span><span class="mi">3</span><span class="p">][</span><span class="n">j</span><span class="p">]</span><span class="o">+=</span><span class="mi">1</span>
+                        <span class="c1">#print(&quot;\n Leaf Adding&quot;)</span>
+                        <span class="c1">#print(self.Node[j])</span>
+                    <span class="k">while</span> <span class="p">((</span><span class="bp">self</span><span class="o">.</span><span class="n">WeightTable</span><span class="p">[</span><span class="mi">2</span><span class="p">][</span><span class="n">j</span><span class="p">]</span><span class="o">&gt;</span><span class="mi">1</span><span class="p">)):</span> <span class="c1"># While the node is not a leaf</span>
+                        <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">Node</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+                            <span class="k">if</span> <span class="n">InOrder2</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">Node</span><span class="p">[</span><span class="n">j</span><span class="p">],</span><span class="bp">self</span><span class="o">.</span><span class="n">Node</span><span class="p">[</span><span class="n">k</span><span class="p">]):</span>
+                                <span class="bp">self</span><span class="o">.</span><span class="n">WeightTable</span><span class="p">[</span><span class="mi">2</span><span class="p">][</span><span class="n">k</span><span class="p">]</span><span class="o">-=</span><span class="mi">1</span>
+                                <span class="k">if</span> <span class="p">(</span><span class="n">k</span><span class="o">==</span><span class="n">j</span><span class="p">):</span>
+                                    <span class="bp">self</span><span class="o">.</span><span class="n">WeightTable</span><span class="p">[</span><span class="mi">3</span><span class="p">][</span><span class="n">k</span><span class="p">]</span><span class="o">-=</span><span class="mi">1</span>
+                                    <span class="c1">#print(&quot;\n Branch removal&quot;)</span>
+                                    <span class="c1">#print(self.WeightTable[2])</span>
+                    <span class="k">while</span> <span class="p">((</span><span class="bp">self</span><span class="o">.</span><span class="n">WeightTable</span><span class="p">[</span><span class="mi">2</span><span class="p">][</span><span class="n">j</span><span class="p">]</span><span class="o">&lt;</span><span class="mi">1</span><span class="p">)):</span>     <span class="c1"># While the node is not a branch</span>
+                        <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">Node</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+                            <span class="k">if</span> <span class="n">InOrder2</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">Node</span><span class="p">[</span><span class="n">j</span><span class="p">],</span><span class="bp">self</span><span class="o">.</span><span class="n">Node</span><span class="p">[</span><span class="n">k</span><span class="p">]):</span>
+                                <span class="bp">self</span><span class="o">.</span><span class="n">WeightTable</span><span class="p">[</span><span class="mi">2</span><span class="p">][</span><span class="n">k</span><span class="p">]</span><span class="o">+=</span><span class="mi">1</span>
+                                <span class="k">if</span> <span class="p">(</span><span class="n">k</span><span class="o">==</span><span class="n">j</span><span class="p">):</span>
+                                    <span class="bp">self</span><span class="o">.</span><span class="n">WeightTable</span><span class="p">[</span><span class="mi">3</span><span class="p">][</span><span class="n">k</span><span class="p">]</span><span class="o">+=</span><span class="mi">1</span>
+                                    <span class="c1">#print(&quot;\n Branch addition&quot;)</span>
+                                    <span class="c1">#print(self.WeightTable[2])</span>
+            <span class="c1">#print(&quot;\n The sum of weights should be nonegative and less than the number of leaves&quot;)</span>
+            <span class="c1">#print(sum(self.WeightTable[3]))</span>
+        
+        <span class="n">InitWeight</span><span class="p">()</span>
+        <span class="n">UpdatePolyDeFiab</span><span class="p">()</span>
+        <span class="c1">#print(&quot;Unreliability polynomial&quot;)</span>
+
+    <span class="k">def</span> <span class="fm">__del__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>  <span class="c1"># Destructor</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        The destructor is called when the object is about to be destroyed</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="n">NDownHasseDiagram</span><span class="o">-=</span><span class="mi">1</span>     <span class="c1"># Decrement the number of down hasse diagrams</span>
+        
+<div class="viewcode-block" id="DownHasseDiagram.GetPolyFiab"><a class="viewcode-back" href="../docs/HasseDiagramLib.html#HasseDiagramLib.DownHasseDiagram.GetPolyFiab">[docs]</a>    <span class="k">def</span> <span class="nf">GetPolyFiab</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>  
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Calculating the reliability polynomial of a system GetPolyFiab.</span>
+
+<span class="sd">        creating a list of lists. The outer list is a list of lists, where</span>
+<span class="sd">        each inner list is a list of the reliability values for each component.</span>
+<span class="sd">        Calculating the reliability polynomial of a system.</span>
+<span class="sd">            </span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1">#R=[sympy.Symbol(&quot;R&quot;+str(self.IndIndex[i])) for i in range(self.NComponent)]</span>
+        <span class="n">R</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">IndLabel</span>
+        <span class="k">if</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">Option</span><span class="o">==</span><span class="mi">1</span><span class="p">):</span>
+            <span class="n">R2</span><span class="o">=</span><span class="p">[[</span><span class="bp">self</span><span class="o">.</span><span class="n">IndFiabVal</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="n">j</span><span class="p">]</span> <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">Time</span><span class="p">))]</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">NComponent</span><span class="p">)]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">R2</span><span class="o">=</span><span class="p">[[</span><span class="bp">self</span><span class="o">.</span><span class="n">IndFiabFunc</span><span class="p">[</span><span class="n">i</span><span class="p">](</span><span class="bp">self</span><span class="o">.</span><span class="n">Time</span><span class="p">[</span><span class="n">j</span><span class="p">])</span> <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">Time</span><span class="p">))]</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">NComponent</span><span class="p">)]</span>
+        <span class="n">P</span><span class="o">=</span><span class="mi">0</span>
+        <span class="n">P2</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span> <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">Time</span><span class="p">))]</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">WeightTable</span><span class="p">[</span><span class="mi">0</span><span class="p">]:</span>
+            <span class="n">Temp</span><span class="o">=</span><span class="mi">1</span>
+            <span class="n">Temp2</span><span class="o">=</span><span class="p">[</span><span class="mi">1</span> <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">Time</span><span class="p">))]</span>
+            <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">NComponent</span><span class="p">):</span>
+                <span class="k">if</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">WeightTable</span><span class="p">[</span><span class="mi">4</span><span class="p">][</span><span class="n">i</span><span class="p">][</span><span class="n">j</span><span class="p">]</span><span class="o">==</span><span class="mi">1</span><span class="p">):</span>
+                    <span class="n">Temp</span><span class="o">*=</span><span class="mi">1</span><span class="o">-</span><span class="n">R</span><span class="p">[</span><span class="n">j</span><span class="p">]</span>
+                    <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">Time</span><span class="p">)):</span>
+                        <span class="n">Temp2</span><span class="p">[</span><span class="n">k</span><span class="p">]</span><span class="o">*=</span><span class="mi">1</span><span class="o">-</span><span class="n">R2</span><span class="p">[</span><span class="n">j</span><span class="p">][</span><span class="n">k</span><span class="p">]</span>
+                    <span class="c1">#print(&quot;\n Temp &quot;)</span>
+                    <span class="c1">#print(Temp)</span>
+                    <span class="c1">#print(&quot;\n Temp2 &quot;)</span>
+                    <span class="c1">#print(Temp2)</span>
+                <span class="k">elif</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">WeightTable</span><span class="p">[</span><span class="mi">4</span><span class="p">][</span><span class="n">i</span><span class="p">][</span><span class="n">j</span><span class="p">]</span><span class="o">==-</span><span class="mi">1</span><span class="p">):</span>
+                    <span class="n">Temp</span><span class="o">*=</span><span class="n">R</span><span class="p">[</span><span class="n">j</span><span class="p">]</span>
+                    <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">Time</span><span class="p">)):</span>
+                        <span class="n">Temp2</span><span class="p">[</span><span class="n">k</span><span class="p">]</span><span class="o">*=</span><span class="n">R2</span><span class="p">[</span><span class="n">j</span><span class="p">][</span><span class="n">k</span><span class="p">]</span>
+                    <span class="c1">#print(&quot;\n Temp &quot;)</span>
+                    <span class="c1">#print(Temp)</span>
+                    <span class="c1">#print(&quot;\n Temp2 &quot;)</span>
+                    <span class="c1">#print(Temp2)</span>
+            <span class="n">P</span><span class="o">+=</span><span class="bp">self</span><span class="o">.</span><span class="n">WeightTable</span><span class="p">[</span><span class="mi">3</span><span class="p">][</span><span class="n">i</span><span class="p">]</span><span class="o">*</span><span class="n">Temp</span>
+            <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">Time</span><span class="p">)):</span>
+                <span class="n">P2</span><span class="p">[</span><span class="n">k</span><span class="p">]</span><span class="o">+=</span><span class="bp">self</span><span class="o">.</span><span class="n">WeightTable</span><span class="p">[</span><span class="mi">3</span><span class="p">][</span><span class="n">i</span><span class="p">]</span><span class="o">*</span><span class="n">Temp2</span><span class="p">[</span><span class="n">k</span><span class="p">]</span>
+            <span class="c1">#print(&quot;\n Temp &quot;)</span>
+            <span class="c1">#print(Temp)</span>
+            <span class="c1">#print(&quot;\n Temp2 &quot;)</span>
+            <span class="c1">#print(Temp2)</span>
+            <span class="c1">#print(&quot;\n current R2 &quot;)</span>
+            <span class="c1">#print(P2)</span>
+            <span class="c1">#print(&quot;\n Les coefficient &quot;)</span>
+        <span class="c1">#print(self.WeightTable[3])</span>
+        <span class="c1">#print(&quot;\n Reliability polynomial R= &quot;)</span>
+        <span class="k">return</span> <span class="p">[</span><span class="n">sympy</span><span class="o">.</span><span class="n">simplify</span><span class="p">(</span><span class="n">sympy</span><span class="o">.</span><span class="n">expand</span><span class="p">(</span><span class="mi">1</span><span class="o">-</span><span class="n">P</span><span class="p">)),[</span><span class="mi">1</span><span class="o">-</span><span class="n">P2</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">Time</span><span class="p">))]]</span></div>
+    
+<div class="viewcode-block" id="DownHasseDiagram.ViewGraph"><a class="viewcode-back" href="../docs/HasseDiagramLib.html#HasseDiagramLib.DownHasseDiagram.ViewGraph">[docs]</a>    <span class="k">def</span> <span class="nf">ViewGraph</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">Dir</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        It takes a graph and draws it</span>
+<span class="sd">        </span>
+<span class="sd">        :param Dir: the directory where the graph will be saved</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">G</span><span class="o">=</span><span class="n">nx</span><span class="o">.</span><span class="n">DiGraph</span><span class="p">()</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">AdjMat</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+            <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">AdjMat</span><span class="p">[</span><span class="n">i</span><span class="p">])):</span>
+                <span class="k">if</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">AdjMat</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="n">j</span><span class="p">]</span><span class="o">==</span><span class="mi">1</span><span class="p">):</span>
+                    <span class="n">G</span><span class="o">.</span><span class="n">add_edge</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="nb">sum</span><span class="p">([(</span><span class="bp">self</span><span class="o">.</span><span class="n">Node</span><span class="p">[</span><span class="n">j</span><span class="p">][</span><span class="n">kk</span><span class="p">])</span><span class="o">*</span><span class="p">(</span><span class="mi">2</span><span class="o">**</span><span class="n">kk</span><span class="p">)</span> <span class="k">for</span> <span class="n">kk</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">Node</span><span class="p">[</span><span class="n">j</span><span class="p">]))])),</span>\
+                    <span class="nb">str</span><span class="p">(</span><span class="nb">sum</span><span class="p">([(</span><span class="bp">self</span><span class="o">.</span><span class="n">Node</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="n">kk</span><span class="p">])</span><span class="o">*</span><span class="p">(</span><span class="mi">2</span><span class="o">**</span><span class="n">kk</span><span class="p">)</span> <span class="k">for</span> <span class="n">kk</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">Node</span><span class="p">[</span><span class="n">i</span><span class="p">]))])))</span>
+                    <span class="c1">#G.add_edge(str(self.Node[j]),str(self.Node[i]))</span>
+
+        <span class="c1">#print(G.adj)</span>
+        <span class="c1">#fig=plt.figure(figsize=(5,5))</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="mi">10</span><span class="p">))</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">clf</span><span class="p">()</span> <span class="c1"># Efface le contenu de la figure courante</span>
+        <span class="n">nx</span><span class="o">.</span><span class="n">draw_networkx</span><span class="p">(</span><span class="n">G</span><span class="p">,</span><span class="n">pos</span><span class="o">=</span><span class="n">nx</span><span class="o">.</span><span class="n">circular_layout</span><span class="p">(</span><span class="n">G</span><span class="p">),</span><span class="n">node_size</span><span class="o">=</span><span class="p">(</span><span class="mi">10</span><span class="o">**</span><span class="mi">4</span><span class="p">)</span><span class="o">/</span><span class="mi">2</span><span class="p">)</span>
+        <span class="c1">#nx.draw(G)</span>
+        <span class="c1">#nx.draw(G,pos=nx.circular_layout(G),node_color=&#39;r&#39;,edge_color=&#39;b&#39;)</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">axis</span><span class="p">(</span><span class="s1">&#39;off&#39;</span><span class="p">)</span>
+        <span class="c1">#plt.grid(False)</span>
+        <span class="k">if</span> <span class="p">(</span><span class="n">Dir</span><span class="o">!=</span><span class="kc">None</span><span class="p">):</span>
+            <span class="n">plt</span><span class="o">.</span><span class="n">savefig</span><span class="p">(</span><span class="n">Dir</span><span class="o">+</span><span class="s2">&quot;HD.png&quot;</span><span class="p">)</span>
+            <span class="n">plt</span><span class="o">.</span><span class="n">savefig</span><span class="p">(</span><span class="n">Dir</span><span class="o">+</span><span class="s2">&quot;HD.pdf&quot;</span><span class="p">,</span><span class="nb">format</span><span class="o">=</span><span class="s2">&quot;pdf&quot;</span><span class="p">)</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span></div></div>
+
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">MyTree=FaultTree(3)</span>
+<span class="sd">MyTree.NewRelation(3,[1,1,0],[0,0,1])</span>
+<span class="sd">MyTree.ViewGraph(Dir)</span>
+
+<span class="sd">MyDownHasseDiagram=DownHasseDiagram(MyTree,[0,1],[0,1],[[1],[1]],[One,One],[0],1)</span>
+
+<span class="sd">print(MyDownHasseDiagram.NComponent)</span>
+<span class="sd">print(MyDownHasseDiagram.Node)</span>
+
+
+<span class="sd">print(MyDownHasseDiagram.MinCut)</span>
+
+<span class="sd">print(MyDownHasseDiagram.NCut)</span>
+<span class="sd">print(MyDownHasseDiagram.Cut)</span>
+
+<span class="sd">print(MyDownHasseDiagram.NNode)</span>
+<span class="sd">print(MyDownHasseDiagram.Node)</span>
+
+<span class="sd">print(MyDownHasseDiagram.NodeGeneration)</span>
+
+<span class="sd">print(MyDownHasseDiagram.AdjMat)</span>
+
+<span class="sd">print(MyDownHasseDiagram.WeightTable)</span>
+
+<span class="sd">MyDownHasseDiagram.ViewGraph(Dir)</span>
+
+<span class="sd">print(MyDownHasseDiagram.GetPolyFiab())</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="n">UpHasseDiagrams</span><span class="o">=</span><span class="p">{}</span>
+<div class="viewcode-block" id="UpHasseDiagram"><a class="viewcode-back" href="../docs/HasseDiagramLib.html#HasseDiagramLib.UpHasseDiagram">[docs]</a><span class="k">class</span> <span class="nc">UpHasseDiagram</span><span class="p">:</span>
+    <span class="n">NUpHasseDiagram</span><span class="o">=</span><span class="mi">0</span>    
+    
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">Tree</span><span class="o">=</span><span class="n">FaultTree</span><span class="p">(</span><span class="mi">2</span><span class="p">),</span><span class="n">IndivIndex</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span><span class="n">IndivLabel</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span><span class="n">IndivReliabilityVal</span><span class="o">=</span><span class="p">[[</span><span class="mi">1</span><span class="p">]],</span><span class="n">IndivReliabilityFunc</span><span class="o">=</span><span class="p">[</span><span class="n">One</span><span class="p">],</span><span class="n">t</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span><span class="n">Option</span><span class="o">=</span><span class="mi">1</span><span class="p">):</span> 
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        It takes a list of lists, and creates a new list of lists, where each sublist contains the</span>
+<span class="sd">        indices of the original list that have the same value.</span>
+<span class="sd">        </span>
+<span class="sd">        :param Tree: The tree that is used to generate the Hasse diagram</span>
+<span class="sd">        :param IndivIndex: The index of the individual</span>
+<span class="sd">        :param IndivLabel: a list of the labels of the individuals</span>
+<span class="sd">        :param IndivReliabilityVal: a list of lists of length equal to the number of components in the</span>
+<span class="sd">        system. Each</span>
+<span class="sd">        :param IndivReliabilityFunc: a list of functions that will be used to calculate the reliability</span>
+<span class="sd">        of the individual</span>
+<span class="sd">        :param t: the time at which the reliability of the system is to be calculated</span>
+<span class="sd">        :param Option: 1 for reliability values, 2 for reliability functions, defaults to 1 (optional),</span>
+<span class="sd">        defaults to 1 (optional)</span>
+<span class="sd">        &quot;&quot;&quot;</span> 
+        <span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="o">=</span><span class="nb">id</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+        <span class="n">UpHasseDiagrams</span><span class="p">[</span><span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="p">)]</span><span class="o">=</span><span class="bp">self</span>
+        <span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="n">NUpHasseDiagram</span><span class="o">+=</span><span class="mi">1</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">Tree</span><span class="o">=</span><span class="n">Tree</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">IndIndex</span><span class="o">=</span><span class="n">IndivIndex</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">IndLabel</span><span class="o">=</span><span class="n">IndivLabel</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">IndFiabVal</span><span class="o">=</span><span class="n">IndivReliabilityVal</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">IndFiabFunc</span><span class="o">=</span><span class="n">IndivReliabilityFunc</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">NComponent</span><span class="o">=</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">IndLabel</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">Time</span><span class="o">=</span><span class="n">t</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">Option</span><span class="o">=</span><span class="n">Option</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">Times</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">NComponent</span><span class="p">)]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">Order</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">NComponent</span><span class="p">)]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">IndicesPrincipal</span><span class="o">=</span><span class="p">[</span><span class="mi">1</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">NComponent</span><span class="p">)]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">NNode</span><span class="o">=</span><span class="mi">0</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">Node</span><span class="o">=</span><span class="p">{}</span>        
+        <span class="bp">self</span><span class="o">.</span><span class="n">NLink</span><span class="o">=</span><span class="mi">0</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">Link</span><span class="o">=</span><span class="p">[]</span>
+        
+        <span class="n">MyLink</span><span class="o">=</span><span class="n">Link</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">Tree</span><span class="p">,</span><span class="bp">self</span><span class="o">.</span><span class="n">IndIndex</span><span class="p">)</span>
+        <span class="n">MyLink</span><span class="o">.</span><span class="n">CollectLink</span><span class="p">()</span>
+        
+        <span class="bp">self</span><span class="o">.</span><span class="n">MinLink</span><span class="o">=</span><span class="n">MyLink</span><span class="o">.</span><span class="n">MinLink</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">NMinLink</span><span class="o">=</span><span class="n">MyLink</span><span class="o">.</span><span class="n">NMinLink</span>
+        
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2"> Minimal Links&quot;</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">MinLink</span><span class="p">)</span>
+        
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">MinLink</span><span class="p">)):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">Node</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">MinLink</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">Link</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">MinLink</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">copy</span><span class="p">())</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">NNode</span><span class="o">+=</span><span class="mi">1</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">NLink</span><span class="o">+=</span><span class="mi">1</span>
+            
+        <span class="bp">self</span><span class="o">.</span><span class="n">NodeGeneration</span><span class="o">=</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">MinLink</span><span class="p">]</span>
+        
+        <span class="c1">#print(&quot;\n UpHasseDiagram called line 630&quot;)</span>
+        <span class="c1">#print([self.MinLink,[[1 for j in range(self.NComponent)]]])</span>
+        <span class="n">xx</span><span class="o">=</span><span class="nb">max</span><span class="p">([</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">MinLink</span><span class="p">[</span><span class="n">ii</span><span class="p">])</span> <span class="k">for</span> <span class="n">ii</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">MinLink</span><span class="p">))])</span><span class="o">-</span><span class="bp">self</span><span class="o">.</span><span class="n">NComponent</span>
+        <span class="c1">#print(xx)</span>
+        <span class="k">if</span> <span class="p">(</span><span class="n">xx</span><span class="o">==</span><span class="mi">0</span><span class="p">):</span>
+            <span class="c1">#print([self.MinLink,[[1 for j in range(self.NComponent)]]])</span>
+            <span class="k">while</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">NodeGeneration</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">!=</span><span class="p">[[</span><span class="mi">1</span> <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">NComponent</span><span class="p">)]]):</span>
+                <span class="n">Leaves</span><span class="o">=</span><span class="p">[]</span>
+                <span class="k">for</span> <span class="n">Leaf</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">NodeGeneration</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]:</span>
+                    <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">Leaf</span><span class="p">)):</span>
+                        <span class="n">NewLeaf</span><span class="o">=</span><span class="n">Leaf</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+                        <span class="k">if</span> <span class="p">(</span><span class="n">NewLeaf</span><span class="p">[</span><span class="n">k</span><span class="p">]</span><span class="o">&lt;</span><span class="mi">1</span><span class="p">):</span>
+                            <span class="n">NewLeaf</span><span class="p">[</span><span class="n">k</span><span class="p">]</span><span class="o">+=</span><span class="mi">1</span>
+                            <span class="k">if</span> <span class="p">(</span><span class="ow">not</span><span class="p">(</span><span class="n">NewLeaf</span> <span class="ow">in</span> <span class="n">Leaves</span><span class="p">)</span> <span class="ow">and</span> <span class="ow">not</span><span class="p">(</span><span class="n">NewLeaf</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">Link</span><span class="p">)):</span>
+                                <span class="n">Leaves</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">NewLeaf</span><span class="o">.</span><span class="n">copy</span><span class="p">())</span>
+                                <span class="bp">self</span><span class="o">.</span><span class="n">Node</span><span class="p">[</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">Node</span><span class="p">)]</span><span class="o">=</span><span class="n">NewLeaf</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+                                <span class="bp">self</span><span class="o">.</span><span class="n">Link</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">NewLeaf</span><span class="o">.</span><span class="n">copy</span><span class="p">())</span>
+                                <span class="bp">self</span><span class="o">.</span><span class="n">NNode</span><span class="o">+=</span><span class="mi">1</span>
+                                <span class="bp">self</span><span class="o">.</span><span class="n">NLink</span><span class="o">+=</span><span class="mi">1</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">NodeGeneration</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">Leaves</span><span class="p">)</span> 
+                <span class="c1">#print(&quot;\n New generation&quot;)</span>
+                <span class="c1">#print(self.NodeGeneration[-1])</span>
+        <span class="c1">#print(&quot;\n All Links generated&quot;)</span>
+<span class="w">        </span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot; </span>
+<span class="sd">        def InOrder2(xx=[1, 1, 0, 0],yy=[1, 0, 0, 0]):</span>
+<span class="sd">            i=min(len(xx),len(yy))-1</span>
+<span class="sd">            while ((xx[i]==yy[i]) and (i&gt;=0)):</span>
+<span class="sd">                #print((xx,yy))</span>
+<span class="sd">                i=i-1</span>
+<span class="sd">            if (i&lt;0):</span>
+<span class="sd">                res=True</span>
+<span class="sd">            else:</span>
+<span class="sd">                res=(xx[i]&lt;yy[i])</span>
+<span class="sd">            return res</span>
+<span class="sd">        </span>
+<span class="sd">        </span>
+<span class="sd">        def InOrder2(xx=[1,3,2],yy=[1,2,30]):</span>
+<span class="sd">            i=min(len(xx),len(yy))-1</span>
+<span class="sd">            while ((xx[i]==yy[i]) and (i&gt;=0)):</span>
+<span class="sd">                #print((xx,yy))</span>
+<span class="sd">                i=i-1</span>
+<span class="sd">            if (i&lt;0):</span>
+<span class="sd">                res=True</span>
+<span class="sd">            else:</span>
+<span class="sd">                res=(xx[i]&lt;yy[i])</span>
+<span class="sd">            return res</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        
+        <span class="k">def</span> <span class="nf">InOrder2</span><span class="p">(</span><span class="n">x</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">],</span><span class="n">y</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">]):</span>
+<span class="w">            </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">            If the two lists are not empty, then the function returns True if the first list is less</span>
+<span class="sd">            than or equal to the second list</span>
+<span class="sd">            </span>
+<span class="sd">            :param x: a list of integers</span>
+<span class="sd">            :param y: the list of values to be sorted</span>
+<span class="sd">            :return: True</span>
+<span class="sd">            </span>
+<span class="sd">            </span>
+<span class="sd">            Examples:</span>
+<span class="sd">            -------</span>
+
+<span class="sd">            &gt;&gt;&gt; x=[0,0,1],y=[0,1]</span>
+<span class="sd">            False</span>
+<span class="sd">            &quot;&quot;&quot;</span>
+            <span class="n">res</span><span class="o">=</span><span class="kc">True</span>
+            <span class="k">if</span> <span class="p">(</span><span class="n">x</span><span class="o">!=</span><span class="kc">None</span><span class="p">)</span> <span class="ow">and</span> <span class="p">(</span><span class="n">y</span><span class="o">!=</span><span class="kc">None</span><span class="p">):</span>
+                <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">min</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">x</span><span class="p">),</span><span class="nb">len</span><span class="p">(</span><span class="n">y</span><span class="p">))):</span>
+                    <span class="n">res</span><span class="o">=</span><span class="n">res</span> <span class="ow">and</span> <span class="p">(</span><span class="n">x</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">&lt;=</span><span class="n">y</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
+            <span class="k">return</span> <span class="n">res</span>
+        
+        <span class="bp">self</span><span class="o">.</span><span class="n">AdjMat</span><span class="o">=</span><span class="p">{</span><span class="n">i</span><span class="p">:[</span><span class="mi">0</span> <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">Node</span><span class="p">))]</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">Node</span><span class="o">.</span><span class="n">keys</span><span class="p">()}</span>   
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">Node</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+            <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">Node</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+                <span class="k">if</span> <span class="p">((</span><span class="n">i</span><span class="o">!=</span><span class="n">j</span><span class="p">)</span> <span class="ow">and</span> <span class="n">InOrder2</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">Node</span><span class="p">[</span><span class="n">i</span><span class="p">],</span><span class="bp">self</span><span class="o">.</span><span class="n">Node</span><span class="p">[</span><span class="n">j</span><span class="p">])):</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">AdjMat</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="n">j</span><span class="p">]</span><span class="o">=</span><span class="mi">1</span>
+        <span class="c1">#generate hassediagram</span>
+        <span class="k">def</span> <span class="nf">UpdateGeneration</span><span class="p">():</span>
+<span class="w">            </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">            It takes a list of lists, and creates a new list of lists, where each sublist contains the</span>
+<span class="sd">            indices of the original list that have the same value.</span>
+<span class="sd">            &quot;&quot;&quot;</span>
+            <span class="n">kk</span><span class="o">=</span><span class="nb">min</span><span class="p">([</span><span class="nb">sum</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">MinLink</span><span class="p">[</span><span class="n">i</span><span class="p">])</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">MinLink</span><span class="p">))])</span>
+            <span class="n">depth</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">NComponent</span><span class="o">-</span><span class="n">kk</span><span class="o">+</span><span class="mi">1</span>
+            <span class="n">temp</span><span class="o">=</span><span class="p">[[]</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">depth</span><span class="p">)]</span>
+            <span class="c1">#print(&quot;\n Nodes:&quot;)</span>
+            <span class="c1">#print(self.Node)</span>
+            <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">Node</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+                <span class="n">j</span><span class="o">=</span><span class="nb">sum</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">Node</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
+                <span class="n">temp</span><span class="p">[</span><span class="n">depth</span><span class="o">+</span><span class="n">kk</span><span class="o">-</span><span class="n">j</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">i</span><span class="p">)</span>
+                <span class="c1">#print(&quot;\n Generations:&quot;)</span>
+                <span class="c1">#print(temp)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">NodeGeneration</span><span class="o">=</span><span class="n">temp</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>          
+            
+        <span class="bp">self</span><span class="o">.</span><span class="n">WeightTable</span><span class="o">=</span><span class="p">[[],[],[],[],[]]</span>
+        <span class="c1">#[[Index],[minimalité], [poids], [coef poly fiab], [code coupe]]</span>
+        
+        
+        
+        <span class="k">def</span> <span class="nf">InitWeight</span><span class="p">():</span> 
+<span class="w">            </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">            For each node, if it is in the minimum spanning tree, then its weight is 1, and the number</span>
+<span class="sd">            of nodes that are in the minimum spanning tree and are in the order of the node is 1.</span>
+<span class="sd">            Otherwise, the weight is 0, and the number of nodes that are in the minimum spanning tree</span>
+<span class="sd">            and are in the order of the node is 0</span>
+<span class="sd">            &quot;&quot;&quot;</span>
+            <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">Node</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">WeightTable</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">i</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">WeightTable</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">WeightTable</span><span class="p">[</span><span class="mi">4</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">Node</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
+                <span class="k">if</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">Node</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">MinLink</span><span class="p">):</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">WeightTable</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">WeightTable</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">WeightTable</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">WeightTable</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+                    <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">Node</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+                        <span class="k">if</span> <span class="p">(</span><span class="n">i</span><span class="o">!=</span><span class="n">j</span><span class="p">)</span> <span class="ow">and</span> <span class="n">InOrder2</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">Node</span><span class="p">[</span><span class="n">j</span><span class="p">],</span><span class="bp">self</span><span class="o">.</span><span class="n">Node</span><span class="p">[</span><span class="n">i</span><span class="p">])</span> <span class="ow">and</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">Node</span><span class="p">[</span><span class="n">j</span><span class="p">]</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">MinLink</span><span class="p">):</span>
+                            <span class="bp">self</span><span class="o">.</span><span class="n">WeightTable</span><span class="p">[</span><span class="mi">2</span><span class="p">][</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">+=</span><span class="mi">1</span>
+            <span class="c1">#print(&quot;\n Current weights&quot;)</span>
+            <span class="c1">#print(self.WeightTable[2])</span>
+        
+        <span class="k">def</span> <span class="nf">UpdatePolyFiab</span><span class="p">():</span> 
+<span class="w">            </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">            The function takes a graph and updates the reliability polynomial of the graph.</span>
+<span class="sd">            &quot;&quot;&quot;</span>
+            <span class="n">UpdateGeneration</span><span class="p">()</span> <span class="c1">#update generation</span>
+            <span class="c1">#print(&quot;Generations&quot;)</span>
+            <span class="c1">#print(self.NodeGeneration)</span>
+            <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">NodeGeneration</span><span class="p">)</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span><span class="o">-</span><span class="mi">1</span><span class="p">):</span>
+                <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">NodeGeneration</span><span class="p">[</span><span class="n">i</span><span class="p">]:</span>
+                    <span class="k">if</span> <span class="p">((</span><span class="bp">self</span><span class="o">.</span><span class="n">Node</span><span class="p">[</span><span class="n">j</span><span class="p">]</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">MinLink</span><span class="p">)</span> <span class="ow">and</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">WeightTable</span><span class="p">[</span><span class="mi">2</span><span class="p">][</span><span class="n">j</span><span class="p">]</span><span class="o">==</span><span class="mi">1</span><span class="p">)):</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">WeightTable</span><span class="p">[</span><span class="mi">3</span><span class="p">][</span><span class="n">j</span><span class="p">]</span><span class="o">+=</span><span class="mi">1</span>
+                        <span class="c1">#print(&quot;\n Leaf Adding&quot;)</span>
+                        <span class="c1">#print(j)</span>
+                        <span class="c1">#print(self.Node[j])</span>
+                    <span class="k">while</span> <span class="p">((</span><span class="bp">self</span><span class="o">.</span><span class="n">WeightTable</span><span class="p">[</span><span class="mi">2</span><span class="p">][</span><span class="n">j</span><span class="p">]</span><span class="o">&gt;</span><span class="mi">1</span><span class="p">)):</span>
+                        <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">Node</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+                            <span class="k">if</span> <span class="n">InOrder2</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">Node</span><span class="p">[</span><span class="n">j</span><span class="p">],</span><span class="bp">self</span><span class="o">.</span><span class="n">Node</span><span class="p">[</span><span class="n">k</span><span class="p">]):</span>
+                                <span class="c1">#print(self.Node[j],self.Node[k])</span>
+                                <span class="c1">#print(&quot;True 1 ?&quot;)</span>
+                                <span class="bp">self</span><span class="o">.</span><span class="n">WeightTable</span><span class="p">[</span><span class="mi">2</span><span class="p">][</span><span class="n">k</span><span class="p">]</span><span class="o">-=</span><span class="mi">1</span>
+                                <span class="k">if</span> <span class="p">(</span><span class="n">k</span><span class="o">==</span><span class="n">j</span><span class="p">):</span>
+                                    <span class="bp">self</span><span class="o">.</span><span class="n">WeightTable</span><span class="p">[</span><span class="mi">3</span><span class="p">][</span><span class="n">k</span><span class="p">]</span><span class="o">-=</span><span class="mi">1</span>
+                                <span class="c1">#print(&quot;\n Branch removal&quot;)</span>
+                                <span class="c1">#print(self.WeightTable[2])</span>
+                    <span class="k">while</span> <span class="p">((</span><span class="bp">self</span><span class="o">.</span><span class="n">WeightTable</span><span class="p">[</span><span class="mi">2</span><span class="p">][</span><span class="n">j</span><span class="p">]</span><span class="o">&lt;</span><span class="mi">1</span><span class="p">)):</span>
+                        <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">Node</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+                            <span class="k">if</span> <span class="n">InOrder2</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">Node</span><span class="p">[</span><span class="n">j</span><span class="p">],</span><span class="bp">self</span><span class="o">.</span><span class="n">Node</span><span class="p">[</span><span class="n">k</span><span class="p">]):</span>
+                                <span class="c1">#print(self.Node[j],self.Node[k])</span>
+                                <span class="c1">#print(&quot;True 2 ?&quot;)</span>
+                                <span class="bp">self</span><span class="o">.</span><span class="n">WeightTable</span><span class="p">[</span><span class="mi">2</span><span class="p">][</span><span class="n">k</span><span class="p">]</span><span class="o">+=</span><span class="mi">1</span>
+                                <span class="k">if</span> <span class="p">(</span><span class="n">k</span><span class="o">==</span><span class="n">j</span><span class="p">):</span>
+                                    <span class="bp">self</span><span class="o">.</span><span class="n">WeightTable</span><span class="p">[</span><span class="mi">3</span><span class="p">][</span><span class="n">k</span><span class="p">]</span><span class="o">+=</span><span class="mi">1</span>
+                                <span class="c1">#print(&quot;\n Branch addition&quot;)</span>
+                                <span class="c1">#print(self.WeightTable[2])</span>
+            <span class="c1">#print(&quot;\n The sum of weights should be nonegative and less than the number of leaves&quot;)</span>
+            <span class="c1">#print(self.WeightTable[3])</span>
+            <span class="c1">#print(sum(self.WeightTable[3]))</span>
+            <span class="c1">#print(len(self.NodeGeneration[-1]))</span>
+        
+        <span class="n">InitWeight</span><span class="p">()</span>
+        
+        <span class="n">UpdatePolyFiab</span><span class="p">()</span>
+        <span class="c1">#print(&quot;Reliability polynomial&quot;)</span>
+        
+    <span class="k">def</span> <span class="fm">__del__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        The function __del__ is a special function in Python that is called when an object is about to</span>
+<span class="sd">        be destroyed</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="n">NUpHasseDiagram</span><span class="o">-=</span><span class="mi">1</span>
+        
+<div class="viewcode-block" id="UpHasseDiagram.GetPolyFiab"><a class="viewcode-back" href="../docs/HasseDiagramLib.html#HasseDiagramLib.UpHasseDiagram.GetPolyFiab">[docs]</a>    <span class="k">def</span> <span class="nf">GetPolyFiab</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        The function GetPolyFiab() returns the reliability polynomial and the reliability function for a</span>
+<span class="sd">        given system</span>
+<span class="sd">        :return: The reliability polynomial and the reliability polynomial evaluated at the time points.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1">#R=[sympy.Symbol(&quot;R&quot;+str(self.IndIndex[i])) for i in range(self.NComponent)]</span>
+        <span class="n">R</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">IndLabel</span>
+        <span class="k">if</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">Option</span><span class="o">==</span><span class="mi">1</span><span class="p">):</span>
+            <span class="n">R2</span><span class="o">=</span><span class="p">[[</span><span class="bp">self</span><span class="o">.</span><span class="n">IndFiabVal</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="n">j</span><span class="p">]</span> <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">Time</span><span class="p">))]</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">NComponent</span><span class="p">)]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">R2</span><span class="o">=</span><span class="p">[[</span><span class="bp">self</span><span class="o">.</span><span class="n">IndFiabFunc</span><span class="p">[</span><span class="n">i</span><span class="p">](</span><span class="bp">self</span><span class="o">.</span><span class="n">Time</span><span class="p">[</span><span class="n">j</span><span class="p">])</span> <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">Time</span><span class="p">))]</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">NComponent</span><span class="p">)]</span>
+        
+        
+        <span class="n">P</span><span class="o">=</span><span class="mi">0</span>
+        <span class="n">P2</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span> <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">Time</span><span class="p">))]</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">WeightTable</span><span class="p">[</span><span class="mi">0</span><span class="p">]:</span>
+            <span class="n">Temp</span><span class="o">=</span><span class="mi">1</span>
+            <span class="n">Temp2</span><span class="o">=</span><span class="p">[</span><span class="mi">1</span> <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">Time</span><span class="p">))]</span>
+            <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">NComponent</span><span class="p">):</span>
+                <span class="k">if</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">WeightTable</span><span class="p">[</span><span class="mi">4</span><span class="p">][</span><span class="n">i</span><span class="p">][</span><span class="n">j</span><span class="p">]</span><span class="o">==</span><span class="mi">1</span><span class="p">):</span>
+                    <span class="n">Temp</span><span class="o">*=</span><span class="n">R</span><span class="p">[</span><span class="n">j</span><span class="p">]</span>
+                    <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">Time</span><span class="p">)):</span>
+                        <span class="n">Temp2</span><span class="p">[</span><span class="n">k</span><span class="p">]</span><span class="o">*=</span><span class="n">R2</span><span class="p">[</span><span class="n">j</span><span class="p">][</span><span class="n">k</span><span class="p">]</span>
+                <span class="k">elif</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">WeightTable</span><span class="p">[</span><span class="mi">4</span><span class="p">][</span><span class="n">i</span><span class="p">][</span><span class="n">j</span><span class="p">]</span><span class="o">==-</span><span class="mi">1</span><span class="p">):</span>
+                    <span class="n">Temp</span><span class="o">*=</span><span class="mi">1</span><span class="o">-</span><span class="n">R</span><span class="p">[</span><span class="n">j</span><span class="p">]</span>
+                    <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">Time</span><span class="p">)):</span>
+                        <span class="n">Temp2</span><span class="p">[</span><span class="n">k</span><span class="p">]</span><span class="o">*=</span><span class="mi">1</span><span class="o">-</span><span class="n">R2</span><span class="p">[</span><span class="n">j</span><span class="p">][</span><span class="n">k</span><span class="p">]</span>
+            <span class="n">P</span><span class="o">+=</span><span class="bp">self</span><span class="o">.</span><span class="n">WeightTable</span><span class="p">[</span><span class="mi">3</span><span class="p">][</span><span class="n">i</span><span class="p">]</span><span class="o">*</span><span class="n">Temp</span>
+            <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">Time</span><span class="p">)):</span>
+                <span class="n">P2</span><span class="p">[</span><span class="n">k</span><span class="p">]</span><span class="o">+=</span><span class="bp">self</span><span class="o">.</span><span class="n">WeightTable</span><span class="p">[</span><span class="mi">3</span><span class="p">][</span><span class="n">i</span><span class="p">]</span><span class="o">*</span><span class="n">Temp2</span><span class="p">[</span><span class="n">k</span><span class="p">]</span>
+        <span class="c1">#print(&quot;\n Les poids&quot;)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="n">R2</span><span class="p">)</span>
+        <span class="c1">#print(len(self.WeightTable))</span>
+        <span class="c1">#print(self.WeightTable[0])</span>
+        <span class="c1">#print(self.WeightTable[2])</span>
+        <span class="c1">#print(self.WeightTable[3])</span>
+        <span class="c1">#print(&quot;\n Reliability polynomial R= &quot;)</span>
+        <span class="c1">#print(P2)</span>
+        <span class="c1">#return [sympy.simplify(sympy.expand(P)),P2]</span>
+        <span class="k">return</span> <span class="p">[</span><span class="n">P</span><span class="p">,</span><span class="n">P2</span><span class="p">]</span></div>
+    
+<div class="viewcode-block" id="UpHasseDiagram.ViewGraph"><a class="viewcode-back" href="../docs/HasseDiagramLib.html#HasseDiagramLib.UpHasseDiagram.ViewGraph">[docs]</a>    <span class="k">def</span> <span class="nf">ViewGraph</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">Dir</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        It takes a graph and draws it</span>
+<span class="sd">        </span>
+<span class="sd">        :param Dir: the directory where the graph will be saved</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">G</span><span class="o">=</span><span class="n">nx</span><span class="o">.</span><span class="n">DiGraph</span><span class="p">()</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">AdjMat</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+            <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">AdjMat</span><span class="p">[</span><span class="n">i</span><span class="p">])):</span>
+                <span class="k">if</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">AdjMat</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="n">j</span><span class="p">]</span><span class="o">==</span><span class="mi">1</span><span class="p">):</span>
+                    <span class="n">G</span><span class="o">.</span><span class="n">add_edge</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="nb">sum</span><span class="p">([(</span><span class="bp">self</span><span class="o">.</span><span class="n">Node</span><span class="p">[</span><span class="n">j</span><span class="p">][</span><span class="n">kk</span><span class="p">])</span><span class="o">*</span><span class="p">(</span><span class="mi">2</span><span class="o">**</span><span class="n">kk</span><span class="p">)</span> <span class="k">for</span> <span class="n">kk</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">Node</span><span class="p">[</span><span class="n">j</span><span class="p">]))])),</span>\
+                    <span class="nb">str</span><span class="p">(</span><span class="nb">sum</span><span class="p">([(</span><span class="bp">self</span><span class="o">.</span><span class="n">Node</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="n">kk</span><span class="p">])</span><span class="o">*</span><span class="p">(</span><span class="mi">2</span><span class="o">**</span><span class="n">kk</span><span class="p">)</span> <span class="k">for</span> <span class="n">kk</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">Node</span><span class="p">[</span><span class="n">i</span><span class="p">]))])))</span>
+                    <span class="c1">#G.add_edge(str(self.Node[j]),str(self.Node[i]))</span>
+
+        <span class="c1">#print(G.adj)</span>
+        <span class="c1">#fig=plt.figure(figsize=(5,5))</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="mi">10</span><span class="p">))</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">clf</span><span class="p">()</span> <span class="c1"># Efface le contenu de la figure courante</span>
+        <span class="n">nx</span><span class="o">.</span><span class="n">draw_networkx</span><span class="p">(</span><span class="n">G</span><span class="p">,</span><span class="n">pos</span><span class="o">=</span><span class="n">nx</span><span class="o">.</span><span class="n">circular_layout</span><span class="p">(</span><span class="n">G</span><span class="p">),</span><span class="n">node_size</span><span class="o">=</span><span class="p">(</span><span class="mi">10</span><span class="o">**</span><span class="mi">4</span><span class="p">)</span><span class="o">/</span><span class="mi">2</span><span class="p">)</span>
+        <span class="c1">#nx.draw(G)</span>
+        <span class="c1">#nx.draw(G,pos=nx.circular_layout(G),node_color=&#39;r&#39;,edge_color=&#39;b&#39;)</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">axis</span><span class="p">(</span><span class="s1">&#39;off&#39;</span><span class="p">)</span>
+        <span class="c1">#plt.grid(False)</span>
+        <span class="k">if</span> <span class="p">(</span><span class="n">Dir</span><span class="o">!=</span><span class="kc">None</span><span class="p">):</span>
+            <span class="n">plt</span><span class="o">.</span><span class="n">savefig</span><span class="p">(</span><span class="n">Dir</span><span class="o">+</span><span class="s2">&quot;HD.png&quot;</span><span class="p">)</span>
+            <span class="n">plt</span><span class="o">.</span><span class="n">savefig</span><span class="p">(</span><span class="n">Dir</span><span class="o">+</span><span class="s2">&quot;HD.pdf&quot;</span><span class="p">,</span><span class="nb">format</span><span class="o">=</span><span class="s2">&quot;pdf&quot;</span><span class="p">)</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span></div></div>
+
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">MyTree=FaultTree(3)</span>
+<span class="sd">MyTree.NewRelation(3,[1,1,0],[0,0,1])</span>
+<span class="sd">MyTree.ViewGraph(Dir)</span>
+
+<span class="sd">MyUpHasseDiagram=UpHasseDiagram(MyTree,[0,1],[0,1],[[1],[1]],[One,One],[0],1)</span>
+
+
+<span class="sd">print(MyUpHasseDiagram.NComponent)</span>
+<span class="sd">print(MyUpHasseDiagram.Node)</span>
+
+
+<span class="sd">print(MyUpHasseDiagram.MinCut)</span>
+
+<span class="sd">print(MyUpHasseDiagram.NCut)</span>
+<span class="sd">print(MyUpHasseDiagram.Cut)</span>
+
+<span class="sd">print(MyUpHasseDiagram.NNode)</span>
+<span class="sd">print(MyUpHasseDiagram.Node)</span>
+
+<span class="sd">print(MyUpHasseDiagram.NodeGeneration)</span>
+
+<span class="sd">print(MyUpHasseDiagram.AdjMat)</span>
+
+<span class="sd">print(MyUpHasseDiagram.WeightTable)</span>
+
+<span class="sd">MyUpHasseDiagram.ViewGraph(Dir)</span>
+
+<span class="sd">print(MyUpHasseDiagram.GetPolyFiab())</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Dir=&quot;E:/Pedagogie/Encadrement/EncadrementEnsai/MasterRThese/20192020/TadieBenjaulys/&quot;</span>
+<span class="sd">MyTree=FaultTree(12)</span>
+<span class="sd">MyTree.NewRelation(3,[0,1,1,1,0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,1,0,0,0,0])</span>
+<span class="sd">MyTree.NewRelation(3,[0,0,0,0,1,1,1,0,0,0,0,0],[0,0,0,0,0,0,0,0,1,0,0,0])</span>
+<span class="sd">MyTree.NewRelation(4,[0,0,0,0,0,0,0,1,1,0,0,0],[0,0,0,0,0,0,0,0,0,1,0,0])</span>
+<span class="sd">MyTree.NewRelation(3,[1,0,0,0,0,0,0,0,0,1,0,0],[0,0,0,0,0,0,0,0,0,0,1,0])</span>
+<span class="sd">MyTree.NewRelation(1,[0,0,0,0,0,0,0,0,0,0,1,0],[0,0,0,0,0,0,0,0,0,0,0,1])</span>
+
+<span class="sd">#MyTree.ViewGraph(Dir)</span>
+
+<span class="sd">MyDownHasseDiagram=DownHasseDiagram(MyTree,[k for k in range(7)],[k for k in range(7)],[[1] for k in range(7)],[One for k in range(7)],[0],1)</span>
+<span class="sd">print(MyDownHasseDiagram.GetPolyFiab())</span>
+
+<span class="sd">MyUpHasseDiagram=UpHasseDiagram(MyTree,[k for k in range(7)],[k for k in range(7)],[[1] for k in range(7)],[One for k in range(7)],[0],1)</span>
+<span class="sd">#print(MyUpHasseDiagram.Node)</span>
+<span class="sd">print(MyUpHasseDiagram.GetPolyFiab())</span>
+<span class="sd">#print(MyUpHasseDiagram.MinLink)</span>
+
+<span class="sd">#MyDownHasseDiagram.ViewGraph(Dir)</span>
+<span class="sd">#MyUpHasseDiagram.ViewGraph(Dir)</span>
+
+<span class="sd">&quot;&quot;&quot;</span>
+</pre></div>
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">DFT2HD2ReliabilityR 1.0.0 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="index.html" >Module code</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">HasseDiagramLib</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2023, ARDIS4SD.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 5.3.0.
+    </div>
+  </body>
+</html>

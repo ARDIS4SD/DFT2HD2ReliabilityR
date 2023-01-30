@@ -1,0 +1,686 @@
+
+<!DOCTYPE html>
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>FaultTreeRLib &#8212; DFT2HD2ReliabilityR 1.0.0 documentation</title>
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/classic.css" />
+    
+    <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+    <script src="../_static/jquery.js"></script>
+    <script src="../_static/underscore.js"></script>
+    <script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
+    <script src="../_static/doctools.js"></script>
+    <script src="../_static/sphinx_highlight.js"></script>
+    
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">DFT2HD2ReliabilityR 1.0.0 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="index.html" accesskey="U">Module code</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">FaultTreeRLib</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for FaultTreeRLib</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Bibliothèques utiles</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="c1">#import plotly.graph_objects as go</span>
+
+<span class="kn">import</span> <span class="nn">sympy</span>
+<span class="kn">import</span> <span class="nn">networkx</span> <span class="k">as</span> <span class="nn">nx</span>
+<span class="kn">import</span>  <span class="nn">matplotlib.pyplot</span>  <span class="k">as</span>  <span class="nn">plt</span>
+
+<span class="kn">from</span> <span class="nn">LogicDoorLib</span> <span class="kn">import</span> <span class="o">*</span>
+<span class="kn">from</span> <span class="nn">FaultTreeLib</span> <span class="kn">import</span> <span class="o">*</span>
+<span class="kn">from</span> <span class="nn">HasseDiagramLib</span> <span class="kn">import</span> <span class="o">*</span>
+
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Construction de l&#39;arbre de défaillance</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="n">FaultTreeRs</span><span class="o">=</span><span class="p">{}</span> <span class="c1"># fault tree dictionary</span>
+<div class="viewcode-block" id="FaultTreeR"><a class="viewcode-back" href="../docs/FaultTreeRLib.html#FaultTreeRLib.FaultTreeR">[docs]</a><span class="k">class</span> <span class="nc">FaultTreeR</span><span class="p">:</span> <span class="c1"># fault tree class</span>
+    <span class="n">NFaultTreeR</span><span class="o">=</span><span class="mi">0</span>      <span class="c1"># The number of fault tree</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">n</span><span class="p">,</span><span class="n">IndivReliabilityVal</span><span class="o">=</span><span class="p">[[</span><span class="mi">1</span><span class="p">]],</span><span class="n">IndivReliabilityFunc</span><span class="o">=</span><span class="p">[</span><span class="n">One</span><span class="p">],</span><span class="n">t</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span><span class="n">Option</span><span class="o">=</span><span class="mi">1</span><span class="p">):</span> <span class="c1"># n: number of nodes </span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        The function takes in a number of components, a list of reliability values, a list of</span>
+<span class="sd">        reliability functions, a list of times, and an option. </span>
+<span class="sd">        </span>
+<span class="sd">        The function then creates a number of nodes, a number of subtrees, a number of reliabilities, a</span>
+<span class="sd">        number of labels, a number of adjacency matrices, a number of reliability matrices, and a number</span>
+<span class="sd">        of index tables. </span>
+<span class="sd">        </span>
+<span class="sd">        The function then returns the number of components, the number of nodes, the nodes, the</span>
+<span class="sd">        subtrees, the reliabilities, the labels, the adjacency matrices, the reliability matrices, and</span>
+<span class="sd">        the index tables.</span>
+<span class="sd">        </span>
+<span class="sd">        :param n: number of nodes</span>
+<span class="sd">        :param IndivReliabilityVal: a list of lists of the individual reliabilities of the components</span>
+<span class="sd">        :param IndivReliabilityFunc: a list of functions that represent the reliability of each</span>
+<span class="sd">        component</span>
+<span class="sd">        :param t: time</span>
+<span class="sd">        :param Option: 1 for reliability values, 2 for reliability functions, defaults to 1 (optional)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="o">=</span><span class="nb">id</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+        <span class="n">FaultTreeRs</span><span class="p">[</span><span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="p">)]</span><span class="o">=</span><span class="bp">self</span>
+        <span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="n">NFaultTreeR</span><span class="o">+=</span><span class="mi">1</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">Option</span><span class="o">=</span><span class="n">Option</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">IndFiabVal</span><span class="o">=</span><span class="n">IndivReliabilityVal</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">IndFiabFunc</span><span class="o">=</span><span class="n">IndivReliabilityFunc</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">Time</span><span class="o">=</span><span class="n">t</span>
+        <span class="k">if</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">Option</span><span class="o">==</span><span class="mi">1</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">NComponent</span><span class="o">=</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">IndFiabVal</span><span class="p">)</span> <span class="c1"># The number of component(s) of the system</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">NComponent</span><span class="o">=</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">IndFiabFunc</span><span class="p">)</span> <span class="c1"># The number of component(s) of the system</span>
+        <span class="c1">#print(&quot;\n self.NComponent Start in FaultTreeR&quot;)</span>
+        <span class="c1">#print(self.NComponent)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">NNode</span><span class="o">=</span><span class="n">n</span> <span class="c1"># The number of nodes of the fault tree</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">Node</span><span class="o">=</span><span class="p">[]</span>    <span class="c1"># The list of nodes of the fault tree</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">SubTree</span><span class="o">=</span><span class="p">{}</span> <span class="c1"># The dictionary of subtrees of the fault tree</span>
+        
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">NNode</span><span class="p">):</span> <span class="c1"># The list of nodes of the fault tree</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">SubTree</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">=</span><span class="kc">None</span>    <span class="c1"># The dictionary of subtrees of the fault tree</span>
+            
+        <span class="bp">self</span><span class="o">.</span><span class="n">Reliability</span><span class="o">=</span><span class="p">{}</span> <span class="c1"># The dictionary of reliability of the fault tree</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">Label</span><span class="o">=</span><span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">AdjMat</span><span class="o">=</span><span class="p">{}</span><span class="c1">#matlib.zeros((n, n))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">RelMat</span><span class="o">=</span><span class="p">[[],[],[],[],[],[]]</span> 
+        <span class="c1">#[[Door],[NodeIn],[NodeOut],[Orders],[Times],[IndicesPrincipal]]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">IdxTable</span><span class="o">=</span><span class="p">[[],[],[]]</span> 
+        <span class="c1">#[[NumRel],[Node i],[Node j]]</span>
+    
+    <span class="k">def</span> <span class="fm">__del__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>  <span class="c1"># destructor</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        The __del__ method is called when the instance is about to be destroyed</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="n">NFaultTreeR</span><span class="o">-=</span><span class="mi">1</span>
+    
+<div class="viewcode-block" id="FaultTreeR.IdxNode"><a class="viewcode-back" href="../docs/FaultTreeRLib.html#FaultTreeRLib.FaultTreeR.IdxNode">[docs]</a>    <span class="k">def</span> <span class="nf">IdxNode</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">Indices</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span> <span class="c1"># Indices: list of indices of nodes</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        It returns the index of the node in the list of nodes</span>
+<span class="sd">        </span>
+<span class="sd">        :param Indices: The indices of the node to be found</span>
+<span class="sd">        :return: The index of the node in the list of nodes.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">res</span><span class="o">=</span><span class="kc">None</span>
+        <span class="k">if</span> <span class="p">(</span><span class="n">Indices</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">Node</span><span class="p">):</span>
+            <span class="n">res</span><span class="o">=</span><span class="mi">0</span>
+            <span class="k">while</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">Node</span><span class="p">[</span><span class="n">res</span><span class="p">]</span><span class="o">!=</span><span class="n">Indices</span><span class="p">):</span>
+                <span class="n">res</span><span class="o">=</span><span class="n">res</span><span class="o">+</span><span class="mi">1</span>
+        <span class="k">return</span> <span class="n">res</span></div>
+    
+<div class="viewcode-block" id="FaultTreeR.InOrder2"><a class="viewcode-back" href="../docs/FaultTreeRLib.html#FaultTreeRLib.FaultTreeR.InOrder2">[docs]</a>    <span class="k">def</span> <span class="nf">InOrder2</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">xx</span><span class="o">=</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="mi">3</span><span class="p">,</span><span class="mi">2</span><span class="p">],</span><span class="n">yy</span><span class="o">=</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">30</span><span class="p">]):</span>  <span class="c1"># xx: list of indices of nodes, yy: list of indices of nodes</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        If the two lists are equal, then they are in order. Otherwise, if the first list is shorter than</span>
+<span class="sd">        the second, then the first list is in order.</span>
+<span class="sd">        </span>
+<span class="sd">        :param xx: the first list of numbers</span>
+<span class="sd">        :param yy: the current state of the board</span>
+<span class="sd">        :return: True or False</span>
+<span class="sd">        </span>
+<span class="sd">        </span>
+<span class="sd">        Examples:</span>
+<span class="sd">        ---------</span>
+<span class="sd">        </span>
+<span class="sd">        &gt;&gt;&gt; self=(1),xx=[1,3,2],yy=[1,2,30]</span>
+<span class="sd">        Output: True</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">i</span><span class="o">=</span><span class="nb">min</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">xx</span><span class="p">),</span><span class="nb">len</span><span class="p">(</span><span class="n">yy</span><span class="p">))</span><span class="o">-</span><span class="mi">1</span>
+        <span class="k">while</span> <span class="p">((</span><span class="n">xx</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">==</span><span class="n">yy</span><span class="p">[</span><span class="n">i</span><span class="p">])</span> <span class="ow">and</span> <span class="p">(</span><span class="n">i</span><span class="o">&gt;=</span><span class="mi">0</span><span class="p">)):</span>
+            <span class="c1">#print((xx,yy))</span>
+            <span class="n">i</span><span class="o">=</span><span class="n">i</span><span class="o">-</span><span class="mi">1</span>
+        <span class="k">if</span> <span class="p">(</span><span class="n">i</span><span class="o">&lt;</span><span class="mi">0</span><span class="p">):</span>
+            <span class="n">res</span><span class="o">=</span><span class="kc">True</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">res</span><span class="o">=</span><span class="p">(</span><span class="n">xx</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">&lt;</span><span class="n">yy</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
+        <span class="k">return</span> <span class="n">res</span></div>
+
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    def InOrder2(self,xx=[1,3,2],yy=[1,2,30]):</span>
+<span class="sd">        res=True</span>
+<span class="sd">        i=0</span>
+<span class="sd">        while ((res==True) and (i&lt;min(len(xx),len(yy)))):</span>
+<span class="sd">            #print((xx,yy))</span>
+<span class="sd">            res=(res and (xx[i]&lt;=yy[i]))</span>
+<span class="sd">            i=i+1</span>
+<span class="sd">        return res</span>
+<span class="sd">    </span>
+<span class="sd">    print(InOrder2())</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    
+<div class="viewcode-block" id="FaultTreeR.Leaves"><a class="viewcode-back" href="../docs/FaultTreeRLib.html#FaultTreeRLib.FaultTreeR.Leaves">[docs]</a>    <span class="k">def</span> <span class="nf">Leaves</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>   <span class="c1"># Returns the list of leaves of the fault tree</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        It returns the indices of the nodes that are leaves in the graph</span>
+<span class="sd">        :return: the leaves of the tree.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">res</span><span class="o">=</span><span class="p">[]</span>
+        <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">AdjMat</span><span class="p">)):</span>
+            <span class="n">Temp</span><span class="o">=</span><span class="mi">0</span>
+            <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">AdjMat</span><span class="p">)):</span>
+                <span class="k">if</span> <span class="p">(</span><span class="n">i</span><span class="o">!=</span><span class="n">j</span><span class="p">):</span>
+                    <span class="n">Temp</span><span class="o">+=</span><span class="bp">self</span><span class="o">.</span><span class="n">AdjMat</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="n">j</span><span class="p">]</span>
+                    <span class="k">if</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">InOrder2</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">Node</span><span class="p">[</span><span class="n">i</span><span class="p">],</span><span class="bp">self</span><span class="o">.</span><span class="n">Node</span><span class="p">[</span><span class="n">j</span><span class="p">])):</span>
+                        <span class="n">Temp</span><span class="o">+=</span><span class="mi">1</span>
+            <span class="k">if</span> <span class="p">(</span><span class="n">Temp</span><span class="o">==</span><span class="mi">0</span><span class="p">):</span><span class="c1">#((Temp==0) and (self.RelMat[0][j]==1)):</span>
+                <span class="n">res</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">j</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">res</span></div>
+    
+<div class="viewcode-block" id="FaultTreeR.Root"><a class="viewcode-back" href="../docs/FaultTreeRLib.html#FaultTreeRLib.FaultTreeR.Root">[docs]</a>    <span class="k">def</span> <span class="nf">Root</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span> <span class="c1"># Returns the index of the root of the fault tree</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        It returns the index of the root node of the tree</span>
+<span class="sd">        :return: The root node of the graph.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">res</span><span class="o">=</span><span class="p">[]</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">AdjMat</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+            <span class="n">Temp</span><span class="o">=</span><span class="mi">0</span>
+            <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">AdjMat</span><span class="p">)):</span>
+                <span class="k">if</span> <span class="p">(</span><span class="n">i</span><span class="o">!=</span><span class="n">j</span><span class="p">):</span>
+                    <span class="n">Temp</span><span class="o">+=</span><span class="bp">self</span><span class="o">.</span><span class="n">AdjMat</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="n">j</span><span class="p">]</span>
+                    <span class="k">if</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">InOrder2</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">Node</span><span class="p">[</span><span class="n">i</span><span class="p">],</span><span class="bp">self</span><span class="o">.</span><span class="n">Node</span><span class="p">[</span><span class="n">j</span><span class="p">])):</span>
+                        <span class="n">Temp</span><span class="o">+=</span><span class="mi">1</span>
+            <span class="k">if</span> <span class="p">(</span><span class="n">Temp</span><span class="o">==</span><span class="mi">0</span><span class="p">):</span><span class="c1">#((Temp==0) and (self.RelMat[0][j]==1)):</span>
+                <span class="n">res</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">i</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">res</span></div>
+    
+<div class="viewcode-block" id="FaultTreeR.Update"><a class="viewcode-back" href="../docs/FaultTreeRLib.html#FaultTreeRLib.FaultTreeR.Update">[docs]</a>    <span class="k">def</span> <span class="nf">Update</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">ID_P</span><span class="p">):</span>   <span class="c1"># Updates the adjacency matrix of the fault tree</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        If the last entry in the RelMat is a valid entry, then add it to the Node list and the AdjMat.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">n</span><span class="o">=</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">RelMat</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+        <span class="k">if</span> <span class="p">(</span><span class="n">n</span><span class="o">&gt;</span><span class="mi">0</span><span class="p">):</span>
+            <span class="n">Test</span><span class="o">=</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">Node</span><span class="p">)</span><span class="o">&lt;=</span><span class="bp">self</span><span class="o">.</span><span class="n">NNode</span><span class="o">-</span><span class="mi">2</span><span class="p">)</span>
+            <span class="n">Test</span><span class="o">=</span><span class="n">Test</span> <span class="ow">or</span> <span class="p">((</span><span class="bp">self</span><span class="o">.</span><span class="n">RelMat</span><span class="p">[</span><span class="mi">1</span><span class="p">][</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">Node</span><span class="p">)</span> <span class="ow">and</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">RelMat</span><span class="p">[</span><span class="mi">2</span><span class="p">][</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">Node</span><span class="p">))</span>
+            <span class="n">Test</span><span class="o">=</span><span class="n">Test</span> <span class="ow">or</span> <span class="p">((</span><span class="ow">not</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">RelMat</span><span class="p">[</span><span class="mi">1</span><span class="p">][</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">Node</span><span class="p">)</span> <span class="ow">or</span> <span class="ow">not</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">RelMat</span><span class="p">[</span><span class="mi">2</span><span class="p">][</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">Node</span><span class="p">))</span> <span class="ow">and</span> <span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">Node</span><span class="p">)</span><span class="o">&lt;=</span><span class="bp">self</span><span class="o">.</span><span class="n">NNode</span><span class="o">-</span><span class="mi">1</span><span class="p">))</span>
+            <span class="k">if</span> <span class="ow">not</span><span class="p">(</span><span class="n">Test</span><span class="p">):</span>   <span class="c1"># If the last node is not a leaf</span>
+                <span class="c1">#print(&quot;Update Test No&quot;)</span>
+                <span class="k">del</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">RelMat</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
+                <span class="k">del</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">RelMat</span><span class="p">[</span><span class="mi">1</span><span class="p">][</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
+                <span class="k">del</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">RelMat</span><span class="p">[</span><span class="mi">2</span><span class="p">][</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
+                <span class="k">del</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">RelMat</span><span class="p">[</span><span class="mi">3</span><span class="p">][</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
+                <span class="k">del</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">RelMat</span><span class="p">[</span><span class="mi">4</span><span class="p">][</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
+                <span class="k">del</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">RelMat</span><span class="p">[</span><span class="mi">5</span><span class="p">][</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
+            <span class="k">else</span><span class="p">:</span>   <span class="c1"># If the last node is a leaf</span>
+                <span class="k">if</span> <span class="ow">not</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">RelMat</span><span class="p">[</span><span class="mi">1</span><span class="p">][</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">Node</span><span class="p">):</span>    <span class="c1"># If the last node is a leaf and the last node is not in the list of nodes</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">Node</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">RelMat</span><span class="p">[</span><span class="mi">1</span><span class="p">][</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">Label</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">ID_P</span><span class="p">(</span><span class="mi">1</span><span class="p">))</span>
+                    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">Node</span><span class="p">)</span><span class="o">-</span><span class="mi">1</span><span class="p">):</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">AdjMat</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">AdjMat</span><span class="p">[</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">Node</span><span class="p">)</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">Node</span><span class="p">))]</span>
+                <span class="k">if</span> <span class="ow">not</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">RelMat</span><span class="p">[</span><span class="mi">2</span><span class="p">][</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">Node</span><span class="p">):</span>    <span class="c1"># If the last node is a leaf and the last node is not in the list of nodes</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">Node</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">RelMat</span><span class="p">[</span><span class="mi">2</span><span class="p">][</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">Label</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">ID_P</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">RelMat</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="o">-</span><span class="mi">1</span><span class="p">]))</span>
+                    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">Node</span><span class="p">)</span><span class="o">-</span><span class="mi">1</span><span class="p">):</span>   <span class="c1"># If the last node is a leaf and the last node is not in the list of nodes</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">AdjMat</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">AdjMat</span><span class="p">[</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">Node</span><span class="p">)</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">Node</span><span class="p">))]</span>
+                <span class="k">if</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">RelMat</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">&gt;=</span><span class="mi">0</span><span class="p">):</span> <span class="c1"># If the last node is a leaf and the last node is in the list of nodes</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">IdxTable</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">n</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">IdxTable</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">IdxNode</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">RelMat</span><span class="p">[</span><span class="mi">1</span><span class="p">][</span><span class="o">-</span><span class="mi">1</span><span class="p">]))</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">IdxTable</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">IdxNode</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">RelMat</span><span class="p">[</span><span class="mi">2</span><span class="p">][</span><span class="o">-</span><span class="mi">1</span><span class="p">]))</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">AdjMat</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">IdxTable</span><span class="p">[</span><span class="mi">1</span><span class="p">][</span><span class="o">-</span><span class="mi">1</span><span class="p">]][</span><span class="bp">self</span><span class="o">.</span><span class="n">IdxTable</span><span class="p">[</span><span class="mi">2</span><span class="p">][</span><span class="o">-</span><span class="mi">1</span><span class="p">]]</span><span class="o">=</span><span class="mi">1</span></div>
+                <span class="c1">#print(&quot;Update Test Ok&quot;)</span>
+                <span class="c1">#print(self.Node)</span>
+   
+<div class="viewcode-block" id="FaultTreeR.Sort"><a class="viewcode-back" href="../docs/FaultTreeRLib.html#FaultTreeRLib.FaultTreeR.Sort">[docs]</a>    <span class="k">def</span> <span class="nf">Sort</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>         <span class="c1"># Sorts the list of nodes of the fault tree</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        It sorts the relations in the tree in a way that makes it easier to draw the tree</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">Temp1</span><span class="o">=</span><span class="p">[]</span>
+        <span class="n">Temp2</span><span class="o">=</span><span class="p">[]</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">IdxTable</span><span class="p">[</span><span class="mi">0</span><span class="p">])):</span>    <span class="c1"># Sorts the list of indices of the nodes</span>
+            <span class="n">j</span><span class="o">=</span><span class="mi">0</span>
+            <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">IdxTable</span><span class="p">[</span><span class="mi">0</span><span class="p">])):</span>  <span class="c1"># Sorts the list of indices of the nodes</span>
+                <span class="c1">#if (self.InOrder2(self.RelMat[2][k],self.RelMat[1][i]) and (self.IdxTable[2][k]!=self.IdxTable[1][i])):</span>
+                <span class="n">Test</span><span class="o">=</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">AdjMat</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">IdxNode</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">RelMat</span><span class="p">[</span><span class="mi">2</span><span class="p">][</span><span class="n">k</span><span class="p">])][</span><span class="bp">self</span><span class="o">.</span><span class="n">IdxNode</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">RelMat</span><span class="p">[</span><span class="mi">1</span><span class="p">][</span><span class="n">i</span><span class="p">])]</span><span class="o">==</span><span class="mi">1</span><span class="p">)</span>
+                <span class="n">Test</span><span class="o">=</span><span class="n">Test</span> <span class="ow">or</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">InOrder2</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">RelMat</span><span class="p">[</span><span class="mi">2</span><span class="p">][</span><span class="n">k</span><span class="p">],</span><span class="bp">self</span><span class="o">.</span><span class="n">RelMat</span><span class="p">[</span><span class="mi">1</span><span class="p">][</span><span class="n">i</span><span class="p">]))</span>
+                <span class="n">Test</span><span class="o">=</span><span class="n">Test</span> <span class="ow">and</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">IdxTable</span><span class="p">[</span><span class="mi">2</span><span class="p">][</span><span class="n">k</span><span class="p">]</span><span class="o">!=</span><span class="bp">self</span><span class="o">.</span><span class="n">IdxTable</span><span class="p">[</span><span class="mi">1</span><span class="p">][</span><span class="n">i</span><span class="p">])</span>
+                <span class="k">if</span> <span class="n">Test</span><span class="p">:</span>
+                    <span class="n">j</span><span class="o">=</span><span class="n">j</span><span class="o">+</span><span class="mi">1</span>
+            <span class="k">while</span> <span class="p">(</span><span class="n">j</span> <span class="ow">in</span> <span class="n">Temp1</span><span class="p">):</span>
+                <span class="n">j</span><span class="o">=</span><span class="n">j</span><span class="o">+</span><span class="mi">1</span>
+            <span class="n">Temp1</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">j</span><span class="p">)</span>
+            <span class="n">Temp2</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">IdxTable</span><span class="p">[</span><span class="mi">0</span><span class="p">])):</span>
+            <span class="n">Temp2</span><span class="p">[</span><span class="nb">int</span><span class="p">(</span><span class="n">Temp1</span><span class="p">[</span><span class="n">i</span><span class="p">])]</span><span class="o">=</span><span class="n">i</span>
+        <span class="n">Temp3</span><span class="o">=</span><span class="p">[[],[],[]]</span>
+        <span class="n">Temp4</span><span class="o">=</span><span class="p">[[],[],[],[],[],[]]</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">IdxTable</span><span class="p">[</span><span class="mi">0</span><span class="p">])):</span>
+            <span class="n">Temp3</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">i</span><span class="p">)</span>
+            <span class="n">Temp3</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">IdxTable</span><span class="p">[</span><span class="mi">1</span><span class="p">][</span><span class="nb">int</span><span class="p">(</span><span class="n">Temp2</span><span class="p">[</span><span class="n">i</span><span class="p">])])</span>
+            <span class="n">Temp3</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">IdxTable</span><span class="p">[</span><span class="mi">2</span><span class="p">][</span><span class="nb">int</span><span class="p">(</span><span class="n">Temp2</span><span class="p">[</span><span class="n">i</span><span class="p">])])</span>
+            <span class="n">Temp4</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">RelMat</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="nb">int</span><span class="p">(</span><span class="n">Temp2</span><span class="p">[</span><span class="n">i</span><span class="p">])])</span>
+            <span class="n">Temp4</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">RelMat</span><span class="p">[</span><span class="mi">1</span><span class="p">][</span><span class="nb">int</span><span class="p">(</span><span class="n">Temp2</span><span class="p">[</span><span class="n">i</span><span class="p">])])</span>
+            <span class="n">Temp4</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">RelMat</span><span class="p">[</span><span class="mi">2</span><span class="p">][</span><span class="nb">int</span><span class="p">(</span><span class="n">Temp2</span><span class="p">[</span><span class="n">i</span><span class="p">])])</span>
+            <span class="n">Temp4</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">RelMat</span><span class="p">[</span><span class="mi">3</span><span class="p">][</span><span class="nb">int</span><span class="p">(</span><span class="n">Temp2</span><span class="p">[</span><span class="n">i</span><span class="p">])])</span>
+            <span class="n">Temp4</span><span class="p">[</span><span class="mi">4</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">RelMat</span><span class="p">[</span><span class="mi">4</span><span class="p">][</span><span class="nb">int</span><span class="p">(</span><span class="n">Temp2</span><span class="p">[</span><span class="n">i</span><span class="p">])])</span>
+            <span class="n">Temp4</span><span class="p">[</span><span class="mi">5</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">RelMat</span><span class="p">[</span><span class="mi">5</span><span class="p">][</span><span class="nb">int</span><span class="p">(</span><span class="n">Temp2</span><span class="p">[</span><span class="n">i</span><span class="p">])])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">IdxTable</span><span class="o">=</span><span class="n">Temp3</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">RelMat</span><span class="o">=</span><span class="n">Temp4</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span></div>
+        <span class="c1">#print(&quot;\n Sort Called in FaultTreeR&quot;)</span>
+        <span class="c1">#print(self.RelMat)</span>
+        
+<div class="viewcode-block" id="FaultTreeR.NewRelation"><a class="viewcode-back" href="../docs/FaultTreeRLib.html#FaultTreeRLib.FaultTreeR.NewRelation">[docs]</a>    <span class="k">def</span> <span class="nf">NewRelation</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">Port</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span><span class="n">IndicesIn</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span><span class="n">IndicesOut</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span><span class="n">Orders</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span><span class="n">Times</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span><span class="n">IndicesPrincipal</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>   <span class="c1"># Creates a new relation in the fault tree</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        This function adds a new relation to the tree.</span>
+<span class="sd">        </span>
+<span class="sd">        :param Port: The port number of the relation, defaults to 1 (optional)</span>
+<span class="sd">        :param IndicesIn: list of indices of the nodes that are the input to the relation</span>
+<span class="sd">        :param IndicesOut: list of indices of the output nodes</span>
+<span class="sd">        :param Orders: list of integers, each integer is the order of the relation</span>
+<span class="sd">        :param Times: list of times for each order</span>
+<span class="sd">        :param IndicesPrincipal: This is a list of indices of the nodes that are the principal nodes of</span>
+<span class="sd">        the relation</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="p">(</span><span class="n">IndicesIn</span><span class="o">!=</span><span class="kc">None</span><span class="p">)</span> <span class="ow">and</span> <span class="p">(</span><span class="n">IndicesOut</span><span class="o">!=</span><span class="kc">None</span><span class="p">):</span> 
+            <span class="k">if</span> <span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">IndicesIn</span><span class="p">)</span><span class="o">&lt;=</span><span class="bp">self</span><span class="o">.</span><span class="n">NNode</span><span class="p">)</span> <span class="ow">and</span> <span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">IndicesOut</span><span class="p">)</span><span class="o">&lt;=</span><span class="bp">self</span><span class="o">.</span><span class="n">NNode</span><span class="p">):</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">RelMat</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">Port</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">RelMat</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">IndicesIn</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">RelMat</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">IndicesOut</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">RelMat</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">Orders</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">RelMat</span><span class="p">[</span><span class="mi">4</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">Times</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">RelMat</span><span class="p">[</span><span class="mi">5</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">IndicesPrincipal</span><span class="p">)</span>
+                <span class="c1">#print(&quot;\n NewRelation Called in FaultTreeR&quot;)</span>
+                <span class="c1">#print(self.RelMat)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">Update</span><span class="p">()</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">Sort</span><span class="p">()</span></div>
+        <span class="c1">#print(self.RelMat)</span>
+            
+        
+<div class="viewcode-block" id="FaultTreeR.AutoCompletion"><a class="viewcode-back" href="../docs/FaultTreeRLib.html#FaultTreeRLib.FaultTreeR.AutoCompletion">[docs]</a>    <span class="k">def</span> <span class="nf">AutoCompletion</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>   <span class="c1"># Automatically completes the fault tree</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        For each node, if it is not the same as another node, and if it is in order with another node,</span>
+<span class="sd">        then add a new relation between the two nodes.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">nn</span><span class="o">=</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">Node</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">nn</span><span class="p">):</span>
+            <span class="c1">#print(&quot;yeah !&quot;)</span>
+            <span class="c1">#print(self.Node[i])</span>
+            <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">nn</span><span class="p">):</span>
+                <span class="k">if</span> <span class="p">(</span><span class="n">i</span><span class="o">!=</span><span class="n">j</span><span class="p">)</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">InOrder2</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">Node</span><span class="p">[</span><span class="n">i</span><span class="p">],</span><span class="bp">self</span><span class="o">.</span><span class="n">Node</span><span class="p">[</span><span class="n">j</span><span class="p">]):</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">NewRelation</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="bp">self</span><span class="o">.</span><span class="n">Node</span><span class="p">[</span><span class="n">i</span><span class="p">],</span><span class="bp">self</span><span class="o">.</span><span class="n">Node</span><span class="p">[</span><span class="n">j</span><span class="p">],</span><span class="kc">None</span><span class="p">,</span><span class="kc">None</span><span class="p">,</span><span class="kc">None</span><span class="p">)</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        mm=self.NNode</span>
+<span class="sd">        for i in range(nn):</span>
+<span class="sd">            for j in range(mm):</span>
+<span class="sd">                Temp=[0 for k in range(mm)]</span>
+<span class="sd">                Temp[j]=1</span>
+<span class="sd">                if (self.InOrder2(Temp,self.Node[i])) and (Temp!=self.Node[i]):</span>
+<span class="sd">                    if not(Temp in self.Node):</span>
+<span class="sd">                        if (len(self.Node)==self.NNode):</span>
+<span class="sd">                            self.NNode+=1</span>
+<span class="sd">                    self.NewRelation(1,Temp,self.Node[i],None,None,None)</span>
+<span class="sd">        &quot;&quot;&quot;</span></div>
+               
+<div class="viewcode-block" id="FaultTreeR.RecursiveStruturation"><a class="viewcode-back" href="../docs/FaultTreeRLib.html#FaultTreeRLib.FaultTreeR.RecursiveStruturation">[docs]</a>    <span class="k">def</span> <span class="nf">RecursiveStruturation</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>    <span class="c1"># Recursive structurer of the fault tree</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        It takes a tree and creates a new tree for each node in the original tree.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1">##self.AutoCompletion()</span>
+        <span class="c1">#print(&quot;\n RecursiveStruturation in FaultTreeR&quot;)</span>
+        <span class="c1">#print(&quot;\n Nodes in RecursiveStruturation in FaultTreeR&quot;)</span>
+        <span class="c1">#print(self.Node)</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">IdxTable</span><span class="p">[</span><span class="mi">0</span><span class="p">])):</span>  <span class="c1"># For each node</span>
+            <span class="n">Temp</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">IdxTable</span><span class="p">[</span><span class="mi">2</span><span class="p">][</span><span class="n">i</span><span class="p">]</span>
+            <span class="c1">#print(&quot;\n AdjMat: &quot;)</span>
+            <span class="c1">#print(self.AdjMat)</span>
+            <span class="n">nSon</span><span class="o">=</span><span class="mi">0</span>
+            <span class="c1">#print(&quot;\n Sons: &quot;)</span>
+            <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">IdxTable</span><span class="p">[</span><span class="mi">0</span><span class="p">])):</span> <span class="c1">#in range(len(self.Node)):</span>
+                <span class="k">if</span> <span class="p">((</span><span class="bp">self</span><span class="o">.</span><span class="n">IdxTable</span><span class="p">[</span><span class="mi">1</span><span class="p">][</span><span class="n">j</span><span class="p">]</span><span class="o">!=</span><span class="n">Temp</span><span class="p">)</span> <span class="ow">and</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">IdxTable</span><span class="p">[</span><span class="mi">2</span><span class="p">][</span><span class="n">j</span><span class="p">]</span><span class="o">==</span><span class="n">Temp</span><span class="p">)):</span>
+                    <span class="n">nSon</span><span class="o">+=</span><span class="mi">1</span><span class="c1">#self.AdjMat[j][Temp]</span>
+                    <span class="c1">#print((self.IdxTable[1][j],self.IdxTable[2][j]))</span>
+            <span class="c1">#print(nSon)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">SubTree</span><span class="p">[</span><span class="n">Temp</span><span class="p">]</span><span class="o">=</span><span class="n">FaultTree</span><span class="p">(</span><span class="n">nSon</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span>  <span class="c1"># Creates a new subtree with nSon+1 nodes   </span>
+            <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">IdxTable</span><span class="p">[</span><span class="mi">0</span><span class="p">])):</span>
+                <span class="k">if</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">IdxTable</span><span class="p">[</span><span class="mi">2</span><span class="p">][</span><span class="n">j</span><span class="p">]</span><span class="o">==</span><span class="n">Temp</span><span class="p">):</span>
+                    <span class="n">Temp1</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">RelMat</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="bp">self</span><span class="o">.</span><span class="n">IdxTable</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="n">j</span><span class="p">]]</span>
+                    <span class="n">Temp2</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">RelMat</span><span class="p">[</span><span class="mi">1</span><span class="p">][</span><span class="bp">self</span><span class="o">.</span><span class="n">IdxTable</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="n">j</span><span class="p">]]</span>
+                    <span class="n">Temp3</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">RelMat</span><span class="p">[</span><span class="mi">2</span><span class="p">][</span><span class="bp">self</span><span class="o">.</span><span class="n">IdxTable</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="n">j</span><span class="p">]]</span>
+                    <span class="n">Temp4</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">RelMat</span><span class="p">[</span><span class="mi">3</span><span class="p">][</span><span class="bp">self</span><span class="o">.</span><span class="n">IdxTable</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="n">j</span><span class="p">]]</span>
+                    <span class="n">Temp5</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">RelMat</span><span class="p">[</span><span class="mi">4</span><span class="p">][</span><span class="bp">self</span><span class="o">.</span><span class="n">IdxTable</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="n">j</span><span class="p">]]</span>
+                    <span class="n">Temp6</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">RelMat</span><span class="p">[</span><span class="mi">5</span><span class="p">][</span><span class="bp">self</span><span class="o">.</span><span class="n">IdxTable</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="n">j</span><span class="p">]]</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">SubTree</span><span class="p">[</span><span class="n">Temp</span><span class="p">]</span><span class="o">.</span><span class="n">NewRelation</span><span class="p">(</span><span class="n">Temp1</span><span class="p">,</span><span class="n">Temp2</span><span class="p">,</span><span class="n">Temp3</span><span class="p">,</span><span class="n">Temp4</span><span class="p">,</span><span class="n">Temp5</span><span class="p">,</span><span class="n">Temp6</span><span class="p">)</span></div>
+                    <span class="c1">#print(&quot;\n NewRelation &quot;)</span>
+                    <span class="c1">#print(Temp1,Temp2,Temp3,Temp4,Temp5,Temp6)</span>
+                    <span class="c1">#print(&quot;SubTree&#39;s Nodes &quot;)</span>
+                    <span class="c1">#print(self.SubTree[Temp].Node)</span>
+        
+<div class="viewcode-block" id="FaultTreeR.Generation"><a class="viewcode-back" href="../docs/FaultTreeRLib.html#FaultTreeRLib.FaultTreeR.Generation">[docs]</a>    <span class="k">def</span> <span class="nf">Generation</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>   <span class="c1"># Generates the fault tree      </span>
+<span class="w">        </span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        The function takes a tree and returns a list of lists, where each list is a generation of the</span>
+<span class="sd">        tree</span>
+<span class="sd">        :return: a list of lists. Each list in the list is a generation.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1">#print(&quot;\n Generation called in FaultTreeR&quot;)</span>
+        <span class="n">Temp1</span><span class="o">=</span><span class="p">{</span><span class="n">i</span><span class="p">:</span><span class="bp">self</span><span class="o">.</span><span class="n">Node</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">Node</span><span class="p">))}</span>   <span class="c1"># Creates a dictionary with the nodes as keys and the indices as values</span>
+        <span class="n">Temp2</span><span class="o">=</span><span class="p">{}</span>
+        <span class="n">res</span><span class="o">=</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">Leaves</span><span class="p">()</span><span class="o">.</span><span class="n">copy</span><span class="p">()]</span>
+        <span class="c1">#print(&quot;\n New generation&quot;)</span>
+        <span class="c1">#print(res[-1])</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">res</span><span class="p">[</span><span class="mi">0</span><span class="p">]:</span>
+            <span class="n">Temp2</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">Node</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+            <span class="k">del</span><span class="p">(</span><span class="n">Temp1</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
+        <span class="k">while</span> <span class="p">(</span><span class="n">Temp1</span><span class="o">!=</span><span class="p">{}):</span>  <span class="c1"># While there are nodes to be generated (i.e. there are nodes in Temp1)</span>
+            <span class="n">Leaves</span><span class="o">=</span><span class="p">[]</span>
+            <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="n">Temp1</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+                <span class="n">Cond</span><span class="o">=</span><span class="kc">True</span>
+                <span class="k">for</span>  <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">Node</span><span class="p">)):</span>
+                    <span class="k">if</span> <span class="p">(((</span><span class="bp">self</span><span class="o">.</span><span class="n">AdjMat</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="n">j</span><span class="p">]</span><span class="o">==</span><span class="mi">1</span><span class="p">)</span> <span class="ow">or</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">InOrder2</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">Node</span><span class="p">[</span><span class="n">i</span><span class="p">],</span>\
+                         <span class="bp">self</span><span class="o">.</span><span class="n">Node</span><span class="p">[</span><span class="n">j</span><span class="p">])))</span> <span class="ow">and</span> <span class="p">(</span><span class="n">i</span><span class="o">!=</span><span class="n">j</span><span class="p">)):</span>
+                        <span class="n">Cond</span><span class="o">=</span><span class="n">Cond</span> <span class="ow">and</span> <span class="p">(</span><span class="n">i</span> <span class="ow">in</span> <span class="n">Temp2</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span>
+                <span class="k">if</span> <span class="n">Cond</span> <span class="p">:</span>
+                    <span class="n">Leaves</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">j</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">Leaves</span><span class="p">:</span>    <span class="c1"># For each leaf in Leaves   </span>
+                <span class="n">Temp2</span><span class="p">[</span><span class="n">k</span><span class="p">]</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">Node</span><span class="p">[</span><span class="n">k</span><span class="p">]</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+                <span class="k">del</span><span class="p">(</span><span class="n">Temp1</span><span class="p">[</span><span class="n">k</span><span class="p">])</span>
+            <span class="n">res</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">Leaves</span><span class="p">)</span>
+            <span class="c1">#print(&quot;\n New generation&quot;)</span>
+            <span class="c1">#print(res[-1])</span>
+        <span class="c1">#print(&quot;\n All cuts generated&quot;)</span>
+        <span class="k">return</span><span class="p">(</span><span class="n">res</span><span class="p">)</span></div>
+    
+<div class="viewcode-block" id="FaultTreeR.RecursiveReliability"><a class="viewcode-back" href="../docs/FaultTreeRLib.html#FaultTreeRLib.FaultTreeR.RecursiveReliability">[docs]</a>    <span class="k">def</span> <span class="nf">RecursiveReliability</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>  <span class="c1"># Recursive reliability of the fault tree  (not used)  </span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        It computes the reliability of a system, given the reliability of its components.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1">#print(&quot;\n RecursiveReliability called in FaultTreeR&quot;)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">RecursiveStruturation</span><span class="p">()</span>
+        <span class="n">Temp</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">Generation</span><span class="p">()</span>
+        <span class="c1">#print(&quot;\n All generations&quot;)</span>
+        <span class="c1">#print(Temp)</span>
+        
+        <span class="k">def</span> <span class="nf">LeafReliability</span><span class="p">(</span><span class="n">Generation</span><span class="p">,</span><span class="n">i</span><span class="p">,</span><span class="n">Option</span><span class="p">):</span>   <span class="c1"># Recursive reliability of the leaf i in the generation Generation  (not used)</span>
+<span class="w">            </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">            It takes a list of nodes (Generation), an index (i) and an option (Option) and returns a</span>
+<span class="sd">            dictionary of the form {node: {0: [list of symbols], 1: [list of reliability values]}}</span>
+<span class="sd">            </span>
+<span class="sd">            :param Generation: a list of the nodes in the current generation</span>
+<span class="sd">            :param i: the index of the node in the generation</span>
+<span class="sd">            :param Option: 1 for reliability values, 2 for reliability functions</span>
+<span class="sd">            &quot;&quot;&quot;</span>
+            <span class="c1">#print(&quot;\n LeafReliability called in DefautTreeR&quot;)</span>
+            <span class="n">R</span><span class="o">=</span><span class="p">[]</span>
+            <span class="n">R2</span><span class="o">=</span><span class="p">[]</span>
+            <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">NComponent</span><span class="p">):</span>    <span class="c1"># For each component    </span>
+                <span class="k">if</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">Node</span><span class="p">[</span><span class="n">Generation</span><span class="p">[</span><span class="n">i</span><span class="p">]][</span><span class="n">j</span><span class="p">]</span><span class="o">==</span><span class="mi">1</span><span class="p">):</span>
+                    <span class="n">R</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">sympy</span><span class="o">.</span><span class="n">Symbol</span><span class="p">(</span><span class="s2">&quot;R&quot;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">j</span><span class="p">)))</span>
+                    <span class="k">if</span> <span class="p">(</span><span class="n">Option</span><span class="o">==</span><span class="mi">1</span><span class="p">):</span> <span class="c1"># If the option is 1, the reliability is the probability of the component</span>
+<span class="w">                        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">                        print(&quot;\n self.NComponent&quot;)</span>
+<span class="sd">                        print(self.NComponent)</span>
+<span class="sd">                        print(&quot;\n Le node 1&quot; )</span>
+<span class="sd">                        print(self.Node[Genreration[i]])</span>
+<span class="sd">                        &quot;&quot;&quot;</span>
+                        
+                        <span class="n">R2</span><span class="o">.</span><span class="n">append</span><span class="p">([</span><span class="bp">self</span><span class="o">.</span><span class="n">IndFiabVal</span><span class="p">[</span><span class="n">j</span><span class="p">][</span><span class="n">k</span><span class="p">]</span> <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">Time</span><span class="p">))])</span>   <span class="c1"># The reliability is the probability of the component   </span>
+                    <span class="k">else</span><span class="p">:</span>
+<span class="w">                        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">                        print(&quot;\n self.NComponent&quot;)</span>
+<span class="sd">                        print(self.NComponent)</span>
+<span class="sd">                        print(&quot;\n Le node 2&quot; )</span>
+<span class="sd">                        print(self.Node[Genreration[i]])</span>
+<span class="sd">                        &quot;&quot;&quot;</span>
+                        <span class="c1">#print(&quot;\ Reliability steps&quot;)</span>
+                        <span class="c1">#print([len(self.IndFiabFunc),j])</span>
+                        <span class="n">R2</span><span class="o">.</span><span class="n">append</span><span class="p">([</span><span class="bp">self</span><span class="o">.</span><span class="n">IndFiabFunc</span><span class="p">[</span><span class="n">j</span><span class="p">](</span><span class="bp">self</span><span class="o">.</span><span class="n">Time</span><span class="p">[</span><span class="n">k</span><span class="p">])</span> <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">Time</span><span class="p">))])</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">Reliability</span><span class="p">[</span><span class="n">Generation</span><span class="p">[</span><span class="n">i</span><span class="p">]]</span><span class="o">=</span><span class="p">{}</span>  <span class="c1"># Creates a new dictionary for the reliability of the node  in the generation Generation    </span>
+            <span class="c1">#self.Reliability[Genreration[i]][0]=sympy.Symbol(&quot;R&quot;+str(Genreration[i]))</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">Reliability</span><span class="p">[</span><span class="n">Generation</span><span class="p">[</span><span class="n">i</span><span class="p">]][</span><span class="mi">0</span><span class="p">]</span><span class="o">=</span><span class="n">R</span>    <span class="c1"># The reliability is the probability of the component   </span>
+            <span class="c1">#self.Reliability[Genreration[i]][1]=[self.IndFiabVal[i][j] for j in range(len(self.Time))]</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">Reliability</span><span class="p">[</span><span class="n">Generation</span><span class="p">[</span><span class="n">i</span><span class="p">]][</span><span class="mi">1</span><span class="p">]</span><span class="o">=</span><span class="n">R2</span>   <span class="c1"># The reliability is the probability of the component   </span>
+            <span class="c1">#self.Reliability[Genreration[i]][1]=[self.IndFiabFunc[i](self.Time[j]) for j in range(len(self.Time))]</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">Reliability</span><span class="p">[</span><span class="n">Generation</span><span class="p">[</span><span class="n">i</span><span class="p">]][</span><span class="mi">1</span><span class="p">]</span><span class="o">=</span><span class="n">R2</span>   <span class="c1"># The reliability is the probability of the component   </span>
+            <span class="c1">#print(self.Reliability[Genreration[i]][0])</span>
+            <span class="c1">#print(self.Reliability[Genreration[i]][1])</span>
+            <span class="c1">#print(R)</span>
+            <span class="c1">#print(R2)</span>
+        
+        <span class="k">def</span> <span class="nf">BranchReliability</span><span class="p">(</span><span class="n">Generations</span><span class="p">,</span><span class="n">i</span><span class="p">,</span><span class="n">Option</span><span class="p">):</span>    <span class="c1"># Recursive reliability of the branch i in the generations Generations  (not used)  </span>
+<span class="w">            </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">            It computes the reliability of a node of the tree, by computing the reliability of the</span>
+<span class="sd">            sub-tree it is connected to</span>
+<span class="sd">            </span>
+<span class="sd">            :param Generations: a list of lists of integers. Each list of integers is a generation of the</span>
+<span class="sd">            tree</span>
+<span class="sd">            :param i: the index of the generation</span>
+<span class="sd">            :param Option: 1 for reliability values, 2 for reliability functions</span>
+<span class="sd">            &quot;&quot;&quot;</span>
+            <span class="c1">#print(&quot;\n BranchReliability called in DefautTreeR&quot;)</span>
+            <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">Generations</span><span class="p">[</span><span class="n">i</span><span class="p">])):</span>    <span class="c1"># For each generation in the branch i   </span>
+                <span class="n">j</span><span class="o">=</span><span class="n">Generations</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="n">k</span><span class="p">]</span>                <span class="c1"># j is the index of the generation   </span>
+                <span class="k">if</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">SubTree</span><span class="p">[</span><span class="n">j</span><span class="p">]</span><span class="o">==</span><span class="kc">None</span><span class="p">):</span>     <span class="c1"># If the generation is a leaf   </span>
+                    <span class="n">LeafReliability</span><span class="p">(</span><span class="n">Generations</span><span class="p">[</span><span class="n">i</span><span class="p">],</span><span class="n">k</span><span class="p">,</span><span class="n">Option</span><span class="p">)</span>    <span class="c1"># Recursive reliability of the leaf k in the generation j   </span>
+                    <span class="c1">#print(&quot;Here&quot;)  # If the generation is a leaf   </span>
+                    <span class="c1">#print(j)</span>
+                    <span class="c1">#print(self.Reliability[j])</span>
+                    <span class="c1">#print(&quot;Ok&quot;)</span>
+
+                <span class="k">else</span><span class="p">:</span>   <span class="c1"># If the generation is a branch </span>
+                    <span class="n">Temp1</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">SubTree</span><span class="p">[</span><span class="n">j</span><span class="p">]</span>   <span class="c1"># Temp1 is the subtree of the branch j  </span>
+                    <span class="c1">#print(&quot;\n The subTree &quot;+str([i,j]))</span>
+                    <span class="c1">#print(Temp1.RelMat)</span>
+                    <span class="c1">#print(Temp1.Node)</span>
+                    <span class="c1">#print([Temp1.NNode,len(Temp1.Node)])</span>
+                    <span class="n">Temp2</span><span class="o">=</span><span class="p">[]</span>
+                    <span class="n">Temp3</span><span class="o">=</span><span class="p">[]</span>
+                    <span class="n">Temp4</span><span class="o">=</span><span class="p">[]</span>
+                    <span class="c1">#print(&quot;\n Temp1.NNode 1&quot;)</span>
+                    <span class="c1">#print(Temp1.NNode)</span>
+                    
+                    <span class="k">for</span> <span class="n">kk</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">Temp1</span><span class="o">.</span><span class="n">NNode</span><span class="p">):</span>       <span class="c1"># For each node in the subtree of the branch j  </span>
+                        <span class="k">if</span> <span class="p">(</span><span class="n">Temp1</span><span class="o">.</span><span class="n">Node</span><span class="p">[</span><span class="n">kk</span><span class="p">]</span><span class="o">!=</span><span class="bp">self</span><span class="o">.</span><span class="n">Node</span><span class="p">[</span><span class="n">j</span><span class="p">]):</span>  <span class="c1"># If the node is not the same as the branch j   </span>
+                            <span class="n">Temp2</span><span class="o">=</span><span class="p">[]</span>                       <span class="c1"># Temp2 is the list of the nodes of the subtree of the branch j  </span>
+                            <span class="n">Temp3</span><span class="o">=</span><span class="p">[]</span>                   <span class="c1"># Temp3 is the list of the reliability of the nodes of the subtree of the branch j   </span>
+                            <span class="n">Temp4</span><span class="o">=</span><span class="p">[]</span>               <span class="c1"># Temp4 is the list of the reliability of the nodes of the subtree of the branch j   </span>
+<span class="w">                            </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">                            print(&quot;\n Les fiabilités connues :&quot;)</span>
+<span class="sd">                            print(self.Reliability)</span>
+<span class="sd">                            </span>
+<span class="sd">                            print(&quot;\n Le node 3&quot;)</span>
+<span class="sd">                            print(Temp1.Node[kk])</span>
+<span class="sd">                            &quot;&quot;&quot;</span>
+                            
+                            <span class="k">for</span> <span class="n">l</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">Temp1</span><span class="o">.</span><span class="n">Node</span><span class="p">[</span><span class="n">kk</span><span class="p">])):</span><span class="c1">#range(self.NComponent):  </span>
+                                <span class="k">if</span> <span class="p">(</span><span class="n">Temp1</span><span class="o">.</span><span class="n">Node</span><span class="p">[</span><span class="n">kk</span><span class="p">][</span><span class="n">l</span><span class="p">]</span><span class="o">==</span><span class="mi">1</span><span class="p">):</span>  <span class="c1"># If the component is active in the node</span>
+                                    <span class="n">Temp2</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">l</span><span class="p">)</span>       <span class="c1"># The component is added to the list of the nodes of the subtree of the branch j  </span>
+                                    <span class="k">if</span> <span class="p">(</span><span class="n">l</span><span class="o">&lt;</span><span class="bp">self</span><span class="o">.</span><span class="n">NComponent</span><span class="p">):</span> <span class="c1"># If the component is active in the node    </span>
+                                        <span class="n">Temp3</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">sympy</span><span class="o">.</span><span class="n">Symbol</span><span class="p">(</span><span class="s2">&quot;R&quot;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">l</span><span class="p">)))</span>  <span class="c1"># The reliability is the probability of the component       </span>
+                                        <span class="k">if</span> <span class="p">(</span><span class="n">Option</span><span class="o">==</span><span class="mi">1</span><span class="p">):</span> 
+                                            <span class="c1">#print(&quot;\n Here 1 !&quot;)</span>
+                                            <span class="c1">#print(self.IndFiabVal[l])</span>
+                                            <span class="n">Temp4</span><span class="o">.</span><span class="n">append</span><span class="p">([</span><span class="bp">self</span><span class="o">.</span><span class="n">IndFiabVal</span><span class="p">[</span><span class="n">l</span><span class="p">][</span><span class="n">kkk</span><span class="p">]</span> <span class="k">for</span> <span class="n">kkk</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">Time</span><span class="p">))])</span>
+                                        <span class="k">else</span><span class="p">:</span>
+                                            <span class="c1">#print(&quot;\n Here 2 !&quot;)</span>
+                                            <span class="c1">#print(self.IndFiabFunc[l])</span>
+                                            <span class="n">Temp4</span><span class="o">.</span><span class="n">append</span><span class="p">([</span><span class="bp">self</span><span class="o">.</span><span class="n">IndFiabFunc</span><span class="p">[</span><span class="n">l</span><span class="p">](</span><span class="bp">self</span><span class="o">.</span><span class="n">Time</span><span class="p">[</span><span class="n">kkk</span><span class="p">])</span> <span class="k">for</span> <span class="n">kkk</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">Time</span><span class="p">))])</span>
+                                    <span class="k">else</span><span class="p">:</span>       
+                                        <span class="n">Node</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span> <span class="k">for</span> <span class="n">kkk</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">Temp1</span><span class="o">.</span><span class="n">Node</span><span class="p">[</span><span class="n">kk</span><span class="p">]))]</span>
+                                        <span class="n">Node</span><span class="p">[</span><span class="n">l</span><span class="p">]</span><span class="o">=</span><span class="mi">1</span>
+                                        <span class="n">ll</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">IdxNode</span><span class="p">(</span><span class="n">Node</span><span class="p">)</span>
+                                        <span class="c1">#print(&quot;\n Les fiabilités connues :&quot;)</span>
+                                        <span class="c1">#print(self.Reliability)</span>
+                                        <span class="c1">#print(&quot;\n Here 30 !&quot;)</span>
+                                        <span class="c1">#print(ll)</span>
+                                        <span class="c1">#print(self.Reliability[ll])</span>
+                                        <span class="c1">#print(&quot;Ok&quot;)</span>
+                                        
+                                        <span class="n">Temp3</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">Reliability</span><span class="p">[</span><span class="n">ll</span><span class="p">][</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">])</span>
+                                        <span class="n">Temp4</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">Reliability</span><span class="p">[</span><span class="n">ll</span><span class="p">][</span><span class="mi">1</span><span class="p">][</span><span class="mi">0</span><span class="p">])</span>
+                            
+                            <span class="c1">#print(Temp3)</span>
+                            <span class="c1">#print(&quot;\n Index 1&quot;)</span>
+                            <span class="c1">#print(Temp2)</span>
+                            <span class="c1">#print(Temp4)</span>
+                            <span class="c1">#print(k)</span>
+                            <span class="c1">#print(Temp2)</span>
+                            <span class="n">Temp5</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">Time</span>
+                            <span class="c1">#print(&quot;\n Here 3 !&quot;)</span>
+                            <span class="c1">#print(Temp2)</span>
+                            <span class="c1">#print(Temp4)</span>
+                            <span class="c1">#print(len(Temp4))</span>
+                            <span class="c1">#print((Temp1,Temp2,Temp3,Temp4,None,Temp5,1))</span>
+                            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Here&quot;</span><span class="p">)</span>
+                            <span class="nb">print</span><span class="p">(</span><span class="n">j</span><span class="p">)</span>
+                            <span class="n">MyUpHasseDiagram</span><span class="o">=</span><span class="n">UpHasseDiagram</span><span class="p">(</span><span class="n">Temp1</span><span class="p">,</span><span class="n">Temp2</span><span class="p">,</span><span class="n">Temp3</span><span class="p">,</span><span class="n">Temp4</span><span class="p">,</span><span class="kc">None</span><span class="p">,</span><span class="n">Temp5</span><span class="p">,</span><span class="mi">1</span><span class="p">)</span>   <span class="c1"># The UpHasseDiagram of the subtree of the branch j is created  </span>
+                            <span class="c1">##(Tree=FaultTree(2),IndivIndex=[0],IndivLabel=[0],IndivReliabilityVal=[[1]],IndivReliabilityFunc=[One],t=[0],Option=1)</span>
+                            
+                            <span class="n">MyPolyFiab</span><span class="o">=</span><span class="n">MyUpHasseDiagram</span><span class="o">.</span><span class="n">GetPolyFiab</span><span class="p">()</span>   <span class="c1"># The polynomial of the reliability of the subtree of the branch j is computed  </span>
+                            
+                            <span class="bp">self</span><span class="o">.</span><span class="n">Reliability</span><span class="p">[</span><span class="n">j</span><span class="p">]</span><span class="o">=</span><span class="p">{}</span>  <span class="c1"># The reliability of the branch j is initialized </span>
+                            <span class="bp">self</span><span class="o">.</span><span class="n">Reliability</span><span class="p">[</span><span class="n">j</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span><span class="o">=</span><span class="p">[</span><span class="n">MyPolyFiab</span><span class="p">[</span><span class="mi">0</span><span class="p">]]</span>  <span class="c1"># The reliability of the branch j is initialized </span>
+                            <span class="bp">self</span><span class="o">.</span><span class="n">Reliability</span><span class="p">[</span><span class="n">j</span><span class="p">][</span><span class="mi">1</span><span class="p">]</span><span class="o">=</span><span class="p">[</span><span class="n">MyPolyFiab</span><span class="p">[</span><span class="mi">1</span><span class="p">]]</span>  
+                            <span class="c1">#print(&quot;\n Current Reliability :&quot;)</span>
+                            <span class="c1">#print(self.Reliability[j][1])</span>
+                    <span class="c1">#print(&quot;Here&quot;)</span>
+                    <span class="c1">#print(j)</span>
+                    <span class="c1">#print(self.Reliability[j])</span>
+                    <span class="c1">#print(&quot;Ok&quot;)</span>
+      
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">Temp</span><span class="p">[</span><span class="mi">0</span><span class="p">])):</span>   <span class="c1"># For each branch in the tree   </span>
+            <span class="n">LeafReliability</span><span class="p">(</span><span class="n">Temp</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span><span class="n">i</span><span class="p">,</span><span class="bp">self</span><span class="o">.</span><span class="n">Option</span><span class="p">)</span>   <span class="c1"># Recursive reliability of the branch i in the tree </span>
+            <span class="c1">#print(i)</span>
+        
+        <span class="k">if</span> <span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">Temp</span><span class="p">)</span><span class="o">&gt;</span><span class="mi">1</span><span class="p">):</span>  <span class="c1"># If the tree is not a leaf </span>
+            <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="nb">len</span><span class="p">(</span><span class="n">Temp</span><span class="p">)):</span>  <span class="c1"># For each branch in the tree </span>
+                <span class="c1">#print(&quot;In&quot;)</span>
+                <span class="c1">#print(i)</span>
+                <span class="n">BranchReliability</span><span class="p">(</span><span class="n">Temp</span><span class="p">,</span><span class="n">i</span><span class="p">,</span><span class="bp">self</span><span class="o">.</span><span class="n">Option</span><span class="p">)</span>  <span class="c1"># Recursive reliability of the branch i in the tree </span>
+                <span class="c1">#print(&quot;Out&quot;)</span>
+                <span class="c1">#print(i)</span>
+            
+        <span class="n">res</span><span class="o">=</span><span class="p">[]</span>   <span class="c1"># The list of the reliability of the tree is initialized </span>
+        <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="n">Temp</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]:</span>
+            <span class="n">res</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">Reliability</span><span class="p">[</span><span class="n">j</span><span class="p">])</span>
+        
+        <span class="c1">#print(&quot;\n In BranchReliability &quot;)</span>
+        <span class="c1">#print(&quot;\n Reliability polynomial R= &quot;)</span>
+        <span class="c1">#print(res)</span>
+        <span class="k">return</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">Time</span><span class="p">,</span><span class="n">res</span><span class="p">]</span></div>
+
+<div class="viewcode-block" id="FaultTreeR.ViewGraph"><a class="viewcode-back" href="../docs/FaultTreeRLib.html#FaultTreeRLib.FaultTreeR.ViewGraph">[docs]</a>    <span class="k">def</span> <span class="nf">ViewGraph</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">ID_P</span><span class="p">,</span><span class="n">Dir</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>  <span class="c1"># View the tree in a graph </span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        It takes a list of nodes and a list of edges, and draws a graph</span>
+<span class="sd">        </span>
+<span class="sd">        :param ID_P: The ID of the parent node</span>
+<span class="sd">        :param Dir: The directory where the graph will be saved</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">AutoCompletion</span><span class="p">()</span> <span class="c1"># The tree is automatically completed</span>
+        <span class="n">G</span><span class="o">=</span><span class="n">nx</span><span class="o">.</span><span class="n">DiGraph</span><span class="p">()</span> <span class="c1"># The graph is initialized </span>
+        <span class="n">GNode</span><span class="o">=</span><span class="p">{}</span> <span class="c1"># The graph is initialized</span>
+        <span class="n">nn</span><span class="o">=</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">Node</span><span class="p">)</span> <span class="c1"># The number of branches is computed</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">AdjMat</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>    <span class="c1"># For each branch in the tree</span>
+            <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">AdjMat</span><span class="p">[</span><span class="n">i</span><span class="p">])):</span>    <span class="c1"># For each node in the branch</span>
+                <span class="k">if</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">AdjMat</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="n">j</span><span class="p">]</span><span class="o">==</span><span class="mi">1</span><span class="p">):</span>  <span class="c1"># If the node is active</span>
+                    <span class="n">GNode</span><span class="p">[</span><span class="n">nn</span><span class="o">-</span><span class="mi">1</span><span class="o">-</span><span class="bp">self</span><span class="o">.</span><span class="n">IdxNode</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">Node</span><span class="p">[</span><span class="n">i</span><span class="p">])]</span><span class="o">=</span><span class="nb">str</span><span class="p">(</span><span class="n">nn</span><span class="o">-</span><span class="mi">1</span><span class="o">-</span><span class="bp">self</span><span class="o">.</span><span class="n">IdxNode</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">Node</span><span class="p">[</span><span class="n">i</span><span class="p">]))</span><span class="o">+</span><span class="s1">&#39;:&#39;</span><span class="o">+</span><span class="bp">self</span><span class="o">.</span><span class="n">Label</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+                    <span class="n">GNode</span><span class="p">[</span><span class="n">nn</span><span class="o">-</span><span class="mi">1</span><span class="o">-</span><span class="bp">self</span><span class="o">.</span><span class="n">IdxNode</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">Node</span><span class="p">[</span><span class="n">j</span><span class="p">])]</span><span class="o">=</span><span class="nb">str</span><span class="p">(</span><span class="n">nn</span><span class="o">-</span><span class="mi">1</span><span class="o">-</span><span class="bp">self</span><span class="o">.</span><span class="n">IdxNode</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">Node</span><span class="p">[</span><span class="n">j</span><span class="p">]))</span><span class="o">+</span><span class="s1">&#39;:&#39;</span><span class="o">+</span><span class="bp">self</span><span class="o">.</span><span class="n">Label</span><span class="p">[</span><span class="n">j</span><span class="p">]</span>
+                    <span class="n">G</span><span class="o">.</span><span class="n">add_edge</span><span class="p">(</span><span class="n">GNode</span><span class="p">[</span><span class="n">nn</span><span class="o">-</span><span class="mi">1</span><span class="o">-</span><span class="bp">self</span><span class="o">.</span><span class="n">IdxNode</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">Node</span><span class="p">[</span><span class="n">i</span><span class="p">])],</span><span class="n">GNode</span><span class="p">[</span><span class="n">nn</span><span class="o">-</span><span class="mi">1</span><span class="o">-</span><span class="bp">self</span><span class="o">.</span><span class="n">IdxNode</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">Node</span><span class="p">[</span><span class="n">j</span><span class="p">])])</span>
+                    <span class="c1">#G.add_edge(str(nn-1-self.IdxNode(self.Node[i]))+&#39;:&#39;+self.Label[i],str(nn-1-self.IdxNode(self.Node[j]))+&#39;:&#39;+self.Label[j])</span>
+                    <span class="c1">#G.add_edge(str(self.Node[j]),str(self.Node[i]))</span>
+        <span class="c1">#CompleteNode=self.Node.copy()</span>
+        
+        <span class="n">mm</span><span class="o">=</span><span class="n">nn</span> <span class="c1"># The number of nodes is computed</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">nn</span><span class="p">):</span> <span class="c1"># For each node in the tree</span>
+            <span class="c1">#print(&quot;yeah !&quot;)</span>
+            <span class="c1">#print(self.Node[i])</span>
+            <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">nn</span><span class="p">):</span> <span class="c1"># For each node in the tree</span>
+                <span class="k">if</span> <span class="p">(</span><span class="n">i</span><span class="o">!=</span><span class="n">j</span><span class="p">)</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">InOrder2</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">Node</span><span class="p">[</span><span class="n">i</span><span class="p">],</span><span class="bp">self</span><span class="o">.</span><span class="n">Node</span><span class="p">[</span><span class="n">j</span><span class="p">]):</span>
+                    <span class="n">G</span><span class="o">.</span><span class="n">add_edge</span><span class="p">(</span><span class="n">GNode</span><span class="p">[</span><span class="n">nn</span><span class="o">-</span><span class="mi">1</span><span class="o">-</span><span class="bp">self</span><span class="o">.</span><span class="n">IdxNode</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">Node</span><span class="p">[</span><span class="n">i</span><span class="p">])],</span><span class="n">GNode</span><span class="p">[</span><span class="n">nn</span><span class="o">-</span><span class="mi">1</span><span class="o">-</span><span class="bp">self</span><span class="o">.</span><span class="n">IdxNode</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">Node</span><span class="p">[</span><span class="n">j</span><span class="p">])])</span>
+            <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">NNode</span><span class="p">):</span> <span class="c1"># For each node in the tree</span>
+                <span class="n">Temp</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span> <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">NNode</span><span class="p">)]</span>
+                <span class="n">Temp</span><span class="p">[</span><span class="n">j</span><span class="p">]</span><span class="o">=</span><span class="mi">1</span>
+                <span class="k">if</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">InOrder2</span><span class="p">(</span><span class="n">Temp</span><span class="p">,</span><span class="bp">self</span><span class="o">.</span><span class="n">Node</span><span class="p">[</span><span class="n">i</span><span class="p">]))</span> <span class="ow">and</span> <span class="p">(</span><span class="n">Temp</span><span class="o">!=</span><span class="bp">self</span><span class="o">.</span><span class="n">Node</span><span class="p">[</span><span class="n">i</span><span class="p">]):</span>
+                    <span class="c1">#print(Temp)</span>
+                    <span class="k">if</span> <span class="ow">not</span><span class="p">(</span><span class="n">Temp</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">Node</span><span class="p">):</span>
+                        <span class="n">GNode</span><span class="p">[</span><span class="n">mm</span><span class="p">]</span><span class="o">=</span><span class="nb">str</span><span class="p">(</span><span class="n">mm</span><span class="p">)</span><span class="o">+</span><span class="s1">&#39;:&#39;</span><span class="o">+</span><span class="n">ID_P</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+                        <span class="n">G</span><span class="o">.</span><span class="n">add_edge</span><span class="p">(</span><span class="n">GNode</span><span class="p">[</span><span class="n">mm</span><span class="p">],</span><span class="n">GNode</span><span class="p">[</span><span class="n">nn</span><span class="o">-</span><span class="mi">1</span><span class="o">-</span><span class="bp">self</span><span class="o">.</span><span class="n">IdxNode</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">Node</span><span class="p">[</span><span class="n">i</span><span class="p">])])</span>
+                        <span class="n">mm</span><span class="o">+=</span><span class="mi">1</span>
+                        <span class="c1">#G.add_edge(str(self.Node[i]),str(Temp))</span>
+                    <span class="c1">#CompleteNode.append(Temp)</span>
+        
+        <span class="c1">#print(G.adj)</span>
+        <span class="c1">#fig=plt.figure(figsize=(5,5))</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="mi">10</span><span class="p">))</span> <span class="c1"># The graph is displayed</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">clf</span><span class="p">()</span>   <span class="c1"># The graph is cleared</span>
+        <span class="n">nx</span><span class="o">.</span><span class="n">draw_networkx</span><span class="p">(</span><span class="n">G</span><span class="p">,</span><span class="n">pos</span><span class="o">=</span><span class="n">nx</span><span class="o">.</span><span class="n">circular_layout</span><span class="p">(</span><span class="n">G</span><span class="p">),</span><span class="n">node_size</span><span class="o">=</span><span class="p">(</span><span class="mi">10</span><span class="o">**</span><span class="mi">4</span><span class="p">)</span><span class="o">/</span><span class="mi">2</span><span class="p">)</span> <span class="c1"># The graph is displayed</span>
+        <span class="c1">#nx.draw(G)</span>
+        <span class="c1">#nx.draw(G,pos=nx.circular_layout(G),node_color=&#39;r&#39;,edge_color=&#39;b&#39;)</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">axis</span><span class="p">(</span><span class="s1">&#39;off&#39;</span><span class="p">)</span> <span class="c1"># The graph is not displayed</span>
+        <span class="c1">#plt.grid(False)</span>
+        <span class="k">if</span> <span class="p">(</span><span class="n">Dir</span><span class="o">!=</span><span class="kc">None</span><span class="p">):</span> <span class="c1"># If a directory is given</span>
+            <span class="n">plt</span><span class="o">.</span><span class="n">savefig</span><span class="p">(</span><span class="n">Dir</span><span class="o">+</span><span class="s2">&quot;AD.png&quot;</span><span class="p">)</span>   <span class="c1"># The graph is saved</span>
+            <span class="n">plt</span><span class="o">.</span><span class="n">savefig</span><span class="p">(</span><span class="n">Dir</span><span class="o">+</span><span class="s2">&quot;AD.pdf&quot;</span><span class="p">,</span><span class="nb">format</span><span class="o">=</span><span class="s2">&quot;pdf&quot;</span><span class="p">)</span>  <span class="c1"># The graph is saved</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>  <span class="c1"># The graph is displayed</span></div></div>
+<span class="w">        </span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Dir=&quot;E:/Pedagogie/Encadrement/EncadrementEnsai/MasterRThese/20192020/TadieBenjaulys/&quot;</span>
+
+<span class="sd">MyTree=FaultTreeR(3,[[1],[1]],[One,One],[0],1)</span>
+<span class="sd">MyTree.NewRelation(3,[1,1,0],[0,0,1])</span>
+<span class="sd">print(MyTree.RecursiveReliability())</span>
+<span class="sd">#MyTree.ViewGraph(Dir)</span>
+
+<span class="sd">#MyUpHasseDiagram=UpHasseDiagram(MyTree,[0,1],[[1],[1]],[One,One],[0],1)</span>
+
+<span class="sd">&quot;&quot;&quot;</span>
+</pre></div>
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">DFT2HD2ReliabilityR 1.0.0 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="index.html" >Module code</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">FaultTreeRLib</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2023, ARDIS4SD.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 5.3.0.
+    </div>
+  </body>
+</html>

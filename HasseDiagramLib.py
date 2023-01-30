@@ -10,100 +10,142 @@ import sympy
 import networkx as nx
 import  matplotlib.pyplot  as  plt
 
-from DFT2HD2ReliabilityR.DefaultTreeLib import *
+from FaultTreeLib import *
 
 """
 Construction des coupes minimales
 """
 
-Cuts={} # dictionary of cuts
-class Cut:  # cut class
-    NCut=0      # Number of cuts
-    def __init__(self,Tree=DefaultTree(2),IndivIndex=[0]):  # cut class
-        self.id=id(self)                             # id of the cut
-        Cuts[str(self.id)]=self                     # add the cut to the dictionary
-        self.__class__.NCut+=1                    # increase the number of cuts
-        self.Tree=Tree                          # fault tree
-        self.IndIndex=IndivIndex            # list of indices of the components
-        self.NComponent=len(self.IndIndex)  # number of components
-        self.NNode=0                      # number of nodes
-        self.Node={}                  # list of nodes
-        self.NCut=0                     # number of cuts
-        self.Cut=[]                 # list of cuts
-        self.RelMat=[[],[],[],[],[],[],[],[]]   # list of relations
+Cuts={} # Dictionary of Cups
+class Cut: # Classe de coupes
+    NCut=0    
+    def __init__(self,Tree=FaultTree(2),IndivIndex=[0]):  # Constructeur
+        """
+        > Décrémentation du nombre de coupes
+        
+        And here's the full docstring:
+        
+        > Dictionary of Cups
+        > 
+        > Args:
+        >     Tree (list, optional): _description_. Defaults to FaultTreeR(2).
+        >     IndivIndex (list, optional): _description_. Defaults to [0].
+        > Décrémentation du nombre de coupes
+        
+        The docstring is a mess. It's not clear what the function does, and it's not clear what the
+        arguments are
+        
+        :param Tree: the tree of failure
+        :param IndivIndex: list of indices of individuals
+        """
+        self.id=id(self)    # Identifiant de la classe
+        Cuts[str(self.id)]=self # Ajout de la classe dans le dictionnaire
+        self.__class__.NCut+=1 # Incrémentation du nombre de coupes
+        self.Tree=Tree  # Arbre de défaillance
+        self.IndIndex=IndivIndex    # Indices des individus
+        self.NComponent=len(self.IndIndex)  # Nombre de composants
+        self.NNode=0    # Nombre de noeuds
+        self.Node={}    # Dictionnaire des noeuds
+        self.NCut=0    # Nombre de coupes
+        self.Cut=[]   # Liste des coupes
+        self.RelMat=[[],[],[],[],[],[],[],[]]   # Matrice de relations
         #[[NumRel],[Node i],[Node j],[Door],[Orders],[Times],[IndicesPrincipal],[Result]]
         
-    def __del__(self):      # delete the cut
-        self.__class__.NCut-=1  # decrease the number of cuts
+    def __del__(self):  # Destructeur
+        """
+        The __del__ method is called when the instance is about to be destroyed
+        """
+        self.__class__.NCut-=1  # 
         
-    def InOrder2(self,xx=[1,3,2],yy=[1,2,30]):  # return the inorder of the cut
-        res=True                             # return the inorder of the cut
-        i=0                                 # index of the first node
-        while ((res==True) and (i<min(len(xx),len(yy)))):   # while the inorder is correct
-            res=(res and (xx[i]<=yy[i]))    # check the inorder
-            i=i+1                       # increase the index
-        return res                        # return the inorder of the cut
+    def InOrder2(self,xx=[1,3,2],yy=[1,2,30]):  # Traitement d'un arbre
+        """
+        > As long as the function is true and the end of the list has not been reached, the function returns
+        True if xx is in the order of yy
+        
+        :param xx: list of integers
+        :param yy: the list of the values of the nodes of the tree
+        :return: True if xx is in the order of yy
+          Examples:
+        -------
+        Input: self=1
+            xx=[1,3,2]
+            yy=[1,2,30]
+        Output: false
+        """
+        res=True    
+        i=0
+        while ((res==True) and (i<min(len(xx),len(yy)))):
+            res=(res and (xx[i]<=yy[i])) 
+            i=i+1
+        return res
     
-    def Leaves(self):   # return the leaves of the cut
-        Temp1=self.Tree.Leaves()    # return the leaves of the tree
-        #print("\n DT leaves")  # print the leaves of the tree
+    def Leaves(self):   
+        """
+        It takes the leaves of the tree and creates a list of lists 
+        :return: A list of lists.
+        """
+        Temp1=self.Tree.Leaves()
+        #print("\n DT leaves")
         #print(Temp1)
-        n=len(Temp1)         # number of leaves
-        res=[]              # list of leaves
-        for i in range(n):  # for each leaf
-            Leaf=[]        # list of leaves
+        n=len(Temp1)
+        res=[]
+        for i in range(n):
+            Leaf=[]
             #Temp2=self.Tree.Node[Temp1[i]]
             #print("\n Raw leaf :")
             #print(Temp2)
             #print(self.IndIndex)
             #print(self.NComponent)
-            for k in range(self.NComponent):    # for each component
-                Temp3=[0 for l in range(self.NComponent)]   # list of components
-                Temp3[k]=1                              # set the component
+            for k in range(self.NComponent):    # Pour chaque composant
+                Temp3=[0 for l in range(self.NComponent)]
+                Temp3[k]=1
                 #print("\n Cutomized leaf :")
                 #print(Temp3)
                 Leaf+=[[Temp3]]
             #if (Leaf!=[]):
-            res.append([Temp1[i],Leaf]) # add the leaf to the list
+            res.append([Temp1[i],Leaf])
             #print("\n Leaf:")
             #print(Leaf)
-        return res               # return the leaves of the cut
+        return res
 
-    def CollectCut(self):   # return the cut
-        Temp1=self.Leaves()   # return the leaves of the cut
+    def CollectCut(self,P_Gen): # Collecte des coupes
+        """
+        It takes a tree and returns a list of cuts
+        """
+        Temp1=self.Leaves()
         #print("\n Customized DT Leaves")
         #print(Temp1)
-        Temp2=self.Tree.IdxTable            # return the index table of the tree
+        Temp2=self.Tree.IdxTable
         #print("\n Index Table")
         #print(Temp2)
         #[[NumRel],[Node i],[Node j]]
-        Temp3=self.Tree.RelMat            # return the relations of the tree
+        Temp3=self.Tree.RelMat
         #print("\n Tree.RelMat")
         #print(Temp3)
         #[[Door],[NodeIn],[NodeOut],[Orders],[Times],[IndicesPrincipal]]
-        for i in range(len(Temp1)): # for each leaf
-            self.NNode+=1          # increase the number of nodes
-            self.Node[Temp1[i][0]]=Temp1[i][1]  # add the leaf to the list of nodes
+        for i in range(len(Temp1)):
+            self.NNode+=1
+            self.Node[Temp1[i][0]]=Temp1[i][1]
             #self.Cut=P_Gen(3,[self.Cut]+Temp1[i][1])[0]
             #self.NCut=len(self.Cut)
         #print("\n Nodes")
         #print(self.Node)   
-        for i in range(len(Temp2[0])):  # for each relation
+        for i in range(len(Temp2[0])):
             #[[NumRel],[Node i],[Node j],[Door],[Orders],[Times],[IndicesPrincipal],[Result]]
-            self.RelMat[0].append(Temp2[0][i])      # add the relation number    
-            self.RelMat[1].append(Temp2[1][i])    # add the node i
-            self.RelMat[2].append(Temp2[2][i])      # add the node j
-            self.RelMat[3].append(Temp3[0][i])    # add the door
-            self.RelMat[4].append(Temp3[3][i])  # add the orders
-            self.RelMat[5].append(Temp3[4][i])  # add the times
-            self.RelMat[6].append(Temp3[5][i])  # add the indices principal
-            for x in self.Tree.Node:    # for each node
-                if (self.Tree.IdxNode(x) in self.Node): # if the node is in the cut
-                    y=self.Tree.Node[self.RelMat[1][-1]]    # return the node i
-                    Test=(x!=y) and (self.InOrder2(x,y))    # check the inorder
-                    Test=(Test and (self.Tree.AdjMat[self.Tree.IdxNode(y)][self.Tree.IdxNode(x)]==0))   # check the adjacency
-                    Test=(Test and (self.Tree.AdjMat[self.Tree.IdxNode(x)][self.Tree.IdxNode(y)]==0))   # check the adjacency
-                    if (Test):      
+            self.RelMat[0].append(Temp2[0][i])
+            self.RelMat[1].append(Temp2[1][i])
+            self.RelMat[2].append(Temp2[2][i])
+            self.RelMat[3].append(Temp3[0][i])
+            self.RelMat[4].append(Temp3[3][i])
+            self.RelMat[5].append(Temp3[4][i])
+            self.RelMat[6].append(Temp3[5][i])
+            for x in self.Tree.Node:
+                if (self.Tree.IdxNode(x) in self.Node):
+                    y=self.Tree.Node[self.RelMat[1][-1]]
+                    Test=(x!=y) and (self.InOrder2(x,y))
+                    Test=(Test and (self.Tree.AdjMat[self.Tree.IdxNode(y)][self.Tree.IdxNode(x)]==0))
+                    Test=(Test and (self.Tree.AdjMat[self.Tree.IdxNode(x)][self.Tree.IdxNode(y)]==0))
+                    if (Test):
                         self.Node[self.RelMat[1][-1]]+=self.Node[self.Tree.IdxNode(x)]
                         #print("\n Added vertice")
                         #print([self.Tree.IdxNode(x),self.Node[self.Tree.IdxNode(x)]])
@@ -115,8 +157,9 @@ class Cut:  # cut class
             #print(self.Node[self.RelMat[1][-1]])
             #print("\n P_Gen gives")
             #print(P_Gen(self.RelMat[3][-1],self.Node[self.RelMat[1][-1]],self.RelMat[4][-1],self.RelMat[5][-1],self.RelMat[6][-1])[0])
-            if not(self.RelMat[2][-1] in self.Node):    # if the node is not in the cut
-                self.NNode+=1       # increase the number of nodes
+            if not(self.RelMat[2][-1] in self.Node):
+                self.NNode+=1
+                # Creating a new node in the graph, and it is a Python node.
                 self.Node[self.RelMat[2][-1]]=P_Gen(self.RelMat[3][-1],self.Node[self.RelMat[1][-1]],self.RelMat[4][-1],self.RelMat[5][-1],self.RelMat[6][-1])
                 #self.Cut=P_Gen(3,[self.Cut]+self.Node[self.RelMat[2][-1]])[0]
                 #self.NCut=len(self.Cut)
@@ -136,7 +179,7 @@ class Cut:  # cut class
         self.NCut=len(self.Cut)
 
 """
-MyTree=DefaultTree(3)
+MyTree=FaultTree(3)
 MyTree.NewRelation(3,[1,1,0],[0,0,1])
 
 MyCut=Cut(MyTree,[0])
@@ -158,45 +201,100 @@ print(MyCut.Node)
 Construction des liens minimaux
 """
 
-Links={}    # dictionnary of links  with the number of links
-class Link: # class of links    #[[NumRel],[Node i],[Node j]]
-    NLink=0     # number of links   
-    def __init__(self,Tree=DefaultTree(2),IndivIndex=[0]):  # constructor
-        self.id=id(self)    # id of the link
-        Links[str(self.id)]=self    # add the link to the dictionnary
-        self.__class__.NLink+=1  # increase the number of links
-        self.Tree=Tree  # tree of the link
-        self.IndIndex=IndivIndex    # index of the individual
-        self.NComponent=len(self.IndIndex)  # number of components
+Links={} 
+"""Dictionary of minimal links
 
-        self.NNode=0    # number of nodes
-        self.Node={}    # list of nodes
-        self.NLink=0    # number of links
-        self.Link=[]    # list of links
-        self.NMinLink=0   # number of minimal links
-        self.MinLink=[]  # list of minimal links
+    Returns:
+    list: contain the minimal links of order 3
+"""
+class Link:     # Classe liens minimaux
+    NLink=0    
+    def __init__(self,P_NOT,Tree=FaultTree(2),IndivIndex=[0]): # 
+        """
+        This function is used to create a new link
         
-        def InOrder3(xx=[1,0,1],yy=[0,-1,-1]):  # function to check the inorder of the nodes
+        :param Tree: The tree that the link is in
+        :param IndivIndex: The index of the individual in the tree
+        """
+        self.id=id(self) # Identifiant
+        Links[str(self.id)]=self # Ajout dans le dictionnaire
+        self.__class__.NLink+=1 # Incrémentation du nombre de liens
+        self.Tree=Tree # Arbre
+        self.IndIndex=IndivIndex    # Indices des individus    
+        self.NComponent=len(self.IndIndex)  # Nombre de composants
+        
+        self.NNode=0 # Nombre de noeuds
+        self.Node={} # Dictionnaire des noeuds
+        self.NLink=0    # Nombre de liens
+        self.Link=[] # Liste des liens
+        self.NMinLink=0 # Nombre de liens minimaux
+        self.MinLink=[] # Liste des liens minimaux
+        
+        def InOrder3(xx=[1,0,1],yy=[0,-1,-1]): 
+            """
+            If the two lists are of equal length, then the function returns True if and only if the first
+            list is less than or equal to the second list in the lexicographic order
+            
+            :param xx: the x-coordinates of the points
+            :param yy: the list of y-coordinates of the points in the polygon
+            :return: True or False
+             Examples:
+            -------
+            Input: 
+                xx=[1,0,1]
+                yy=[0,-1,-1]
+            Output: false
+            """
             #print([xx,yy])
             res=True
             i=0
-            while ((res==True) and (i<min(len(xx),len(yy)))):   # while the inorder is correct and the number of nodes is less than the number of nodes of the tree (the last node is not in the tree)
-                if (xx[i]*yy[i]!=0):    # if the inorder is not correct
-                    res=(res and (xx[i]<=yy[i]))    # check the inorder
-                i=i+1   # increase the index
-            return res  # return the result
+            while ((res==True) and (i<min(len(xx),len(yy)))):
+                if (xx[i]*yy[i]!=0):
+                    res=(res and (xx[i]<=yy[i]))
+                i=i+1
+            return res
         
-        def TrueVal1(xx=[1,0],yy=[0,-1]):   # function to check the inorder of the nodes
-            res=xx.copy()   # copy the list
-            if InOrder3(xx,yy):   # if the inorder is correct
-                i=0 
-                while (i<min(len(xx),len(yy))):  # while the number of nodes is less than the number of nodes of the tree (the last node is not in the tree)
+        def TrueVal1(xx=[1,0],yy=[0,-1]):   
+            """
+            If the two input vectors are in order, then the output vector is the same as the first input
+            vector, except that if the first input vector has a zero in a position where the second input
+            vector has a nonzero, then the output vector has a one in that position
+            
+            :param xx: the first input vector
+            :param yy: the first input vector
+            :return: a list of 1's and 0's.
+            Examples:
+            -------
+            Input: 
+                xx=[1,0]
+                yy=[0,-1]
+            Output: [1, 1]
+            
+            """
+            res=xx.copy()
+            if InOrder3(xx,yy):
+                i=0
+                while (i<min(len(xx),len(yy))):
                     if (xx[i]*yy[i]==0) and (xx[i]+yy[i]!=0):
                         res[i]=1
                     i=i+1
             return res
         
-        def TrueVal2(xx=[1,0],yy=[[0,-1]]):
+        def TrueVal2(xx=[1,0],yy=[[0,-1]]):  
+            """
+            It takes a list of lists of numbers and returns a list of numbers
+            
+            :param xx: a list of numbers, each number is either 0 or 1
+            :param yy: a list of lists of numbers. Each list of numbers is a list of coefficients of a
+            polynomial
+            :return: the result of the operation.
+             Examples:
+            -------
+            Input: 
+                xx=[1,0]
+                yy=[0,-1]
+            Output: [1, 1]
+            """
             res=xx.copy()
             i=0
             while (i<len(yy)):
@@ -209,17 +307,17 @@ class Link: # class of links    #[[NumRel],[Node i],[Node j]]
         self.Cut=Cut(self.Tree,self.IndIndex)
         self.Cut.CollectCut() 
         
-        for x in self.Cut.Cut:
+        for x in self.Cut.Cut:  # For each vertex of the cut
             for i in range(len(x)):
                 x[i]=-x[i]
         
-        if (self.Cut.Cut!=[]):
+        if (self.Cut.Cut!=[]): # If the cut is not empty
             temp=P_NOT([self.Cut.Cut])
             if (temp!=[]):
                 self.Link=temp[0]
-        else:
+        else: # If the cut is empty
             temp=[]
-            for i in range(self.NComponent):
+            for i in range(self.NComponent): # For each component
                 tempBis=[0 for j in range(self.NComponent)]
                 tempBis[i]=1
                 temp.append(tempBis)
@@ -227,7 +325,7 @@ class Link: # class of links    #[[NumRel],[Node i],[Node j]]
             #print("Here")
             #print(self.Link)
         
-        self.NLink=len(self.Link)   # number of links
+        self.NLink=len(self.Link) # Number of links
         
         #print("\n Minimal Cuts: ")
         #print(self.Cut.Cut)
@@ -235,30 +333,93 @@ class Link: # class of links    #[[NumRel],[Node i],[Node j]]
         #print("\n Raw set of Links: ")
         #print(self.Link)
         
-    def __del__(self):
+    def __del__(self): 
+        """
+        The function __del__ is a destructor. It is called when the object is about to be destroyed
+        """
         self.__class__.NLink-=1
     
-    def InOrder2(self,xx=[1,3,2],yy=[1,2,30]):  # function to check the inorder of the nodes
+    def InOrder2(self,xx=[1,3,2],yy=[1,2,30]): 
+        """
+        > Checking if the first vector is less than or equal to the second vector
+        
+        :param xx: the first vector
+        :param yy: the vector of the current state
+        :return: a boolean value.
+        Examples:
+            -------
+            Input: 
+                xx=[1,0]
+                yy=[0,-1]
+            Output: False
+        
+        """
         res=True
         i=0
-        while ((res==True) and (i<min(len(xx),len(yy)))):   # while the inorder is correct and the number of nodes is less than the number of nodes of the tree (the last node is not in the tree)
+        while ((res==True) and (i<min(len(xx),len(yy)))):
             res=(res and (xx[i]<=yy[i]))
             i=i+1
         return res      
 
-    def CollectLink(self):  # function to collect the links
+    def CollectLink(self): # Collecte des liens minimaux
+        """
+        It takes a list of links and returns a list of minimal links.
+        Checking if the link is already in the dictionary. If not, it adds it to the dictionary.
+
+        """
         #Temp=self.Node.copy()
         #nn=len(Temp)     
-        def InOrder3(xx=[1,0],yy=[0,-1]):   # function to check the inorder of the nodes
+        def InOrder3(xx=[1,0],yy=[0,-1]): # Fonction d'ordre 3
+            """
+            > summary Function of order 3 
+            
+            Here's a longer description of the function:
+            
+            > Checking if the cut is feasible
+            
+            :param xx: the list of the number of vertices in each connected component of the graph
+            :param yy: the list of the number of vertices in each part of the cut
+            :return: a boolean value.
+            Examples:
+            -------
+            Input: 
+                xx=[1,0]
+                yy=[0,-1]
+            Output: True
+        
+            """
             res=True
             i=0
-            while ((res==True) and (i<min(len(xx),len(yy)))):
+            while ((res==True) and (i<min(len(xx),len(yy)))): # Pour chaque sommet du cut
                 if (xx[i]*yy[i]!=0):
                     res=(res and (xx[i]<=yy[i]))
                 i=i+1
             return res
         
-        def InOrder4(xx=[1,0],yy=[[0,-1],[-1,0]]):  # function to check the inorder of the nodes
+        def InOrder4(xx=[1,0],yy=[[0,-1],[-1,0]]): # Fonction d'ordre 4
+            """
+            > Checking if the list xx is in the list of lists yy
+            
+            Here's a longer description of the above function:
+            
+            > Checking if the list xx is in the list of lists yy
+            
+            > :param xx: the list to be checked
+            
+            > :param yy: the list of lists
+            
+            > :return: a boolean value
+            
+            :param xx: the list to be checked
+            :param yy: the list of lists
+            :return: The list of orders.
+            Examples:
+            -------
+            Input: 
+                xx=[1,0]
+                yy=[[0,-1],[-1,0]]
+            Output: True
+            """
             res=False
             i=0
             while (not(res) and (i<len(yy))):
@@ -266,16 +427,17 @@ class Link: # class of links    #[[NumRel],[Node i],[Node j]]
                 i=i+1
             return res
         
-        Order=[]    # list of inorder
-        for y in self.Link: # for each link
-            if not(y in [self.Node[k] for k in self.Node.keys()]):
+        Order=[] # Liste des ordres
+# Creating a list of links that are not in order.
+        for y in self.Link: # Pour chaque lien
+            if not(y in [self.Node[k] for k in self.Node.keys()]): # Si le lien n'est pas déjà dans le dictionnaire
                 self.Node[self.NNode]=y
                 self.NNode+=1
                 Order.append(0)
-                for x in self.Link:
-                    if ((x!=y)and(self.InOrder2(x,y))):
+                for x in self.Link:     # Pour chaque lien
+                    if ((x!=y)and(self.InOrder2(x,y))): # Si le lien est dans l'ordre
                         Order[-1]+=1
-                if (Order[-1]==0):
+                if (Order[-1]==0):  # Si le lien n'est pas dans l'ordre
                     if not(y in self.MinLink):
                         self.MinLink.append(y)
                         self.NMinLink+=1
@@ -313,7 +475,7 @@ class Link: # class of links    #[[NumRel],[Node i],[Node j]]
             Temp=Temp1.copy()
         """   
 """
-MyTree=DefaultTree(3)
+MyTree=FaultTree(3)
 MyTree.NewRelation(3,[1,1,0],[0,0,1])
 
 MyLink=Link(MyTree,2)
@@ -328,56 +490,105 @@ print(MyLink.MinLink)
 """
 
 """
-Construction du diagramme de Hasse et Calcul du polynôme de fiabilité
+ 
 """
 
-def One(x):     # function to check if x is a one
+def One(x):
+    """
+    Function that returns 1 if x is a positive integer
+     
+    # R
+    #' @title One
+    #' @description Function that returns 1 if x is a positive integer
+    #' @param x (int)
+    #' @return int
+    One <- function(x) {
+        return(1)
+    }
+    
+    :param x: int
+    :return: 1
+    """
     return 1
             
-DownHasseDiagrams={}    # dictionary of the down hasse diagrams
-class DownHasseDiagram: # class of the down hasse diagrams
-    NDownHasseDiagram=0     # number of down hasse diagrams
+DownHasseDiagrams={}    # Dictionnaire des diagrammes de Hasse
+class DownHasseDiagram: # Classe des diagrammes de Hasse
+    NDownHasseDiagram=0   # Nombre de diagrammes de Hasse
     
-    def __init__(self,Tree=DefaultTree(2),IndivIndex=[0],IndivLabel=[0],IndivReliabilityVal=[[1]],IndivReliabilityFunc=[One],t=[0],Option=1):   # constructor
-        self.id=id(self)    # id of the down hasse diagram  
-        DownHasseDiagrams[str(self.id)]=self    # adding the down hasse diagram to the dictionary
-        self.__class__.NDownHasseDiagram+=1  # incrementing the number of down hasse diagrams
-        self.Tree=Tree  # tree of the down hasse diagram
-        self.IndIndex=IndivIndex    # index of the individuals  of the down hasse diagram
-        self.IndLabel=IndivLabel    # label of the individuals of the down hasse diagram
-        self.IndFiabVal=IndivReliabilityVal   # reliability value of the individuals of the down hasse diagram  
-        self.IndFiabFunc=IndivReliabilityFunc   # reliability function of the individuals of the down hasse diagram
-        self.NComponent=len(self.IndLabel)  # number of components of the down hasse diagram
-        self.Time=t # time of the down hasse diagram
-        self.Option=Option  # option of the down hasse diagram
-        self.Times=[0 for i in range(self.NComponent)]  # list of times of the down hasse diagram
-        self.Order=[0 for i in range(self.NComponent)]  # list of orders of the down hasse diagram
-        self.IndicesPrincipal=[1 for i in range(self.NComponent)]       # list of indices of the principal components of the down hasse diagram    
-        self.NNode=0    # number of nodes of the down hasse diagram
-        self.Node={}    # dictionary of the nodes of the down hasse diagram
-        self.NCut=0    # number of cuts of the down hasse diagram
-        self.Cut=[]   # list of cuts of the down hasse diagram
+    def __init__(self,Tree=FaultTree(2),IndivIndex=[0],IndivLabel=[0],IndivReliabilityVal=[[1]],IndivReliabilityFunc=[One],t=[0],Option=1): # Constructeur
+        """
+        The function is used to create a Hasse diagram of the system. 
         
-        MyCut=Cut(self.Tree,self.IndIndex)  # cut of the down hasse diagram 
-        MyCut.CollectCut()  # collecting the cuts of the down hasse diagram
-        self.MinCut=MyCut.Cut   # minimal cuts of the down hasse diagram
+        Here's a more detailed explanation of the function: 
+        
+        The function is used to create a Hasse diagram of the system. The function takes in the following
+        parameters: 
+        
+        Tree: This is the tree of the system. 
+        
+        IndivIndex: This is the index of the individual. 
+        
+        IndivLabel: This is the label of the individual. 
+        
+        IndivReliabilityVal: This is the reliability value of the individual. 
+        
+        IndivReliabilityFunc: This is the reliability function of the individual. 
+        
+        t: This is the time. 
+        
+        Option: This is the option. 
+        
+        The function returns the following: 
+        
+        The function returns the Hasse diagram of the
+        
+        :param Tree: The tree that is used to generate the Hasse diagram
+        :param IndivIndex: The index of the individual
+        :param IndivLabel: The labels of the components
+        :param IndivReliabilityVal: The reliability of each component
+        :param IndivReliabilityFunc: A list of functions that will be used to calculate the reliability
+        of the individual
+        :param t: time
+        :param Option: 1, defaults to 1 (optional)
+        """
+        self.id=id(self)
+        DownHasseDiagrams[str(self.id)]=self    # Ajout du diagramme dans le dictionnaire
+        self.__class__.NDownHasseDiagram+=1   # Incrémentation du nombre de diagrammes de Hasse
+        self.Tree=Tree                     # Arbre
+        self.IndIndex=IndivIndex       # Indices des individus
+        self.IndLabel=IndivLabel    # Labels des individus
+        self.IndFiabVal=IndivReliabilityVal # Valeurs de fiabilité des individus
+        self.IndFiabFunc=IndivReliabilityFunc # Fonctions de fiabilité des individus
+        self.NComponent=len(self.IndLabel)  # Nombre de composants
+        self.Time=t # Temps
+        self.Option=Option  # Option
+        self.Times=[0 for i in range(self.NComponent)]  # Liste des temps
+        self.Order=[0 for i in range(self.NComponent)] # Liste des ordres
+        self.IndicesPrincipal=[1 for i in range(self.NComponent)]   # Liste des indices principaux
+        self.NNode=0    # Nombre de noeuds
+        self.Node={}    # Dictionnaire des noeuds
+        self.NCut=0    # Nombre de cuts
+        self.Cut=[]   # Liste des cuts
+        
+        MyCut=Cut(self.Tree,self.IndIndex) # Création du cut
+        MyCut.CollectCut()  # Collecte du cut
+        self.MinCut=MyCut.Cut   # Minimal cuts
         
         #print("\n Minimal Cuts")
         #print(MyCut.Cut)
         
         
-        for i in range(len(self.MinCut)):   # for each minimal cut
-            self.Node[i]=self.MinCut[i].copy()  # adding the nodes of the cut to the down hasse diagram
-            self.Cut.append(self.MinCut[i].copy())  # adding the cut to the down hasse diagram
-            self.NNode+=1   # incrementing the number of nodes of the down hasse diagram
-            self.NCut+=1    # incrementing the number of cuts of the down hasse diagram
-
-        self.NodeGeneration=[self.MinCut]   # list of the nodes of the down hasse diagram
+        for i in range(len(self.MinCut)):   # Pour chaque cut
+            self.Node[i]=self.MinCut[i].copy()
+            self.Cut.append(self.MinCut[i].copy())
+            self.NNode+=1
+            self.NCut+=1
         
-        while (self.NodeGeneration[-1]!=[[1 for j in range(self.NComponent)]]): # while the last node of the list of nodes is not the last node
-            Leaves=[]   # list of leaves of the last node of the list of nodes
-            for Leaf in self.NodeGeneration[-1]:    
-                
+        self.NodeGeneration=[self.MinCut]
+        
+        while (self.NodeGeneration[-1]!=[[1 for j in range(self.NComponent)]]): # Tant que l'on a pas trouvé tous les noeuds
+            Leaves=[]
+            for Leaf in self.NodeGeneration[-1]:
                 for k in range(len(Leaf)):
                     NewLeaf=Leaf.copy()
                     if (NewLeaf[k]<1):
@@ -407,21 +618,37 @@ class DownHasseDiagram: # class of the down hasse diagrams
             return res
         
         """
-        def InOrder2(x=[0,0,1],y=[0,1]):    # function to check if x is in order of y
+        def InOrder2(x=[0,0,1],y=[0,1]):    
+            """
+            Checking if x is less than or equal to y
+            
+            :param x: a list of integers
+            :param y: [0,1]
+            :return: The function InOrder2 is being returned.
+            Examples:
+            -------
+            Input: 
+                x=[0,0,1]
+                y=[0,1]
+            Output: True
+            """
             res=True
             if (x!=None) and (y!=None):
                 for i in range(min(len(x),len(y))):
                     res=res and (x[i]<=y[i])
             return res
         
-        self.AdjMat={i:[0 for j in range(len(self.Node))] for i in self.Node.keys()}  # adjacency matrix of the down hasse diagram
+        self.AdjMat={i:[0 for j in range(len(self.Node))] for i in self.Node.keys()} # Matrice d'adjacence
         for i in self.Node.keys():
             for j in self.Node.keys():
                 if ((i!=j) and InOrder2(self.Node[i],self.Node[j])):
                     self.AdjMat[i][j]=1
         
-        def UpdateGeneration(): # function to update the generation of the down hasse diagram   
-            kk=min([sum(self.MinCut[i]) for i in range(len(self.MinCut))])
+        def UpdateGeneration(): # Fonction qui met à jour la génération
+            """
+            The function UpdateGeneration() is used to find the minimum cut of the graph
+            """
+            kk=min([sum(self.MinCut[i]) for i in range(len(self.MinCut))])  # Nombre de noeuds dans la génération
             depth=self.NComponent-kk+1
             #print("\n Depth:")
             #print(depth)
@@ -435,10 +662,12 @@ class DownHasseDiagram: # class of the down hasse diagrams
                 #print(temp)
             self.NodeGeneration=temp.copy()          
             
-        self.WeightTable=[[],[],[],[],[]] # weight table of the down hasse diagram
+        self.WeightTable=[[],[],[],[],[]]
         #[[Index],[minimalité], [poids], [coef poly fiab], [code coupe]]
         
-        def InitWeight():   # function to initialize the weight table of the down hasse diagram 
+        def InitWeight():   
+            """summary Function that initializes the weights
+            """
             for i in self.Node.keys():
                 self.WeightTable[0].append(i)
                 self.WeightTable[3].append(0)
@@ -457,15 +686,17 @@ class DownHasseDiagram: # class of the down hasse diagrams
             #print("\n Current Nodes")
             #print(self.Node)
         
-        def UpdatePolyDeFiab(): # function to update the polynomial of defiability of the down hasse diagram
-            UpdateGeneration()
-            for i in range(len(self.NodeGeneration)-1,-1,-1):   # for each generation
+        def UpdatePolyDeFiab(): 
+            """Function that updates the weight of reliability polynomials
+            """
+            UpdateGeneration()  # Generation Update
+            for i in range(len(self.NodeGeneration)-1,-1,-1):   # For every generation
                 for j in self.NodeGeneration[i]:
                     if ((self.Node[j] in self.MinCut)):# and (self.WeightTable[2][j]==1)):
                         self.WeightTable[3][j]+=1
                         #print("\n Leaf Adding")
                         #print(self.Node[j])
-                    while ((self.WeightTable[2][j]>1)): # while the number of cuts of the node is greater than 1
+                    while ((self.WeightTable[2][j]>1)): # While the node is not a leaf
                         for k in self.Node.keys():
                             if InOrder2(self.Node[j],self.Node[k]):
                                 self.WeightTable[2][k]-=1
@@ -473,7 +704,7 @@ class DownHasseDiagram: # class of the down hasse diagrams
                                     self.WeightTable[3][k]-=1
                                     #print("\n Branch removal")
                                     #print(self.WeightTable[2])
-                    while ((self.WeightTable[2][j]<1)): # while the number of cuts of the node is less than 1
+                    while ((self.WeightTable[2][j]<1)):     # While the node is not a branch
                         for k in self.Node.keys():
                             if InOrder2(self.Node[j],self.Node[k]):
                                 self.WeightTable[2][k]+=1
@@ -484,17 +715,29 @@ class DownHasseDiagram: # class of the down hasse diagrams
             #print("\n The sum of weights should be nonegative and less than the number of leaves")
             #print(sum(self.WeightTable[3]))
         
-        InitWeight()    # initialize the weight table of the down hasse diagram
-        UpdatePolyDeFiab()  # update the polynomial of defiability of the down hasse diagram
+        InitWeight()
+        UpdatePolyDeFiab()
         #print("Unreliability polynomial")
 
-    def __del__(self):  # destructor
-        self.__class__.NDownHasseDiagram-=1
+    def __del__(self):  # Destructor
+        """
+        The destructor is called when the object is about to be destroyed
+        """
+        self.__class__.NDownHasseDiagram-=1     # Decrement the number of down hasse diagrams
         
-    def GetPolyFiab(self):  # function to get the polynomial of defiability of the down hasse diagram
+    def GetPolyFiab(self):  
+        """Calculating the reliability polynomial of a system GetPolyFiab.
+
+        creating a list of lists. The outer list is a list of lists, where
+        each inner list is a list of the reliability values for each component.
+        Calculating the reliability polynomial of a system.
+
+        Returns:
+            
+        """
         #R=[sympy.Symbol("R"+str(self.IndIndex[i])) for i in range(self.NComponent)]
-        R=self.IndLabel     # list of the variables of the polynomial of defiability
-        if (self.Option==1):    # if the option is 1, the polynomial of defiability is the polynomial of reliability
+        R=self.IndLabel
+        if (self.Option==1):
             R2=[[self.IndFiabVal[i][j] for j in range(len(self.Time))] for i in range(self.NComponent)]
         else:
             R2=[[self.IndFiabFunc[i](self.Time[j]) for j in range(len(self.Time))] for i in range(self.NComponent)]
@@ -532,9 +775,14 @@ class DownHasseDiagram: # class of the down hasse diagrams
             #print("\n Les coefficient ")
         #print(self.WeightTable[3])
         #print("\n Reliability polynomial R= ")
-        return [sympy.simplify(sympy.expand(1-P)),[1-P2[k] for k in range(len(self.Time))]] # return the polynomial of defiability and the polynomial of reliability
+        return [sympy.simplify(sympy.expand(1-P)),[1-P2[k] for k in range(len(self.Time))]]
     
-    def ViewGraph(self,Dir=None):   # function to view the down hasse diagram
+    def ViewGraph(self,Dir=None):
+        """
+        It takes a graph and draws it
+        
+        :param Dir: the directory where the graph will be saved
+        """
         G=nx.DiGraph()
         for i in self.AdjMat.keys():
             for j in range(len(self.AdjMat[i])):
@@ -558,7 +806,7 @@ class DownHasseDiagram: # class of the down hasse diagrams
         plt.show()
 
 """
-MyTree=DefaultTree(3)
+MyTree=FaultTree(3)
 MyTree.NewRelation(3,[1,1,0],[0,0,1])
 MyTree.ViewGraph(Dir)
 
@@ -587,52 +835,67 @@ MyDownHasseDiagram.ViewGraph(Dir)
 print(MyDownHasseDiagram.GetPolyFiab())
 """
 
-UpHasseDiagrams={} # dictionary of the up hasse diagrams
-class UpHasseDiagram:   # class of the up hasse diagram
-    NUpHasseDiagram=0       # number of up hasse diagrams
+UpHasseDiagrams={}
+class UpHasseDiagram:
+    NUpHasseDiagram=0    
     
-    def __init__(self,Tree=DefaultTree(2),IndivIndex=[0],IndivLabel=[0],IndivReliabilityVal=[[1]],IndivReliabilityFunc=[One],t=[0],Option=1): # constructor
-        self.id=id(self) # id of the up hasse diagram
-        UpHasseDiagrams[str(self.id)]=self   # add the up hasse diagram to the dictionary
-        self.__class__.NUpHasseDiagram+=1   # increment the number of up hasse diagrams
-        self.Tree=Tree  # tree of the up hasse diagram
-        self.IndIndex=IndivIndex    # list of the indices of the individuals of the up hasse diagram
-        self.IndLabel=IndivLabel    # list of the labels of the individuals of the up hasse diagram
-        self.IndFiabVal=IndivReliabilityVal   # list of the values of the individuals of the up hasse diagram
-        self.IndFiabFunc=IndivReliabilityFunc   # list of the functions of the individuals of the up hasse diagram
-        self.NComponent=len(self.IndLabel)  # number of components of the up hasse diagram
-        self.Time=t # time of the up hasse diagram
-        self.Option=Option  # option of the up hasse diagram
-        self.Times=[0 for i in range(self.NComponent)]  # list of the times of the up hasse diagram
-        self.Order=[0 for i in range(self.NComponent)]  # list of the orders of the up hasse diagram
-        self.IndicesPrincipal=[1 for i in range(self.NComponent)]   # list of the indices of the principal components of the up hasse diagram
-        self.NNode=0    # number of nodes of the up hasse diagram
-        self.Node={}            # dictionary of the nodes of the up hasse diagram
-        self.NLink=0    # number of links of the up hasse diagram
-        self.Link=[]    # list of the links of the up hasse diagram
+    def __init__(self,Tree=FaultTree(2),IndivIndex=[0],IndivLabel=[0],IndivReliabilityVal=[[1]],IndivReliabilityFunc=[One],t=[0],Option=1): 
+        """
+        It takes a list of lists, and creates a new list of lists, where each sublist contains the
+        indices of the original list that have the same value.
         
-        MyLink=Link(self.Tree,self.IndIndex)    # create a link of the up hasse diagram
-        MyLink.CollectLink()    # collect the links of the up hasse diagram
+        :param Tree: The tree that is used to generate the Hasse diagram
+        :param IndivIndex: The index of the individual
+        :param IndivLabel: a list of the labels of the individuals
+        :param IndivReliabilityVal: a list of lists of length equal to the number of components in the
+        system. Each
+        :param IndivReliabilityFunc: a list of functions that will be used to calculate the reliability
+        of the individual
+        :param t: the time at which the reliability of the system is to be calculated
+        :param Option: 1 for reliability values, 2 for reliability functions, defaults to 1 (optional),
+        defaults to 1 (optional)
+        """ 
+        self.id=id(self)
+        UpHasseDiagrams[str(self.id)]=self
+        self.__class__.NUpHasseDiagram+=1
+        self.Tree=Tree
+        self.IndIndex=IndivIndex
+        self.IndLabel=IndivLabel
+        self.IndFiabVal=IndivReliabilityVal
+        self.IndFiabFunc=IndivReliabilityFunc
+        self.NComponent=len(self.IndLabel)
+        self.Time=t
+        self.Option=Option
+        self.Times=[0 for i in range(self.NComponent)]
+        self.Order=[0 for i in range(self.NComponent)]
+        self.IndicesPrincipal=[1 for i in range(self.NComponent)]
+        self.NNode=0
+        self.Node={}        
+        self.NLink=0
+        self.Link=[]
         
-        self.MinLink=MyLink.MinLink # minimum link of the up hasse diagram
-        self.NMinLink=MyLink.NMinLink   # number of minimum links of the up hasse diagram
+        MyLink=Link(self.Tree,self.IndIndex)
+        MyLink.CollectLink()
         
-        print("\n Minimal Links")     # print the minimal links
-        print(self.MinLink)   # print the minimal links
+        self.MinLink=MyLink.MinLink
+        self.NMinLink=MyLink.NMinLink
         
-        for i in range(len(self.MinLink)):  # for each minimal link
+        print("\n Minimal Links")
+        print(self.MinLink)
+        
+        for i in range(len(self.MinLink)):
             self.Node[i]=self.MinLink[i].copy()
             self.Link.append(self.MinLink[i].copy())
             self.NNode+=1
             self.NLink+=1
             
-        self.NodeGeneration=[self.MinLink]  # list of the generations of the up hasse diagram
+        self.NodeGeneration=[self.MinLink]
         
         #print("\n UpHasseDiagram called line 630")
         #print([self.MinLink,[[1 for j in range(self.NComponent)]]])
-        xx=max([len(self.MinLink[ii]) for ii in range(len(self.MinLink))])-self.NComponent  # number of missing components
+        xx=max([len(self.MinLink[ii]) for ii in range(len(self.MinLink))])-self.NComponent
         #print(xx)
-        if (xx==0): # if there is no missing components
+        if (xx==0):
             #print([self.MinLink,[[1 for j in range(self.NComponent)]]])
             while (self.NodeGeneration[-1]!=[[1 for j in range(self.NComponent)]]):
                 Leaves=[]
@@ -677,20 +940,38 @@ class UpHasseDiagram:   # class of the up hasse diagram
             return res
         """
         
-        def InOrder2(x=[0,0,1],y=[0,1]):    # function to determine if x is in order of y
-            res=True    # result of the function
-            if (x!=None) and (y!=None): # if x and y are not None
+        def InOrder2(x=[0,0,1],y=[0,1]):
+            """
+            If the two lists are not empty, then the function returns True if the first list is less
+            than or equal to the second list
+            
+            :param x: a list of integers
+            :param y: the list of values to be sorted
+            :return: True
+            Examples:
+            -------
+            Input: 
+                x=[0,0,1]
+                y=[0,1]
+            Output: False
+            """
+            res=True
+            if (x!=None) and (y!=None):
                 for i in range(min(len(x),len(y))):
                     res=res and (x[i]<=y[i])
             return res
         
-        self.AdjMat={i:[0 for j in range(len(self.Node))] for i in self.Node.keys()}    # adjacency matrix of the up hasse diagram   
+        self.AdjMat={i:[0 for j in range(len(self.Node))] for i in self.Node.keys()}   
         for i in self.Node.keys():
             for j in self.Node.keys():
                 if ((i!=j) and InOrder2(self.Node[i],self.Node[j])):
                     self.AdjMat[i][j]=1
-        
-        def UpdateGeneration(): # function to update the generation of the up hasse diagram
+        #generate hassediagram
+        def UpdateGeneration():
+            """
+            It takes a list of lists, and creates a new list of lists, where each sublist contains the
+            indices of the original list that have the same value.
+            """
             kk=min([sum(self.MinLink[i]) for i in range(len(self.MinLink))])
             depth=self.NComponent-kk+1
             temp=[[] for i in range(depth)]
@@ -706,8 +987,16 @@ class UpHasseDiagram:   # class of the up hasse diagram
         self.WeightTable=[[],[],[],[],[]]
         #[[Index],[minimalité], [poids], [coef poly fiab], [code coupe]]
         
-        def InitWeight():   # function to initialize the weight table of the up hasse diagram
-            for i in self.Node.keys():  # for each node of the up hasse diagram
+        
+        
+        def InitWeight(): 
+            """
+            For each node, if it is in the minimum spanning tree, then its weight is 1, and the number
+            of nodes that are in the minimum spanning tree and are in the order of the node is 1.
+            Otherwise, the weight is 0, and the number of nodes that are in the minimum spanning tree
+            and are in the order of the node is 0
+            """
+            for i in self.Node.keys():
                 self.WeightTable[0].append(i)
                 self.WeightTable[3].append(0)
                 self.WeightTable[4].append(self.Node[i])
@@ -723,11 +1012,14 @@ class UpHasseDiagram:   # class of the up hasse diagram
             #print("\n Current weights")
             #print(self.WeightTable[2])
         
-        def UpdatePolyFiab():   # function to update the polynomial of fiability of the up hasse diagram
-            UpdateGeneration()  # update the generation of the up hasse diagram
+        def UpdatePolyFiab(): 
+            """
+            The function takes a graph and updates the reliability polynomial of the graph.
+            """
+            UpdateGeneration() #update generation
             #print("Generations")
             #print(self.NodeGeneration)
-            for i in range(len(self.NodeGeneration)-1,-1,-1):   # for each generation of the up hasse diagram
+            for i in range(len(self.NodeGeneration)-1,-1,-1):
                 for j in self.NodeGeneration[i]:
                     if ((self.Node[j] in self.MinLink) and (self.WeightTable[2][j]==1)):
                         self.WeightTable[3][j]+=1
@@ -765,9 +1057,18 @@ class UpHasseDiagram:   # class of the up hasse diagram
         #print("Reliability polynomial")
         
     def __del__(self):
+        """
+        The function __del__ is a special function in Python that is called when an object is about to
+        be destroyed
+        """
         self.__class__.NUpHasseDiagram-=1
         
-    def GetPolyFiab(self):  # function to get the polynomial of fiability of the up hasse diagram
+    def GetPolyFiab(self):
+        """
+        The function GetPolyFiab() returns the reliability polynomial and the reliability function for a
+        given system
+        :return: The reliability polynomial and the reliability polynomial evaluated at the time points.
+        """
         #R=[sympy.Symbol("R"+str(self.IndIndex[i])) for i in range(self.NComponent)]
         R=self.IndLabel
         if (self.Option==1):
@@ -776,11 +1077,11 @@ class UpHasseDiagram:   # class of the up hasse diagram
             R2=[[self.IndFiabFunc[i](self.Time[j]) for j in range(len(self.Time))] for i in range(self.NComponent)]
         
         
-        P=0  # polynomial of fiability
-        P2=[0 for k in range(len(self.Time))]       # polynomial of fiability
-        for i in self.WeightTable[0]:   # for each node of the up hasse diagram
-            Temp=1  # temporary variable
-            Temp2=[1 for k in range(len(self.Time))]    # temporary variable
+        P=0
+        P2=[0 for k in range(len(self.Time))]
+        for i in self.WeightTable[0]:
+            Temp=1
+            Temp2=[1 for k in range(len(self.Time))]
             for j in range(self.NComponent):
                 if (self.WeightTable[4][i][j]==1):
                     Temp*=R[j]
@@ -804,7 +1105,12 @@ class UpHasseDiagram:   # class of the up hasse diagram
         #return [sympy.simplify(sympy.expand(P)),P2]
         return [P,P2]
     
-    def ViewGraph(self,Dir=None): # function to view the up hasse diagram
+    def ViewGraph(self,Dir=None):
+        """
+        It takes a graph and draws it
+        
+        :param Dir: the directory where the graph will be saved
+        """
         G=nx.DiGraph()
         for i in self.AdjMat.keys():
             for j in range(len(self.AdjMat[i])):
@@ -828,7 +1134,7 @@ class UpHasseDiagram:   # class of the up hasse diagram
         plt.show()
 
 """
-MyTree=DefaultTree(3)
+MyTree=FaultTree(3)
 MyTree.NewRelation(3,[1,1,0],[0,0,1])
 MyTree.ViewGraph(Dir)
 
@@ -860,7 +1166,7 @@ print(MyUpHasseDiagram.GetPolyFiab())
 
 """
 Dir="E:/Pedagogie/Encadrement/EncadrementEnsai/MasterRThese/20192020/TadieBenjaulys/"
-MyTree=DefaultTree(12)
+MyTree=FaultTree(12)
 MyTree.NewRelation(3,[0,1,1,1,0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,1,0,0,0,0])
 MyTree.NewRelation(3,[0,0,0,0,1,1,1,0,0,0,0,0],[0,0,0,0,0,0,0,0,1,0,0,0])
 MyTree.NewRelation(4,[0,0,0,0,0,0,0,1,1,0,0,0],[0,0,0,0,0,0,0,0,0,1,0,0])

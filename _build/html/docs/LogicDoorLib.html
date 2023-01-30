@@ -1,0 +1,467 @@
+
+<!DOCTYPE html>
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+    <title>LogicDoorLib module &#8212; DFT2HD2ReliabilityR 1.0.0 documentation</title>
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/classic.css" />
+    
+    <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+    <script src="../_static/jquery.js"></script>
+    <script src="../_static/underscore.js"></script>
+    <script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
+    <script src="../_static/doctools.js"></script>
+    <script src="../_static/sphinx_highlight.js"></script>
+    
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="prev" title="HasseDiagramLib module" href="HasseDiagramLib.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="HasseDiagramLib.html" title="HasseDiagramLib module"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">DFT2HD2ReliabilityR 1.0.0 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="modules.html" accesskey="U">source</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">LogicDoorLib module</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <section id="module-LogicDoorLib">
+<span id="logicdoorlib-module"></span><h1>LogicDoorLib module<a class="headerlink" href="#module-LogicDoorLib" title="Permalink to this heading">¶</a></h1>
+<p>Definition of logical gates</p>
+<dl class="py function">
+<dt class="sig sig-object py" id="LogicDoorLib.G_AND">
+<span class="sig-prename descclassname"><span class="pre">LogicDoorLib.</span></span><span class="sig-name descname"><span class="pre">G_AND</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ValuesIn</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">[[[1,</span> <span class="pre">0,</span> <span class="pre">1],</span> <span class="pre">[1,</span> <span class="pre">1,</span> <span class="pre">0]],</span> <span class="pre">[[0,</span> <span class="pre">1,</span> <span class="pre">0]]]</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">Orders</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">Times</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">IndicesPrincipal</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/LogicDoorLib.html#G_AND"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#LogicDoorLib.G_AND" title="Permalink to this definition">¶</a></dt>
+<dd><p>The above code is taking the cartesian product of the list of lists</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>ValuesIn</strong> – This is the list of lists of lists of numbers</p></li>
+<li><p><strong>Orders</strong> – a list of ordinal values</p></li>
+<li><p><strong>Times</strong> – a list of numbers</p></li>
+<li><p><strong>IndicesPrincipal</strong> – a list of numbers</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>The above code is returning the list of lists.</p>
+</dd>
+</dl>
+<section id="examples">
+<h2>Examples:<a class="headerlink" href="#examples" title="Permalink to this heading">¶</a></h2>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">ValuesIn</span><span class="o">=</span><span class="p">[[[</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">],[</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">]],[[</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">]]]</span>
+<span class="go">[[[1,0,1],[1,1,0]],[[1,0,0]]]</span>
+</pre></div>
+</div>
+</section>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="LogicDoorLib.G_FDEP">
+<span class="sig-prename descclassname"><span class="pre">LogicDoorLib.</span></span><span class="sig-name descname"><span class="pre">G_FDEP</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ValuesIn</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">[[[1,</span> <span class="pre">0,</span> <span class="pre">1],</span> <span class="pre">[1,</span> <span class="pre">1,</span> <span class="pre">0]],</span> <span class="pre">[[0,</span> <span class="pre">1,</span> <span class="pre">0]]]</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">Orders</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">Times</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">IndicesPrincipal</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/LogicDoorLib.html#G_FDEP"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#LogicDoorLib.G_FDEP" title="Permalink to this definition">¶</a></dt>
+<dd><p>It takes a list of lists of lists and returns a list of lists.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>ValuesIn</strong> – a list of lists of lists of integers. Each list of lists of integers represents a</p>
+</dd>
+</dl>
+<p>gate. Each list of integers represents a time. Each integer represents a value
+:param Orders: a list of lists of integers, each list of integers representing a gate
+:param Times: The time at which the gate is applied
+:param IndicesPrincipal: The indices of the principal qubits</p>
+<section id="id1">
+<h2>Examples:<a class="headerlink" href="#id1" title="Permalink to this heading">¶</a></h2>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">ValuesIn</span><span class="o">=</span><span class="p">[[[</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">],[</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">]],[[</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">]]]</span>
+<span class="go">[[1,0,1],[1,1,0]]</span>
+</pre></div>
+</div>
+</section>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="LogicDoorLib.G_Gen">
+<span class="sig-prename descclassname"><span class="pre">LogicDoorLib.</span></span><span class="sig-name descname"><span class="pre">G_Gen</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">n</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ValuesIn</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">[[[1,</span> <span class="pre">0,</span> <span class="pre">1],</span> <span class="pre">[1,</span> <span class="pre">1,</span> <span class="pre">0]],</span> <span class="pre">[[0,</span> <span class="pre">1,</span> <span class="pre">0]]]</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">Orders</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">[0,</span> <span class="pre">0,</span> <span class="pre">0]</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">Times</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">[30,</span> <span class="pre">20,</span> <span class="pre">40]</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">IndicesPrincipal</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">[1,</span> <span class="pre">0]</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/LogicDoorLib.html#G_Gen"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#LogicDoorLib.G_Gen" title="Permalink to this definition">¶</a></dt>
+<dd><p>G_Gen is a function that returns a list of lists of values of G_Input, G_ID, G_NOT, G_OR, G_AND,
+G_PAND, G_FDEP, G_SPARE</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>n</strong> – the number of elements in the list, defaults to 1 (optional)</p></li>
+<li><p><strong>ValuesIn</strong> – the input values of the gate</p></li>
+<li><p><strong>Orders</strong> – The order of the gate</p></li>
+<li><p><strong>Times</strong> – the time of each element</p></li>
+<li><p><strong>IndicesPrincipal</strong> – the index of the main input</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>a list of lists.</p>
+</dd>
+</dl>
+<section id="id2">
+<h2>Examples:<a class="headerlink" href="#id2" title="Permalink to this heading">¶</a></h2>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">n</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span><span class="n">ValuesIn</span><span class="o">=</span><span class="p">[[[</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">],[</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">]],[[</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">]]],</span><span class="n">Orders</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">],</span><span class="n">Times</span><span class="o">=</span><span class="p">[</span><span class="mi">30</span><span class="p">,</span><span class="mi">20</span><span class="p">,</span><span class="mi">40</span><span class="p">],</span><span class="n">IndicesPrincipal</span><span class="o">=</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">]</span>
+<span class="go">[[[1, 0, 1], [1, 1, 0]], [[0, 1, 0]]]</span>
+</pre></div>
+</div>
+</section>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="LogicDoorLib.G_ID">
+<span class="sig-prename descclassname"><span class="pre">LogicDoorLib.</span></span><span class="sig-name descname"><span class="pre">G_ID</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ValuesIn</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">[[[1,</span> <span class="pre">0,</span> <span class="pre">1],</span> <span class="pre">[1,</span> <span class="pre">1,</span> <span class="pre">0]],</span> <span class="pre">[[0,</span> <span class="pre">1,</span> <span class="pre">0]]]</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">Orders</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">Times</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">IndicesPrincipal</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/LogicDoorLib.html#G_ID"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#LogicDoorLib.G_ID" title="Permalink to this definition">¶</a></dt>
+<dd><p>It takes a list of lists of lists of numbers, and returns the same list of lists of lists of numbers</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>ValuesIn</strong> – a list of lists of lists of values. The first list is the list of values for each</p>
+</dd>
+</dl>
+<p>time. The second list is the list of values for each order. The third list is the list of values for
+each index
+:param Orders: a list of lists of integers, each list of integers is a list of indices of the tensor
+to be contracted
+:param Times: a list of times at which the values are given
+:param IndicesPrincipal: The indices of the principal values
+:return: The input values.</p>
+<section id="id3">
+<h2>Examples:<a class="headerlink" href="#id3" title="Permalink to this heading">¶</a></h2>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">ValuesIn</span><span class="o">=</span><span class="p">[[[</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">],[</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">]],[[</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">]]],</span><span class="n">Orders</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span><span class="n">Times</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span><span class="n">IndicesPrincipal</span><span class="o">=</span><span class="kc">None</span>
+<span class="go">[[[1, 0, 1], [1, 1, 0]], [[0, 1, 0]]]</span>
+</pre></div>
+</div>
+</section>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="LogicDoorLib.G_NOT">
+<span class="sig-prename descclassname"><span class="pre">LogicDoorLib.</span></span><span class="sig-name descname"><span class="pre">G_NOT</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ValuesIn</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">[[[1,</span> <span class="pre">0,</span> <span class="pre">1],</span> <span class="pre">[1,</span> <span class="pre">1,</span> <span class="pre">0]],</span> <span class="pre">[[0,</span> <span class="pre">1,</span> <span class="pre">0]]]</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">Orders</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">Times</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">IndicesPrincipal</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/LogicDoorLib.html#G_NOT"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#LogicDoorLib.G_NOT" title="Permalink to this definition">¶</a></dt>
+<dd><p>This function takes a list of lists of lists of integers as input and returns a list of lists of
+integers as output</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>ValuesIn</strong> – The input values</p></li>
+<li><p><strong>Orders</strong> – The order of the gates</p></li>
+<li><p><strong>Times</strong> – The time at which the gate is applied</p></li>
+<li><p><strong>IndicesPrincipal</strong> – The indices of the principal values</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>the negation of the input.</p>
+</dd>
+</dl>
+<section id="exemples">
+<h2>Exemples:<a class="headerlink" href="#exemples" title="Permalink to this heading">¶</a></h2>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">ValuesIn</span><span class="o">=</span><span class="p">[[[</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">],[</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">]],[[</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">]]]</span>
+<span class="go">[[1,0,1],[1,1,0]]</span>
+</pre></div>
+</div>
+</section>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="LogicDoorLib.G_OR">
+<span class="sig-prename descclassname"><span class="pre">LogicDoorLib.</span></span><span class="sig-name descname"><span class="pre">G_OR</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ValuesIn</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">[[[1,</span> <span class="pre">0,</span> <span class="pre">1],</span> <span class="pre">[1,</span> <span class="pre">1,</span> <span class="pre">0]],</span> <span class="pre">[[0,</span> <span class="pre">1,</span> <span class="pre">0]]]</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">Orders</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">Times</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">IndicesPrincipal</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/LogicDoorLib.html#G_OR"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#LogicDoorLib.G_OR" title="Permalink to this definition">¶</a></dt>
+<dd><p>The function takes as input a list of lists of vectors and returns a list of lists of vectors</p>
+<blockquote>
+<div><dl class="field-list simple">
+<dt class="field-odd">param ValuesIn</dt>
+<dd class="field-odd"><p>a list of list</p>
+</dd>
+<dt class="field-even">param Orders</dt>
+<dd class="field-even"><p>a list of ordinal values</p>
+</dd>
+<dt class="field-odd">param Times</dt>
+<dd class="field-odd"><p>a list of numbers</p>
+</dd>
+<dt class="field-even">param IndicesPrincipal</dt>
+<dd class="field-even"><p>a list of numbers</p>
+</dd>
+<dt class="field-odd">return</dt>
+<dd class="field-odd"><p>the list of lists of the reductible vectors of the given vectors.</p>
+</dd>
+</dl>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">],[</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">]],[[</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">]]</span>
+<span class="go">[[[1,0,1],[1,1,0]],[[1,0,0]]]</span>
+</pre></div>
+</div>
+</div></blockquote>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="LogicDoorLib.G_PAND">
+<span class="sig-prename descclassname"><span class="pre">LogicDoorLib.</span></span><span class="sig-name descname"><span class="pre">G_PAND</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ValuesIn</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">[[[1,</span> <span class="pre">0,</span> <span class="pre">1],</span> <span class="pre">[1,</span> <span class="pre">1,</span> <span class="pre">0]],</span> <span class="pre">[[0,</span> <span class="pre">1,</span> <span class="pre">0]]]</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">Orders</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">[0,</span> <span class="pre">0,</span> <span class="pre">0]</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">Times</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">[0,</span> <span class="pre">0,</span> <span class="pre">0]</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">IndicesPrincipal</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/LogicDoorLib.html#G_PAND"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#LogicDoorLib.G_PAND" title="Permalink to this definition">¶</a></dt>
+<dd><p>This function is a gate that is a combination of the AND gate and the PAND gate</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>ValuesIn</strong> – a list of lists of lists of integers. The first list is the list of inputs, the</p>
+</dd>
+</dl>
+<p>second list is the list of values for each input, and the third list is the list of values for each
+input at each time
+:param Orders: a list of the order of each input
+:param Times: a list of the times at which the inputs are applied
+:param IndicesPrincipal: This is a list of indices that you can use to specify which values in
+ValuesIn you want to use</p>
+<section id="id4">
+<h2>Examples:<a class="headerlink" href="#id4" title="Permalink to this heading">¶</a></h2>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">ValuesIn</span><span class="o">=</span><span class="p">[[[</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">],[</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">]],[[</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">]]],</span><span class="n">Orders</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">],</span><span class="n">Times</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">],</span><span class="n">IndicesPrincipal</span><span class="o">=</span><span class="kc">None</span>
+<span class="go">Porte PAND appellee 1</span>
+<span class="go">[[[1, 1, 1], [1, 1, 0]]]</span>
+</pre></div>
+</div>
+</section>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="LogicDoorLib.G_SPARE">
+<span class="sig-prename descclassname"><span class="pre">LogicDoorLib.</span></span><span class="sig-name descname"><span class="pre">G_SPARE</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ValuesIn</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">[[[1,</span> <span class="pre">0,</span> <span class="pre">1],</span> <span class="pre">[1,</span> <span class="pre">1,</span> <span class="pre">0]],</span> <span class="pre">[[0,</span> <span class="pre">1,</span> <span class="pre">0]]]</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">Orders</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">Times</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">[30,</span> <span class="pre">20]</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">IndicesPrincipal</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">[1,</span> <span class="pre">0]</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/LogicDoorLib.html#G_SPARE"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#LogicDoorLib.G_SPARE" title="Permalink to this definition">¶</a></dt>
+<dd><p>The function G_SPARE takes as input a list of lists of lists of integers, a list of integers, a
+list of integers and a list of integers. It returns a list of lists of integers</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>ValuesIn</strong> – The list of the values of the variables</p></li>
+<li><p><strong>Orders</strong> – The order of the variables in the list</p></li>
+<li><p><strong>Times</strong> – [30,20]</p></li>
+<li><p><strong>IndicesPrincipal</strong> – This is a list of 0s and 1s. The length of this list is the same as the</p></li>
+</ul>
+</dd>
+</dl>
+<p>length of the list of values. The 1s in this list indicate the values that are to be used in the
+final result. The 0s indicate the values that are to be used in the
+:return: the values of the variables in the order of the times of the variables.</p>
+<section id="id5">
+<h2>Examples:<a class="headerlink" href="#id5" title="Permalink to this heading">¶</a></h2>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">ValuesIn</span><span class="o">=</span><span class="p">[[[</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">],[</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">]],[[</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">]]],</span><span class="n">Times</span><span class="o">=</span><span class="p">[</span><span class="mi">30</span><span class="p">,</span><span class="mi">20</span><span class="p">],</span><span class="n">IndicesPrincipal</span><span class="o">=</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">]</span>
+<span class="go">[[1,0,1],[1,1,0]]</span>
+</pre></div>
+</div>
+</section>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="LogicDoorLib.ID_G">
+<span class="sig-prename descclassname"><span class="pre">LogicDoorLib.</span></span><span class="sig-name descname"><span class="pre">ID_G</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">n</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/LogicDoorLib.html#ID_G"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#LogicDoorLib.ID_G" title="Permalink to this definition">¶</a></dt>
+<dd><p>This function returns the ID of the gate</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>n</strong> – the number of inputs to the gate, defaults to 1 (optional)</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>The ID of the gate.</p>
+</dd>
+</dl>
+<section id="id6">
+<h2>Examples:<a class="headerlink" href="#id6" title="Permalink to this heading">¶</a></h2>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">n</span><span class="o">=</span><span class="mi">1</span>
+<span class="go">G_ID</span>
+</pre></div>
+</div>
+</section>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="LogicDoorLib.InOrder">
+<span class="sig-prename descclassname"><span class="pre">LogicDoorLib.</span></span><span class="sig-name descname"><span class="pre">InOrder</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">Orders</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">[1,</span> <span class="pre">3,</span> <span class="pre">2]</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">Times</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">[10,</span> <span class="pre">20,</span> <span class="pre">30]</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/LogicDoorLib.html#InOrder"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#LogicDoorLib.InOrder" title="Permalink to this definition">¶</a></dt>
+<dd><p>It takes two lists of numbers and returns a boolean
+The first list contains ordinal numbers.
+The answer is true if the second list is ordered
+according to the respective orders given in the
+first list.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>Orders</strong> – A list of numbers</p></li>
+<li><p><strong>Times</strong> – The time at which each event occurred</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>a boolean.</p>
+</dd>
+</dl>
+<section id="id7">
+<h2>Examples:<a class="headerlink" href="#id7" title="Permalink to this heading">¶</a></h2>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">Orders</span><span class="o">=</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="mi">3</span><span class="p">,</span><span class="mi">2</span><span class="p">],</span><span class="n">Times</span><span class="o">=</span><span class="p">[</span><span class="mi">10</span><span class="p">,</span><span class="mi">20</span><span class="p">,</span><span class="mi">30</span><span class="p">]</span>
+<span class="go">False</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">Order</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span><span class="mi">3</span><span class="p">,</span><span class="mi">2</span><span class="p">],[</span><span class="mi">10</span><span class="p">,</span><span class="mi">30</span><span class="p">,</span><span class="mi">20</span><span class="p">])</span>
+<span class="go">True</span>
+</pre></div>
+</div>
+</section>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="LogicDoorLib.Order">
+<span class="sig-prename descclassname"><span class="pre">LogicDoorLib.</span></span><span class="sig-name descname"><span class="pre">Order</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">Times</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">[30,</span> <span class="pre">20,</span> <span class="pre">20]</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/LogicDoorLib.html#Order"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#LogicDoorLib.Order" title="Permalink to this definition">¶</a></dt>
+<dd><p>It takes a list of numbers and returns a list of two sublists. The first one contains the ranks
+corresponding to the expected position of each numbers in the inputed list if it was sorted from the
+smallest to the highest. The second sublist is the sorted version of the inputed list</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>Times</strong> – The list of times for each person</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>A list of two sublists. The first one contains the ranks corresponding to the expected</p>
+</dd>
+</dl>
+<p>position of each numbers in the inputed list if it was sorted from the smallest to the highest. The
+second sublist is the sorted version of the inputed list.</p>
+<section id="id8">
+<h2>Examples:<a class="headerlink" href="#id8" title="Permalink to this heading">¶</a></h2>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">Times</span><span class="o">=</span><span class="p">[</span><span class="mi">30</span><span class="p">,</span><span class="mi">20</span><span class="p">,</span><span class="mi">20</span><span class="p">]</span>
+<span class="go">[[3,1,2],[20,20,30]]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">Times</span><span class="o">=</span><span class="p">[</span><span class="mi">30</span><span class="p">,</span><span class="mi">20</span><span class="p">,</span><span class="mi">10</span><span class="p">]</span>
+<span class="go">[[3,2,1],[10,20,30]]</span>
+</pre></div>
+</div>
+</section>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="LogicDoorLib.Reductible">
+<span class="sig-prename descclassname"><span class="pre">LogicDoorLib.</span></span><span class="sig-name descname"><span class="pre">Reductible</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">[1,</span> <span class="pre">0,</span> <span class="pre">1]</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">[1,</span> <span class="pre">1,</span> <span class="pre">0]</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/LogicDoorLib.html#Reductible"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#LogicDoorLib.Reductible" title="Permalink to this definition">¶</a></dt>
+<dd><p><strong>Reductible</strong> takes in input two lists of numbers having the same
+length and return True if they are different on exactly one term</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>x</strong> – the first list of numbers</p></li>
+<li><p><strong>y</strong> – the target variable</p></li>
+</ul>
+</dd>
+</dl>
+<section id="id9">
+<h2>Exemples:<a class="headerlink" href="#id9" title="Permalink to this heading">¶</a></h2>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">x</span><span class="o">=</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">],</span><span class="n">y</span><span class="o">=</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">])</span>
+<span class="go">False</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">x</span><span class="o">=</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">],</span><span class="n">y</span><span class="o">=</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">])</span>
+<span class="go">True</span>
+</pre></div>
+</div>
+</section>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="LogicDoorLib.RemoveEmpty">
+<span class="sig-prename descclassname"><span class="pre">LogicDoorLib.</span></span><span class="sig-name descname"><span class="pre">RemoveEmpty</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ValuesIn</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">[[],</span> <span class="pre">[1],</span> <span class="pre">[],</span> <span class="pre">[5]]</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">Orders</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">Times</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">IndicesPrincipal</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/LogicDoorLib.html#RemoveEmpty"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#LogicDoorLib.RemoveEmpty" title="Permalink to this definition">¶</a></dt>
+<dd><p>RemoveEmpty removes sub-lists of ‘ValuesIn’ and items with the same index in
+index in the ‘Orders’, ‘Times’ and ‘IndicesPrincipal’ lists</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>ValuesIn</strong> – a list of list</p></li>
+<li><p><strong>Orders</strong> – a list of ordinal values</p></li>
+<li><p><strong>Times</strong> – a list of numbers</p></li>
+<li><p><strong>IndicesPrincipal</strong> – a list of numbers</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>A list of lists.</p>
+</dd>
+</dl>
+<section id="id10">
+<h2>Examples:<a class="headerlink" href="#id10" title="Permalink to this heading">¶</a></h2>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">ValuesIn</span><span class="o">=</span><span class="p">[[],[</span><span class="mi">1</span><span class="p">],[],[</span><span class="mi">5</span><span class="p">]],</span><span class="n">Orders</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span><span class="n">Times</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span><span class="n">IndicesPrincipal</span><span class="o">=</span><span class="kc">None</span>
+<span class="go">[[[1],[5]],None,None,None]</span>
+</pre></div>
+</div>
+</section>
+</dd></dl>
+
+</section>
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <div>
+    <h3><a href="../index.html">Table of Contents</a></h3>
+    <ul>
+<li><a class="reference internal" href="#">LogicDoorLib module</a><ul>
+<li><a class="reference internal" href="#LogicDoorLib.G_AND"><code class="docutils literal notranslate"><span class="pre">G_AND()</span></code></a></li>
+<li><a class="reference internal" href="#LogicDoorLib.G_FDEP"><code class="docutils literal notranslate"><span class="pre">G_FDEP()</span></code></a></li>
+<li><a class="reference internal" href="#LogicDoorLib.G_Gen"><code class="docutils literal notranslate"><span class="pre">G_Gen()</span></code></a></li>
+<li><a class="reference internal" href="#LogicDoorLib.G_ID"><code class="docutils literal notranslate"><span class="pre">G_ID()</span></code></a></li>
+<li><a class="reference internal" href="#LogicDoorLib.G_NOT"><code class="docutils literal notranslate"><span class="pre">G_NOT()</span></code></a></li>
+<li><a class="reference internal" href="#LogicDoorLib.G_OR"><code class="docutils literal notranslate"><span class="pre">G_OR()</span></code></a></li>
+<li><a class="reference internal" href="#LogicDoorLib.G_PAND"><code class="docutils literal notranslate"><span class="pre">G_PAND()</span></code></a></li>
+<li><a class="reference internal" href="#LogicDoorLib.G_SPARE"><code class="docutils literal notranslate"><span class="pre">G_SPARE()</span></code></a></li>
+<li><a class="reference internal" href="#LogicDoorLib.ID_G"><code class="docutils literal notranslate"><span class="pre">ID_G()</span></code></a></li>
+<li><a class="reference internal" href="#LogicDoorLib.InOrder"><code class="docutils literal notranslate"><span class="pre">InOrder()</span></code></a></li>
+<li><a class="reference internal" href="#LogicDoorLib.Order"><code class="docutils literal notranslate"><span class="pre">Order()</span></code></a></li>
+<li><a class="reference internal" href="#LogicDoorLib.Reductible"><code class="docutils literal notranslate"><span class="pre">Reductible()</span></code></a></li>
+<li><a class="reference internal" href="#LogicDoorLib.RemoveEmpty"><code class="docutils literal notranslate"><span class="pre">RemoveEmpty()</span></code></a></li>
+</ul>
+</li>
+</ul>
+
+  </div>
+  <div>
+    <h4>Previous topic</h4>
+    <p class="topless"><a href="HasseDiagramLib.html"
+                          title="previous chapter">HasseDiagramLib module</a></p>
+  </div>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="../_sources/docs/LogicDoorLib.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="HasseDiagramLib.html" title="HasseDiagramLib module"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">DFT2HD2ReliabilityR 1.0.0 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="modules.html" >source</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">LogicDoorLib module</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2023, ARDIS4SD.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 5.3.0.
+    </div>
+  </body>
+</html>

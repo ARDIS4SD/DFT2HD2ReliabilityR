@@ -8,21 +8,40 @@ import sympy
 import networkx as nx
 import  matplotlib.pyplot  as  plt
 
-from DFT2HD2ReliabilityR.LogicDoorLib import *
-from DFT2HD2ReliabilityR.DefaultTreeLib import *
-from DFT2HD2ReliabilityR.HasseDiagramLib import *
+from LogicDoorLib import *
+from FaultTreeLib import *
+from HasseDiagramLib import *
 
 """
 Construction de l'arbre de défaillance
 """
 
-DefaultTreeRs={} # fault tree dictionary
-class DefaultTreeR: # fault tree class
-    NDefaultTreeR=0      # The number of fault tree
+FaultTreeRs={} # fault tree dictionary
+class FaultTreeR: # fault tree class
+    NFaultTreeR=0      # The number of fault tree
     def __init__(self,n,IndivReliabilityVal=[[1]],IndivReliabilityFunc=[One],t=[0],Option=1): # n: number of nodes 
+        """
+        The function takes in a number of components, a list of reliability values, a list of
+        reliability functions, a list of times, and an option. 
+        
+        The function then creates a number of nodes, a number of subtrees, a number of reliabilities, a
+        number of labels, a number of adjacency matrices, a number of reliability matrices, and a number
+        of index tables. 
+        
+        The function then returns the number of components, the number of nodes, the nodes, the
+        subtrees, the reliabilities, the labels, the adjacency matrices, the reliability matrices, and
+        the index tables.
+        
+        :param n: number of nodes
+        :param IndivReliabilityVal: a list of lists of the individual reliabilities of the components
+        :param IndivReliabilityFunc: a list of functions that represent the reliability of each
+        component
+        :param t: time
+        :param Option: 1 for reliability values, 2 for reliability functions, defaults to 1 (optional)
+        """
         self.id=id(self)
-        DefaultTreeRs[str(self.id)]=self
-        self.__class__.NDefaultTreeR+=1
+        FaultTreeRs[str(self.id)]=self
+        self.__class__.NFaultTreeR+=1
         self.Option=Option
         self.IndFiabVal=IndivReliabilityVal
         self.IndFiabFunc=IndivReliabilityFunc
@@ -31,7 +50,7 @@ class DefaultTreeR: # fault tree class
             self.NComponent=len(self.IndFiabVal) # The number of component(s) of the system
         else:
             self.NComponent=len(self.IndFiabFunc) # The number of component(s) of the system
-        #print("\n self.NComponent Start in DefaultTreeR")
+        #print("\n self.NComponent Start in FaultTreeR")
         #print(self.NComponent)
         self.NNode=n # The number of nodes of the fault tree
         self.Node=[]    # The list of nodes of the fault tree
@@ -49,9 +68,18 @@ class DefaultTreeR: # fault tree class
         #[[NumRel],[Node i],[Node j]]
     
     def __del__(self):  # destructor
-        self.__class__.NDefaultTreeR-=1
+        """
+        The __del__ method is called when the instance is about to be destroyed
+        """
+        self.__class__.NFaultTreeR-=1
     
     def IdxNode(self,Indices=None): # Indices: list of indices of nodes
+        """
+        It returns the index of the node in the list of nodes
+        
+        :param Indices: The indices of the node to be found
+        :return: The index of the node in the list of nodes.
+        """
         res=None
         if (Indices in self.Node):
             res=0
@@ -60,6 +88,21 @@ class DefaultTreeR: # fault tree class
         return res
     
     def InOrder2(self,xx=[1,3,2],yy=[1,2,30]):  # xx: list of indices of nodes, yy: list of indices of nodes
+        """
+        If the two lists are equal, then they are in order. Otherwise, if the first list is shorter than
+        the second, then the first list is in order.
+        
+        :param xx: the first list of numbers
+        :param yy: the current state of the board
+        :return: True or False
+        Examples:
+        -------
+        Input: 
+        self=1
+        xx=[1,3,2]
+        yy=[1,2,30]
+        Output: True
+        """
         i=min(len(xx),len(yy))-1
         while ((xx[i]==yy[i]) and (i>=0)):
             #print((xx,yy))
@@ -84,6 +127,10 @@ class DefaultTreeR: # fault tree class
     """
     
     def Leaves(self):   # Returns the list of leaves of the fault tree
+        """
+        It returns the indices of the nodes that are leaves in the graph
+        :return: the leaves of the tree.
+        """
         res=[]
         for j in range(len(self.AdjMat)):
             Temp=0
@@ -97,6 +144,10 @@ class DefaultTreeR: # fault tree class
         return res
     
     def Root(self): # Returns the index of the root of the fault tree
+        """
+        It returns the index of the root node of the tree
+        :return: The root node of the graph.
+        """
         res=[]
         for i in self.AdjMat.keys():
             Temp=0
@@ -109,7 +160,10 @@ class DefaultTreeR: # fault tree class
                 res.append(i)
         return res
     
-    def Update(self):   # Updates the adjacency matrix of the fault tree
+    def Update(self,ID_P):   # Updates the adjacency matrix of the fault tree
+        """
+        If the last entry in the RelMat is a valid entry, then add it to the Node list and the AdjMat.
+        """
         n=len(self.RelMat[0])
         if (n>0):
             Test=(len(self.Node)<=self.NNode-2)
@@ -145,6 +199,9 @@ class DefaultTreeR: # fault tree class
                 #print(self.Node)
    
     def Sort(self):         # Sorts the list of nodes of the fault tree
+        """
+        It sorts the relations in the tree in a way that makes it easier to draw the tree
+        """
         Temp1=[]
         Temp2=[]
         for i in range(len(self.IdxTable[0])):    # Sorts the list of indices of the nodes
@@ -176,10 +233,21 @@ class DefaultTreeR: # fault tree class
             Temp4[5].append(self.RelMat[5][int(Temp2[i])])
         self.IdxTable=Temp3.copy()
         self.RelMat=Temp4.copy()
-        #print("\n Sort Called in DefaultTreeR")
+        #print("\n Sort Called in FaultTreeR")
         #print(self.RelMat)
         
     def NewRelation(self,Port=1,IndicesIn=None,IndicesOut=None,Orders=None,Times=None,IndicesPrincipal=None):   # Creates a new relation in the fault tree
+        """
+        This function adds a new relation to the tree.
+        
+        :param Port: The port number of the relation, defaults to 1 (optional)
+        :param IndicesIn: list of indices of the nodes that are the input to the relation
+        :param IndicesOut: list of indices of the output nodes
+        :param Orders: list of integers, each integer is the order of the relation
+        :param Times: list of times for each order
+        :param IndicesPrincipal: This is a list of indices of the nodes that are the principal nodes of
+        the relation
+        """
         if (IndicesIn!=None) and (IndicesOut!=None): 
             if (len(IndicesIn)<=self.NNode) and (len(IndicesOut)<=self.NNode):
                 self.RelMat[0].append(Port)
@@ -188,7 +256,7 @@ class DefaultTreeR: # fault tree class
                 self.RelMat[3].append(Orders)
                 self.RelMat[4].append(Times)
                 self.RelMat[5].append(IndicesPrincipal)
-                #print("\n NewRelation Called in DefaultTreeR")
+                #print("\n NewRelation Called in FaultTreeR")
                 #print(self.RelMat)
                 self.Update()
                 self.Sort()
@@ -196,6 +264,10 @@ class DefaultTreeR: # fault tree class
             
         
     def AutoCompletion(self):   # Automatically completes the fault tree
+        """
+        For each node, if it is not the same as another node, and if it is in order with another node,
+        then add a new relation between the two nodes.
+        """
         nn=len(self.Node)
         for i in range(nn):
             #print("yeah !")
@@ -217,9 +289,12 @@ class DefaultTreeR: # fault tree class
         """
                
     def RecursiveStruturation(self):    # Recursive structurer of the fault tree
+        """
+        It takes a tree and creates a new tree for each node in the original tree.
+        """
         ##self.AutoCompletion()
-        #print("\n RecursiveStruturation in DefaultTreeR")
-        #print("\n Nodes in RecursiveStruturation in DefaultTreeR")
+        #print("\n RecursiveStruturation in FaultTreeR")
+        #print("\n Nodes in RecursiveStruturation in FaultTreeR")
         #print(self.Node)
         for i in range(len(self.IdxTable[0])):  # For each node
             Temp=self.IdxTable[2][i]
@@ -232,7 +307,7 @@ class DefaultTreeR: # fault tree class
                     nSon+=1#self.AdjMat[j][Temp]
                     #print((self.IdxTable[1][j],self.IdxTable[2][j]))
             #print(nSon)
-            self.SubTree[Temp]=DefaultTree(nSon+1)  # Creates a new subtree with nSon+1 nodes   
+            self.SubTree[Temp]=FaultTree(nSon+1)  # Creates a new subtree with nSon+1 nodes   
             for j in range(len(self.IdxTable[0])):
                 if (self.IdxTable[2][j]==Temp):
                     Temp1=self.RelMat[0][self.IdxTable[0][j]]
@@ -248,7 +323,13 @@ class DefaultTreeR: # fault tree class
                     #print(self.SubTree[Temp].Node)
         
     def Generation(self):   # Generates the fault tree      
-        #print("\n Generation called in DefaultTreeR")
+        
+        """
+        The function takes a tree and returns a list of lists, where each list is a generation of the
+        tree
+        :return: a list of lists. Each list in the list is a generation.
+        """
+        #print("\n Generation called in FaultTreeR")
         Temp1={i:self.Node[i] for i in range(len(self.Node))}   # Creates a dictionary with the nodes as keys and the indices as values
         Temp2={}
         res=[self.Leaves().copy()]
@@ -277,13 +358,24 @@ class DefaultTreeR: # fault tree class
         return(res)
     
     def RecursiveReliability(self):  # Recursive reliability of the fault tree  (not used)  
-        #print("\n RecursiveReliability called in DefaultTreeR")
+        """
+        It computes the reliability of a system, given the reliability of its components.
+        """
+        #print("\n RecursiveReliability called in FaultTreeR")
         self.RecursiveStruturation()
         Temp=self.Generation()
         #print("\n All generations")
         #print(Temp)
         
         def LeafReliability(Generation,i,Option):   # Recursive reliability of the leaf i in the generation Generation  (not used)
+            """
+            It takes a list of nodes (Generation), an index (i) and an option (Option) and returns a
+            dictionary of the form {node: {0: [list of symbols], 1: [list of reliability values]}}
+            
+            :param Generation: a list of the nodes in the current generation
+            :param i: the index of the node in the generation
+            :param Option: 1 for reliability values, 2 for reliability functions
+            """
             #print("\n LeafReliability called in DefautTreeR")
             R=[]
             R2=[]
@@ -322,6 +414,15 @@ class DefaultTreeR: # fault tree class
             #print(R2)
         
         def BranchReliability(Generations,i,Option):    # Recursive reliability of the branch i in the generations Generations  (not used)  
+            """
+            It computes the reliability of a node of the tree, by computing the reliability of the
+            sub-tree it is connected to
+            
+            :param Generations: a list of lists of integers. Each list of integers is a generation of the
+            tree
+            :param i: the index of the generation
+            :param Option: 1 for reliability values, 2 for reliability functions
+            """
             #print("\n BranchReliability called in DefautTreeR")
             for k in range(len(Generations[i])):    # For each generation in the branch i   
                 j=Generations[i][k]                # j is the index of the generation   
@@ -399,7 +500,7 @@ class DefaultTreeR: # fault tree class
                             print("Here")
                             print(j)
                             MyUpHasseDiagram=UpHasseDiagram(Temp1,Temp2,Temp3,Temp4,None,Temp5,1)   # The UpHasseDiagram of the subtree of the branch j is created  
-                            ##(Tree=DefaultTree(2),IndivIndex=[0],IndivLabel=[0],IndivReliabilityVal=[[1]],IndivReliabilityFunc=[One],t=[0],Option=1)
+                            ##(Tree=FaultTree(2),IndivIndex=[0],IndivLabel=[0],IndivReliabilityVal=[[1]],IndivReliabilityFunc=[One],t=[0],Option=1)
                             
                             MyPolyFiab=MyUpHasseDiagram.GetPolyFiab()   # The polynomial of the reliability of the subtree of the branch j is computed  
                             
@@ -434,7 +535,13 @@ class DefaultTreeR: # fault tree class
         #print(res)
         return [self.Time,res]
 
-    def ViewGraph(self,Dir=None):  # View the tree in a graph 
+    def ViewGraph(self,ID_P,Dir=None):  # View the tree in a graph 
+        """
+        It takes a list of nodes and a list of edges, and draws a graph
+        
+        :param ID_P: The ID of the parent node
+        :param Dir: The directory where the graph will be saved
+        """
         self.AutoCompletion() # The tree is automatically completed
         G=nx.DiGraph() # The graph is initialized 
         GNode={} # The graph is initialized
@@ -485,7 +592,7 @@ class DefaultTreeR: # fault tree class
 """
 Dir="E:/Pedagogie/Encadrement/EncadrementEnsai/MasterRThese/20192020/TadieBenjaulys/"
 
-MyTree=DefaultTreeR(3,[[1],[1]],[One,One],[0],1)
+MyTree=FaultTreeR(3,[[1],[1]],[One,One],[0],1)
 MyTree.NewRelation(3,[1,1,0],[0,0,1])
 print(MyTree.RecursiveReliability())
 #MyTree.ViewGraph(Dir)

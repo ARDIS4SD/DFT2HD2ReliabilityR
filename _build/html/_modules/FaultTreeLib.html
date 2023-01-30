@@ -1,0 +1,361 @@
+
+<!DOCTYPE html>
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>FaultTreeLib &#8212; DFT2HD2ReliabilityR 1.0.0 documentation</title>
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/classic.css" />
+    
+    <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+    <script src="../_static/jquery.js"></script>
+    <script src="../_static/underscore.js"></script>
+    <script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
+    <script src="../_static/doctools.js"></script>
+    <script src="../_static/sphinx_highlight.js"></script>
+    
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">DFT2HD2ReliabilityR 1.0.0 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="index.html" accesskey="U">Module code</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">FaultTreeLib</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for FaultTreeLib</h1><div class="highlight"><pre>
+<span></span><span class="c1"># It&#39;s a class that creates a directed graph</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Bibliothèques utiles</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="c1">#import plotly.graph_objects as go</span>
+<span class="kn">import</span> <span class="nn">networkx</span> <span class="k">as</span> <span class="nn">nx</span>
+<span class="kn">import</span>  <span class="nn">matplotlib.pyplot</span>  <span class="k">as</span>  <span class="nn">plt</span>
+
+<span class="kn">from</span> <span class="nn">LogicDoorLib</span> <span class="kn">import</span> <span class="o">*</span>
+
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Fault tree construction</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="n">FaultTrees</span><span class="o">=</span><span class="p">{}</span>
+<div class="viewcode-block" id="FaultTree"><a class="viewcode-back" href="../docs/FaultTreeLib.html#FaultTreeLib.FaultTree">[docs]</a><span class="k">class</span> <span class="nc">FaultTree</span><span class="p">:</span>
+    <span class="n">NFaultTree</span><span class="o">=</span><span class="mi">0</span>       
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">n</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        It creates a new object of class Tree, and adds it to the dictionary FaultTreeRs</span>
+<span class="sd">        </span>
+<span class="sd">        :param n: number of nodes</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="o">=</span><span class="nb">id</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+        <span class="n">FaultTrees</span><span class="p">[</span><span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="p">)]</span><span class="o">=</span><span class="bp">self</span>
+        <span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="n">NFaultTree</span><span class="o">+=</span><span class="mi">1</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">NNode</span><span class="o">=</span><span class="n">n</span> <span class="c1"># Le système a moins de composant que n</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">Node</span><span class="o">=</span><span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">Label</span><span class="o">=</span><span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">AdjMat</span><span class="o">=</span><span class="p">{}</span><span class="c1">#matlib.zeros((n, n))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">RelMat</span><span class="o">=</span><span class="p">[[],[],[],[],[],[]]</span> 
+        <span class="c1">#[[Door],[NodeIn],[NodeOut],[Orders],[Times],[IndicesPrincipal]]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">IdxTable</span><span class="o">=</span><span class="p">[[],[],[]]</span> 
+        <span class="c1">#[[NumRel],[Node i],[Node j]]</span>
+    
+    <span class="k">def</span> <span class="fm">__del__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        The __del__ method is called when the instance is about to be destroyed</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="n">NFaultTree</span><span class="o">-=</span><span class="mi">1</span>
+    
+<div class="viewcode-block" id="FaultTree.IdxNode"><a class="viewcode-back" href="../docs/FaultTreeLib.html#FaultTreeLib.FaultTree.IdxNode">[docs]</a>    <span class="k">def</span> <span class="nf">IdxNode</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">Indices</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        It returns the index of the node in the list of nodes</span>
+<span class="sd">        </span>
+<span class="sd">        :param Indices: The index of the node you want to find</span>
+<span class="sd">        :return: The index of the node in the list of nodes.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">res</span><span class="o">=</span><span class="kc">None</span>
+     
+        <span class="k">if</span> <span class="p">(</span><span class="n">Indices</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">Node</span><span class="p">):</span>
+            <span class="n">res</span><span class="o">=</span><span class="mi">0</span>
+            <span class="k">while</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">Node</span><span class="p">[</span><span class="n">res</span><span class="p">]</span><span class="o">!=</span><span class="n">Indices</span><span class="p">):</span>
+                <span class="n">res</span><span class="o">=</span><span class="n">res</span><span class="o">+</span><span class="mi">1</span>
+        <span class="k">return</span> <span class="n">res</span></div>
+
+<div class="viewcode-block" id="FaultTree.Root"><a class="viewcode-back" href="../docs/FaultTreeLib.html#FaultTreeLib.FaultTree.Root">[docs]</a>    <span class="k">def</span> <span class="nf">Root</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        It returns the roots of the graph.</span>
+<span class="sd">        :return: The roots of the graph.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">res</span><span class="o">=</span><span class="p">[]</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">AdjMat</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+            <span class="k">if</span> <span class="p">(</span><span class="nb">sum</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">AdjMat</span><span class="p">[</span><span class="n">i</span><span class="p">])</span><span class="o">&lt;=</span><span class="bp">self</span><span class="o">.</span><span class="n">AdjMat</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="n">i</span><span class="p">]):</span>
+                <span class="n">res</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">i</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">res</span></div>
+    
+<div class="viewcode-block" id="FaultTree.Leaves"><a class="viewcode-back" href="../docs/FaultTreeLib.html#FaultTreeLib.FaultTree.Leaves">[docs]</a>    <span class="k">def</span> <span class="nf">Leaves</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        The function `Leaves` returns a list of all the leaf nodes in the graph</span>
+<span class="sd">        :return: The function `Leaves` returns a list of all the leaf nodes in the graph.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">res</span><span class="o">=</span><span class="p">[]</span>
+     <span class="c1"># Checking if the node is a leaf node.</span>
+        <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">AdjMat</span><span class="p">)):</span>
+            <span class="n">Temp</span><span class="o">=</span><span class="mi">0</span>
+            <span class="c1"># Iterating over the keys of the dictionary `self.AdjMat`.</span>
+            <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">AdjMat</span><span class="p">)):</span>
+               <span class="c1"># Checking if the node is a leaf node.</span>
+                <span class="k">if</span> <span class="p">(</span><span class="n">i</span><span class="o">!=</span><span class="n">j</span><span class="p">):</span>
+                    <span class="n">Temp</span><span class="o">+=</span><span class="bp">self</span><span class="o">.</span><span class="n">AdjMat</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="n">j</span><span class="p">]</span>
+            <span class="k">if</span> <span class="p">(</span><span class="n">Temp</span><span class="o">==</span><span class="mi">0</span><span class="p">):</span><span class="c1">#((Temp==0) and (self.RelMat[0][j]==1)):</span>
+                <span class="n">res</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">j</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">res</span></div>
+    
+<div class="viewcode-block" id="FaultTree.Update"><a class="viewcode-back" href="../docs/FaultTreeLib.html#FaultTreeLib.FaultTree.Update">[docs]</a>    <span class="k">def</span> <span class="nf">Update</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">ID_P</span> <span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        If the number of nodes is less than the maximum number of nodes, then add the new node to the</span>
+<span class="sd">        list of nodes</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">n</span><span class="o">=</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">RelMat</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+        <span class="k">if</span> <span class="p">(</span><span class="n">n</span><span class="o">&gt;</span><span class="mi">0</span><span class="p">):</span>
+            <span class="n">Test</span><span class="o">=</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">Node</span><span class="p">)</span><span class="o">&lt;=</span><span class="bp">self</span><span class="o">.</span><span class="n">NNode</span><span class="o">-</span><span class="mi">2</span><span class="p">)</span>
+            <span class="n">Test</span><span class="o">=</span><span class="n">Test</span> <span class="ow">or</span> <span class="p">((</span><span class="bp">self</span><span class="o">.</span><span class="n">RelMat</span><span class="p">[</span><span class="mi">1</span><span class="p">][</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">Node</span><span class="p">)</span> <span class="ow">and</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">RelMat</span><span class="p">[</span><span class="mi">2</span><span class="p">][</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">Node</span><span class="p">))</span>
+            <span class="n">Test</span><span class="o">=</span><span class="n">Test</span> <span class="ow">or</span> <span class="p">((</span><span class="ow">not</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">RelMat</span><span class="p">[</span><span class="mi">1</span><span class="p">][</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">Node</span><span class="p">)</span> <span class="ow">or</span> <span class="ow">not</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">RelMat</span><span class="p">[</span><span class="mi">2</span><span class="p">][</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">Node</span><span class="p">))</span> <span class="ow">and</span> <span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">Node</span><span class="p">)</span><span class="o">&lt;=</span><span class="bp">self</span><span class="o">.</span><span class="n">NNode</span><span class="o">-</span><span class="mi">1</span><span class="p">))</span>
+            <span class="k">if</span> <span class="ow">not</span><span class="p">(</span><span class="n">Test</span><span class="p">):</span>
+                <span class="k">del</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">RelMat</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
+                <span class="k">del</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">RelMat</span><span class="p">[</span><span class="mi">1</span><span class="p">][</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
+                <span class="k">del</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">RelMat</span><span class="p">[</span><span class="mi">2</span><span class="p">][</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
+                <span class="k">del</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">RelMat</span><span class="p">[</span><span class="mi">3</span><span class="p">][</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
+                <span class="k">del</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">RelMat</span><span class="p">[</span><span class="mi">4</span><span class="p">][</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
+                <span class="k">del</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">RelMat</span><span class="p">[</span><span class="mi">5</span><span class="p">][</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">if</span> <span class="ow">not</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">RelMat</span><span class="p">[</span><span class="mi">1</span><span class="p">][</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">Node</span><span class="p">):</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">Node</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">RelMat</span><span class="p">[</span><span class="mi">1</span><span class="p">][</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
+                    <span class="c1"># Appending the label of the node to the list of labels.</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">Label</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">ID_P</span><span class="p">(</span><span class="mi">1</span><span class="p">))</span>
+                    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">Node</span><span class="p">)</span><span class="o">-</span><span class="mi">1</span><span class="p">):</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">AdjMat</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">AdjMat</span><span class="p">[</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">Node</span><span class="p">)</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">Node</span><span class="p">))]</span>
+                <span class="k">if</span> <span class="ow">not</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">RelMat</span><span class="p">[</span><span class="mi">2</span><span class="p">][</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">Node</span><span class="p">):</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">Node</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">RelMat</span><span class="p">[</span><span class="mi">2</span><span class="p">][</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
+                    <span class="c1"># Appending the label of the node to the list of labels.</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">Label</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">ID_P</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">RelMat</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="o">-</span><span class="mi">1</span><span class="p">]))</span>
+                    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">Node</span><span class="p">)</span><span class="o">-</span><span class="mi">1</span><span class="p">):</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">AdjMat</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">AdjMat</span><span class="p">[</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">Node</span><span class="p">)</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">Node</span><span class="p">))]</span>
+                <span class="k">if</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">RelMat</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">&gt;=</span><span class="mi">0</span><span class="p">):</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">IdxTable</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">n</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">IdxTable</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">IdxNode</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">RelMat</span><span class="p">[</span><span class="mi">1</span><span class="p">][</span><span class="o">-</span><span class="mi">1</span><span class="p">]))</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">IdxTable</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">IdxNode</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">RelMat</span><span class="p">[</span><span class="mi">2</span><span class="p">][</span><span class="o">-</span><span class="mi">1</span><span class="p">]))</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">AdjMat</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">IdxTable</span><span class="p">[</span><span class="mi">1</span><span class="p">][</span><span class="o">-</span><span class="mi">1</span><span class="p">]][</span><span class="bp">self</span><span class="o">.</span><span class="n">IdxTable</span><span class="p">[</span><span class="mi">2</span><span class="p">][</span><span class="o">-</span><span class="mi">1</span><span class="p">]]</span><span class="o">=</span><span class="mi">1</span></div>
+    
+<div class="viewcode-block" id="FaultTree.InOrder2"><a class="viewcode-back" href="../docs/FaultTreeLib.html#FaultTreeLib.FaultTree.InOrder2">[docs]</a>    <span class="k">def</span> <span class="nf">InOrder2</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">xx</span><span class="o">=</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="mi">3</span><span class="p">,</span><span class="mi">2</span><span class="p">],</span><span class="n">yy</span><span class="o">=</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">30</span><span class="p">]):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        The function `InOrder2` takes two lists of numbers as input and returns `True` if the first list</span>
+<span class="sd">        is in ascending order and the second list is in descending order</span>
+<span class="sd">        </span>
+<span class="sd">        :param xx: the list of x-coordinates of the points in the first polygon</span>
+<span class="sd">        :param yy: the list of the values of the nodes in the tree</span>
+<span class="sd">        :return: True or False</span>
+
+
+<span class="sd">        Examples:</span>
+<span class="sd">        ---------</span>
+
+<span class="sd">        &gt;&gt;&gt; self=(1),xx=[1,3,2],yy=[1,2,30]</span>
+<span class="sd">        False</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">res</span><span class="o">=</span><span class="kc">True</span>
+        <span class="n">i</span><span class="o">=</span><span class="mi">0</span>
+        <span class="k">while</span> <span class="p">((</span><span class="n">res</span><span class="o">==</span><span class="kc">True</span><span class="p">)</span> <span class="ow">and</span> <span class="p">(</span><span class="n">i</span><span class="o">&lt;</span><span class="nb">min</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">xx</span><span class="p">),</span><span class="nb">len</span><span class="p">(</span><span class="n">yy</span><span class="p">)))):</span>
+            <span class="n">res</span><span class="o">=</span><span class="p">(</span><span class="n">res</span> <span class="ow">and</span> <span class="p">(</span><span class="n">xx</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">&lt;=</span><span class="n">yy</span><span class="p">[</span><span class="n">i</span><span class="p">]))</span>
+            <span class="n">i</span><span class="o">=</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span>
+        <span class="k">return</span> <span class="n">res</span></div>
+   
+<div class="viewcode-block" id="FaultTree.Sort"><a class="viewcode-back" href="../docs/FaultTreeLib.html#FaultTreeLib.FaultTree.Sort">[docs]</a>    <span class="k">def</span> <span class="nf">Sort</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>   
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        It sorts the relations in the order of the nodes in the graph</span>
+<span class="sd">        &quot;&quot;&quot;</span>  
+        <span class="n">Temp1</span><span class="o">=</span><span class="p">[]</span>
+        <span class="n">Temp2</span><span class="o">=</span><span class="p">[]</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">IdxTable</span><span class="p">[</span><span class="mi">0</span><span class="p">])):</span>
+            <span class="n">j</span><span class="o">=</span><span class="mi">0</span>
+            <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">IdxTable</span><span class="p">[</span><span class="mi">0</span><span class="p">])):</span>           
+                <span class="c1">#if (self.InOrder2(self.RelMat[2][k],self.RelMat[1][i]) and (self.IdxTable[2][k]!=self.IdxTable[1][i])):</span>
+                <span class="n">Test</span><span class="o">=</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">AdjMat</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">IdxNode</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">RelMat</span><span class="p">[</span><span class="mi">2</span><span class="p">][</span><span class="n">k</span><span class="p">])][</span><span class="bp">self</span><span class="o">.</span><span class="n">IdxNode</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">RelMat</span><span class="p">[</span><span class="mi">1</span><span class="p">][</span><span class="n">i</span><span class="p">])]</span><span class="o">==</span><span class="mi">1</span><span class="p">)</span>
+                <span class="n">Test</span><span class="o">=</span><span class="n">Test</span> <span class="ow">or</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">InOrder2</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">RelMat</span><span class="p">[</span><span class="mi">2</span><span class="p">][</span><span class="n">k</span><span class="p">],</span><span class="bp">self</span><span class="o">.</span><span class="n">RelMat</span><span class="p">[</span><span class="mi">1</span><span class="p">][</span><span class="n">i</span><span class="p">]))</span>
+                <span class="n">Test</span><span class="o">=</span><span class="n">Test</span> <span class="ow">and</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">IdxTable</span><span class="p">[</span><span class="mi">2</span><span class="p">][</span><span class="n">k</span><span class="p">]</span><span class="o">!=</span><span class="bp">self</span><span class="o">.</span><span class="n">IdxTable</span><span class="p">[</span><span class="mi">1</span><span class="p">][</span><span class="n">i</span><span class="p">])</span>
+                <span class="k">if</span> <span class="n">Test</span><span class="p">:</span>
+                    <span class="n">j</span><span class="o">=</span><span class="n">j</span><span class="o">+</span><span class="mi">1</span>
+            <span class="k">while</span> <span class="p">(</span><span class="n">j</span> <span class="ow">in</span> <span class="n">Temp1</span><span class="p">):</span>
+                <span class="n">j</span><span class="o">=</span><span class="n">j</span><span class="o">+</span><span class="mi">1</span>
+            <span class="n">Temp1</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">j</span><span class="p">)</span>
+            <span class="n">Temp2</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">IdxTable</span><span class="p">[</span><span class="mi">0</span><span class="p">])):</span>
+            <span class="n">Temp2</span><span class="p">[</span><span class="nb">int</span><span class="p">(</span><span class="n">Temp1</span><span class="p">[</span><span class="n">i</span><span class="p">])]</span><span class="o">=</span><span class="n">i</span>
+        <span class="n">Temp3</span><span class="o">=</span><span class="p">[[],[],[]]</span>
+        <span class="n">Temp4</span><span class="o">=</span><span class="p">[[],[],[],[],[],[]]</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">IdxTable</span><span class="p">[</span><span class="mi">0</span><span class="p">])):</span>
+            <span class="n">Temp3</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">i</span><span class="p">)</span>
+            <span class="n">Temp3</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">IdxTable</span><span class="p">[</span><span class="mi">1</span><span class="p">][</span><span class="nb">int</span><span class="p">(</span><span class="n">Temp2</span><span class="p">[</span><span class="n">i</span><span class="p">])])</span>
+            <span class="n">Temp3</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">IdxTable</span><span class="p">[</span><span class="mi">2</span><span class="p">][</span><span class="nb">int</span><span class="p">(</span><span class="n">Temp2</span><span class="p">[</span><span class="n">i</span><span class="p">])])</span>
+            <span class="n">Temp4</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">RelMat</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="nb">int</span><span class="p">(</span><span class="n">Temp2</span><span class="p">[</span><span class="n">i</span><span class="p">])])</span>
+            <span class="n">Temp4</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">RelMat</span><span class="p">[</span><span class="mi">1</span><span class="p">][</span><span class="nb">int</span><span class="p">(</span><span class="n">Temp2</span><span class="p">[</span><span class="n">i</span><span class="p">])])</span>
+            <span class="n">Temp4</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">RelMat</span><span class="p">[</span><span class="mi">2</span><span class="p">][</span><span class="nb">int</span><span class="p">(</span><span class="n">Temp2</span><span class="p">[</span><span class="n">i</span><span class="p">])])</span>
+            <span class="n">Temp4</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">RelMat</span><span class="p">[</span><span class="mi">3</span><span class="p">][</span><span class="nb">int</span><span class="p">(</span><span class="n">Temp2</span><span class="p">[</span><span class="n">i</span><span class="p">])])</span>
+            <span class="n">Temp4</span><span class="p">[</span><span class="mi">4</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">RelMat</span><span class="p">[</span><span class="mi">4</span><span class="p">][</span><span class="nb">int</span><span class="p">(</span><span class="n">Temp2</span><span class="p">[</span><span class="n">i</span><span class="p">])])</span>
+            <span class="n">Temp4</span><span class="p">[</span><span class="mi">5</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">RelMat</span><span class="p">[</span><span class="mi">5</span><span class="p">][</span><span class="nb">int</span><span class="p">(</span><span class="n">Temp2</span><span class="p">[</span><span class="n">i</span><span class="p">])])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">IdxTable</span><span class="o">=</span><span class="n">Temp3</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">RelMat</span><span class="o">=</span><span class="n">Temp4</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span></div>
+        
+<div class="viewcode-block" id="FaultTree.NewRelation"><a class="viewcode-back" href="../docs/FaultTreeLib.html#FaultTreeLib.FaultTree.NewRelation">[docs]</a>    <span class="k">def</span> <span class="nf">NewRelation</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">Port</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span><span class="n">IndicesIn</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span><span class="n">IndicesOut</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span><span class="n">Orders</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span><span class="n">Times</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span><span class="n">IndicesPrincipal</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        It takes in a list of lists, and appends a list to the end of the list of lists</span>
+<span class="sd">        </span>
+<span class="sd">        :param Port: The port number of the relation, defaults to 1 (optional)</span>
+<span class="sd">        :param IndicesIn: The indices of the nodes that are input to the relation</span>
+<span class="sd">        :param IndicesOut: The indices of the output nodes</span>
+<span class="sd">        :param Orders: a list of the orders of the relations</span>
+<span class="sd">        :param Times: The time at which the relation is applied</span>
+<span class="sd">        :param IndicesPrincipal: This is a list of indices that are the principal indices of the relation</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="p">(</span><span class="n">IndicesIn</span><span class="o">!=</span><span class="kc">None</span><span class="p">)</span> <span class="ow">and</span> <span class="p">(</span><span class="n">IndicesOut</span><span class="o">!=</span><span class="kc">None</span><span class="p">):</span>
+            <span class="k">if</span> <span class="kc">True</span><span class="p">:</span><span class="c1">#(len(IndicesIn)==self.NNode) and (len(IndicesOut)==self.NNode):</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">RelMat</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">Port</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">RelMat</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">IndicesIn</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">RelMat</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">IndicesOut</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">RelMat</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">Orders</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">RelMat</span><span class="p">[</span><span class="mi">4</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">Times</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">RelMat</span><span class="p">[</span><span class="mi">5</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">IndicesPrincipal</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">Update</span><span class="p">()</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">Sort</span><span class="p">()</span></div>
+        <span class="c1">#print(self.RelMat)</span>
+    
+<div class="viewcode-block" id="FaultTree.ViewGraph"><a class="viewcode-back" href="../docs/FaultTreeLib.html#FaultTreeLib.FaultTree.ViewGraph">[docs]</a>    <span class="k">def</span> <span class="nf">ViewGraph</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">ID_P</span><span class="p">,</span><span class="n">Dir</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        It takes a graph and returns a graph with the same nodes and edges, but with the nodes labeled</span>
+<span class="sd">        with their index in the original graph.</span>
+<span class="sd">        </span>
+<span class="sd">        :param Dir: the directory where the graph will be saved</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">G</span><span class="o">=</span><span class="n">nx</span><span class="o">.</span><span class="n">DiGraph</span><span class="p">()</span>
+        <span class="n">GNode</span><span class="o">=</span><span class="p">{}</span>
+        <span class="n">nn</span><span class="o">=</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">Node</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">AdjMat</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+            <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">AdjMat</span><span class="p">[</span><span class="n">i</span><span class="p">])):</span>
+                <span class="k">if</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">AdjMat</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="n">j</span><span class="p">]</span><span class="o">==</span><span class="mi">1</span><span class="p">):</span>
+                    <span class="n">GNode</span><span class="p">[</span><span class="n">nn</span><span class="o">-</span><span class="mi">1</span><span class="o">-</span><span class="bp">self</span><span class="o">.</span><span class="n">IdxNode</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">Node</span><span class="p">[</span><span class="n">i</span><span class="p">])]</span><span class="o">=</span><span class="nb">str</span><span class="p">(</span><span class="n">nn</span><span class="o">-</span><span class="mi">1</span><span class="o">-</span><span class="bp">self</span><span class="o">.</span><span class="n">IdxNode</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">Node</span><span class="p">[</span><span class="n">i</span><span class="p">]))</span><span class="o">+</span><span class="s1">&#39;:&#39;</span><span class="o">+</span><span class="bp">self</span><span class="o">.</span><span class="n">Label</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+                    <span class="n">GNode</span><span class="p">[</span><span class="n">nn</span><span class="o">-</span><span class="mi">1</span><span class="o">-</span><span class="bp">self</span><span class="o">.</span><span class="n">IdxNode</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">Node</span><span class="p">[</span><span class="n">j</span><span class="p">])]</span><span class="o">=</span><span class="nb">str</span><span class="p">(</span><span class="n">nn</span><span class="o">-</span><span class="mi">1</span><span class="o">-</span><span class="bp">self</span><span class="o">.</span><span class="n">IdxNode</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">Node</span><span class="p">[</span><span class="n">j</span><span class="p">]))</span><span class="o">+</span><span class="s1">&#39;:&#39;</span><span class="o">+</span><span class="bp">self</span><span class="o">.</span><span class="n">Label</span><span class="p">[</span><span class="n">j</span><span class="p">]</span>
+                    <span class="n">G</span><span class="o">.</span><span class="n">add_edge</span><span class="p">(</span><span class="n">GNode</span><span class="p">[</span><span class="n">nn</span><span class="o">-</span><span class="mi">1</span><span class="o">-</span><span class="bp">self</span><span class="o">.</span><span class="n">IdxNode</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">Node</span><span class="p">[</span><span class="n">i</span><span class="p">])],</span><span class="n">GNode</span><span class="p">[</span><span class="n">nn</span><span class="o">-</span><span class="mi">1</span><span class="o">-</span><span class="bp">self</span><span class="o">.</span><span class="n">IdxNode</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">Node</span><span class="p">[</span><span class="n">j</span><span class="p">])])</span>
+                    <span class="c1">#G.add_edge(str(nn-1-self.IdxNode(self.Node[i]))+&#39;:&#39;+self.Label[i],str(nn-1-self.IdxNode(self.Node[j]))+&#39;:&#39;+self.Label[j])</span>
+                    <span class="c1">#G.add_edge(str(self.Node[j]),str(self.Node[i]))</span>
+        <span class="c1">#CompleteNode=self.Node.copy()</span>
+        
+        <span class="n">mm</span><span class="o">=</span><span class="n">nn</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">nn</span><span class="p">):</span>
+            <span class="c1">#print(&quot;yeah !&quot;)</span>
+            <span class="c1">#print(self.Node[i])</span>
+            <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">nn</span><span class="p">):</span>
+                <span class="k">if</span> <span class="p">(</span><span class="n">i</span><span class="o">!=</span><span class="n">j</span><span class="p">)</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">InOrder2</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">Node</span><span class="p">[</span><span class="n">i</span><span class="p">],</span><span class="bp">self</span><span class="o">.</span><span class="n">Node</span><span class="p">[</span><span class="n">j</span><span class="p">]):</span>
+                    <span class="n">G</span><span class="o">.</span><span class="n">add_edge</span><span class="p">(</span><span class="n">GNode</span><span class="p">[</span><span class="n">nn</span><span class="o">-</span><span class="mi">1</span><span class="o">-</span><span class="bp">self</span><span class="o">.</span><span class="n">IdxNode</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">Node</span><span class="p">[</span><span class="n">i</span><span class="p">])],</span><span class="n">GNode</span><span class="p">[</span><span class="n">nn</span><span class="o">-</span><span class="mi">1</span><span class="o">-</span><span class="bp">self</span><span class="o">.</span><span class="n">IdxNode</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">Node</span><span class="p">[</span><span class="n">j</span><span class="p">])])</span>
+            <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">NNode</span><span class="p">):</span>
+                <span class="n">Temp</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span> <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">NNode</span><span class="p">)]</span>
+                <span class="n">Temp</span><span class="p">[</span><span class="n">j</span><span class="p">]</span><span class="o">=</span><span class="mi">1</span>
+                <span class="k">if</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">InOrder2</span><span class="p">(</span><span class="n">Temp</span><span class="p">,</span><span class="bp">self</span><span class="o">.</span><span class="n">Node</span><span class="p">[</span><span class="n">i</span><span class="p">]))</span> <span class="ow">and</span> <span class="p">(</span><span class="n">Temp</span><span class="o">!=</span><span class="bp">self</span><span class="o">.</span><span class="n">Node</span><span class="p">[</span><span class="n">i</span><span class="p">]):</span>
+                    <span class="c1">#print(Temp)</span>
+                    <span class="k">if</span> <span class="ow">not</span><span class="p">(</span><span class="n">Temp</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">Node</span><span class="p">):</span>
+                        <span class="c1"># Adding a node to the graph.</span>
+                        <span class="n">GNode</span><span class="p">[</span><span class="n">mm</span><span class="p">]</span><span class="o">=</span><span class="nb">str</span><span class="p">(</span><span class="n">mm</span><span class="p">)</span><span class="o">+</span><span class="s1">&#39;:&#39;</span><span class="o">+</span><span class="n">ID_P</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+                        <span class="n">G</span><span class="o">.</span><span class="n">add_edge</span><span class="p">(</span><span class="n">GNode</span><span class="p">[</span><span class="n">mm</span><span class="p">],</span><span class="n">GNode</span><span class="p">[</span><span class="n">nn</span><span class="o">-</span><span class="mi">1</span><span class="o">-</span><span class="bp">self</span><span class="o">.</span><span class="n">IdxNode</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">Node</span><span class="p">[</span><span class="n">i</span><span class="p">])])</span>
+                        <span class="n">mm</span><span class="o">+=</span><span class="mi">1</span>
+                        <span class="c1">#G.add_edge(str(self.Node[i]),str(Temp))</span>
+                    <span class="c1">#CompleteNode.append(Temp)</span>
+        
+        <span class="c1">#print(G.adj)</span>
+        <span class="c1">#fig=plt.figure(figsize=(5,5))</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="mi">10</span><span class="p">))</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">clf</span><span class="p">()</span> <span class="c1"># Efface le contenu de la figure courante</span>
+        <span class="n">nx</span><span class="o">.</span><span class="n">draw_networkx</span><span class="p">(</span><span class="n">G</span><span class="p">,</span><span class="n">pos</span><span class="o">=</span><span class="n">nx</span><span class="o">.</span><span class="n">circular_layout</span><span class="p">(</span><span class="n">G</span><span class="p">),</span><span class="n">node_size</span><span class="o">=</span><span class="p">(</span><span class="mi">10</span><span class="o">**</span><span class="mi">4</span><span class="p">)</span><span class="o">/</span><span class="mi">2</span><span class="p">)</span>
+        <span class="c1">#nx.draw(G)</span>
+        <span class="c1">#nx.draw(G,pos=nx.circular_layout(G),node_color=&#39;r&#39;,edge_color=&#39;b&#39;)</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">axis</span><span class="p">(</span><span class="s1">&#39;off&#39;</span><span class="p">)</span>
+        <span class="c1">#plt.grid(False)</span>
+        <span class="k">if</span> <span class="p">(</span><span class="n">Dir</span><span class="o">!=</span><span class="kc">None</span><span class="p">):</span>
+            <span class="n">plt</span><span class="o">.</span><span class="n">savefig</span><span class="p">(</span><span class="n">Dir</span><span class="o">+</span><span class="s2">&quot;AD.png&quot;</span><span class="p">)</span>
+            <span class="n">plt</span><span class="o">.</span><span class="n">savefig</span><span class="p">(</span><span class="n">Dir</span><span class="o">+</span><span class="s2">&quot;AD.pdf&quot;</span><span class="p">,</span><span class="nb">format</span><span class="o">=</span><span class="s2">&quot;pdf&quot;</span><span class="p">)</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span></div></div>
+<span class="w">        </span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Dir=&quot;E:/Pedagogie/Encadrement/EncadrementEnsai/MasterRThese/20192020/TadieBenjaulys/&quot;</span>
+<span class="sd">MyTree=FaultTree(2)</span>
+<span class="sd">#MyTree.NewRelation(1,[1,0],[1,0])</span>
+<span class="sd">#MyTree.NewRelation(1,[0,1],[0,1])</span>
+<span class="sd">MyTree.NewRelation(4,[0,1],[1,1])</span>
+<span class="sd">MyTree.NewRelation(3,[1,1],[1,1])</span>
+
+<span class="sd">print(MyTree.NNode)</span>
+<span class="sd">print(MyTree.Leaves())</span>
+<span class="sd">print(MyTree.Node)</span>
+<span class="sd">print(MyTree.IdxTable)</span>
+<span class="sd">print(MyTree.RelMat)</span>
+<span class="sd">print(MyTree.AdjMat)</span>
+<span class="sd">print(MyTree.Root())</span>
+<span class="sd">MyTree.ViewGraph(Dir)</span>
+<span class="sd">&quot;&quot;&quot;</span>
+</pre></div>
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">DFT2HD2ReliabilityR 1.0.0 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="index.html" >Module code</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">FaultTreeLib</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2023, ARDIS4SD.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 5.3.0.
+    </div>
+  </body>
+</html>

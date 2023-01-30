@@ -1,0 +1,323 @@
+
+<!DOCTYPE html>
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+    <title>HasseDiagramLib module &#8212; DFT2HD2ReliabilityR 1.0.0 documentation</title>
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/classic.css" />
+    
+    <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+    <script src="../_static/jquery.js"></script>
+    <script src="../_static/underscore.js"></script>
+    <script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
+    <script src="../_static/doctools.js"></script>
+    <script src="../_static/sphinx_highlight.js"></script>
+    
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="LogicDoorLib module" href="LogicDoorLib.html" />
+    <link rel="prev" title="FaultTreeRLib module" href="FaultTreeRLib.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="LogicDoorLib.html" title="LogicDoorLib module"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="FaultTreeRLib.html" title="FaultTreeRLib module"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">DFT2HD2ReliabilityR 1.0.0 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="modules.html" accesskey="U">source</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">HasseDiagramLib module</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <section id="module-HasseDiagramLib">
+<span id="hassediagramlib-module"></span><h1>HasseDiagramLib module<a class="headerlink" href="#module-HasseDiagramLib" title="Permalink to this heading">¶</a></h1>
+<p>Bibliothèques utiles</p>
+<dl class="py class">
+<dt class="sig sig-object py" id="HasseDiagramLib.Cut">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">HasseDiagramLib.</span></span><span class="sig-name descname"><span class="pre">Cut</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">Tree=&lt;FaultTreeLib.FaultTree</span> <span class="pre">object&gt;,</span> <span class="pre">IndivIndex=[0]</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/HasseDiagramLib.html#Cut"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#HasseDiagramLib.Cut" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<dl class="py method">
+<dt class="sig sig-object py" id="HasseDiagramLib.Cut.CollectCut">
+<span class="sig-name descname"><span class="pre">CollectCut</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">P_Gen</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/HasseDiagramLib.html#Cut.CollectCut"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#HasseDiagramLib.Cut.CollectCut" title="Permalink to this definition">¶</a></dt>
+<dd><p>It takes a tree and returns a list of cuts</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="HasseDiagramLib.Cut.InOrder2">
+<span class="sig-name descname"><span class="pre">InOrder2</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">xx</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">[1,</span> <span class="pre">3,</span> <span class="pre">2]</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">yy</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">[1,</span> <span class="pre">2,</span> <span class="pre">30]</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/HasseDiagramLib.html#Cut.InOrder2"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#HasseDiagramLib.Cut.InOrder2" title="Permalink to this definition">¶</a></dt>
+<dd><p>As long as the function is true and the end of the list has not been reached, the function returns
+True if xx is in the order of yy</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>xx</strong> – list of integers</p></li>
+<li><p><strong>yy</strong> – the list of the values of the nodes of the tree</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>True if xx is in the order of yy</p>
+</dd>
+</dl>
+<section id="examples">
+<h2>Examples:<a class="headerlink" href="#examples" title="Permalink to this heading">¶</a></h2>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="bp">self</span><span class="p">,</span><span class="n">xx</span><span class="o">=</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="mi">3</span><span class="p">,</span><span class="mi">2</span><span class="p">],</span><span class="n">yy</span><span class="o">=</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">30</span><span class="p">]</span>
+<span class="go">false</span>
+</pre></div>
+</div>
+</section>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="HasseDiagramLib.Cut.Leaves">
+<span class="sig-name descname"><span class="pre">Leaves</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/HasseDiagramLib.html#Cut.Leaves"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#HasseDiagramLib.Cut.Leaves" title="Permalink to this definition">¶</a></dt>
+<dd><p>It takes the leaves of the tree and creates a list of lists
+:return: A list of lists.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="HasseDiagramLib.Cut.NCut">
+<span class="sig-name descname"><span class="pre">NCut</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">0</span></em><a class="headerlink" href="#HasseDiagramLib.Cut.NCut" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="HasseDiagramLib.DownHasseDiagram">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">HasseDiagramLib.</span></span><span class="sig-name descname"><span class="pre">DownHasseDiagram</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">Tree=&lt;FaultTreeLib.FaultTree</span> <span class="pre">object&gt;,</span> <span class="pre">IndivIndex=[0],</span> <span class="pre">IndivLabel=[0],</span> <span class="pre">IndivReliabilityVal=[[1]],</span> <span class="pre">IndivReliabilityFunc=[&lt;function</span> <span class="pre">One&gt;],</span> <span class="pre">t=[0],</span> <span class="pre">Option=1</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/HasseDiagramLib.html#DownHasseDiagram"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#HasseDiagramLib.DownHasseDiagram" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<dl class="py method">
+<dt class="sig sig-object py" id="HasseDiagramLib.DownHasseDiagram.GetPolyFiab">
+<span class="sig-name descname"><span class="pre">GetPolyFiab</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/HasseDiagramLib.html#DownHasseDiagram.GetPolyFiab"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#HasseDiagramLib.DownHasseDiagram.GetPolyFiab" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calculating the reliability polynomial of a system GetPolyFiab.</p>
+<p>creating a list of lists. The outer list is a list of lists, where
+each inner list is a list of the reliability values for each component.
+Calculating the reliability polynomial of a system.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="HasseDiagramLib.DownHasseDiagram.NDownHasseDiagram">
+<span class="sig-name descname"><span class="pre">NDownHasseDiagram</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">0</span></em><a class="headerlink" href="#HasseDiagramLib.DownHasseDiagram.NDownHasseDiagram" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="HasseDiagramLib.DownHasseDiagram.ViewGraph">
+<span class="sig-name descname"><span class="pre">ViewGraph</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">Dir</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/HasseDiagramLib.html#DownHasseDiagram.ViewGraph"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#HasseDiagramLib.DownHasseDiagram.ViewGraph" title="Permalink to this definition">¶</a></dt>
+<dd><p>It takes a graph and draws it</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>Dir</strong> – the directory where the graph will be saved</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="HasseDiagramLib.Link">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">HasseDiagramLib.</span></span><span class="sig-name descname"><span class="pre">Link</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">P_NOT,</span> <span class="pre">Tree=&lt;FaultTreeLib.FaultTree</span> <span class="pre">object&gt;,</span> <span class="pre">IndivIndex=[0]</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/HasseDiagramLib.html#Link"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#HasseDiagramLib.Link" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<dl class="py method">
+<dt class="sig sig-object py" id="HasseDiagramLib.Link.CollectLink">
+<span class="sig-name descname"><span class="pre">CollectLink</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/HasseDiagramLib.html#Link.CollectLink"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#HasseDiagramLib.Link.CollectLink" title="Permalink to this definition">¶</a></dt>
+<dd><p>It takes a list of links and returns a list of minimal links.
+Checking if the link is already in the dictionary. If not, it adds it to the dictionary.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="HasseDiagramLib.Link.InOrder2">
+<span class="sig-name descname"><span class="pre">InOrder2</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">xx</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">[1,</span> <span class="pre">3,</span> <span class="pre">2]</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">yy</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">[1,</span> <span class="pre">2,</span> <span class="pre">30]</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/HasseDiagramLib.html#Link.InOrder2"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#HasseDiagramLib.Link.InOrder2" title="Permalink to this definition">¶</a></dt>
+<dd><p>Checking if the first vector is less than or equal to the second vector</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>xx</strong> – the first vector</p></li>
+<li><p><strong>yy</strong> – the vector of the current state</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>a boolean value.</p>
+</dd>
+</dl>
+<section id="id1">
+<h2>Examples:<a class="headerlink" href="#id1" title="Permalink to this heading">¶</a></h2>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="bp">self</span><span class="o">=</span><span class="p">(</span><span class="mi">1</span><span class="p">),</span><span class="n">xx</span><span class="o">=</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="mi">3</span><span class="p">,</span><span class="mi">2</span><span class="p">],</span><span class="n">yy</span><span class="o">=</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">30</span><span class="p">]</span>
+<span class="go">False</span>
+</pre></div>
+</div>
+</section>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="HasseDiagramLib.Link.NLink">
+<span class="sig-name descname"><span class="pre">NLink</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">0</span></em><a class="headerlink" href="#HasseDiagramLib.Link.NLink" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="HasseDiagramLib.Links">
+<span class="sig-prename descclassname"><span class="pre">HasseDiagramLib.</span></span><span class="sig-name descname"><span class="pre">Links</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">{}</span></em><a class="headerlink" href="#HasseDiagramLib.Links" title="Permalink to this definition">¶</a></dt>
+<dd><p>Dictionary of minimal links</p>
+<p>Returns:
+list: contain the minimal links of order 3</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="HasseDiagramLib.One">
+<span class="sig-prename descclassname"><span class="pre">HasseDiagramLib.</span></span><span class="sig-name descname"><span class="pre">One</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/HasseDiagramLib.html#One"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#HasseDiagramLib.One" title="Permalink to this definition">¶</a></dt>
+<dd><p>Function that returns 1 if x is a positive integer
+:param x: int
+:return: 1</p>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="HasseDiagramLib.UpHasseDiagram">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">HasseDiagramLib.</span></span><span class="sig-name descname"><span class="pre">UpHasseDiagram</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">Tree=&lt;FaultTreeLib.FaultTree</span> <span class="pre">object&gt;,</span> <span class="pre">IndivIndex=[0],</span> <span class="pre">IndivLabel=[0],</span> <span class="pre">IndivReliabilityVal=[[1]],</span> <span class="pre">IndivReliabilityFunc=[&lt;function</span> <span class="pre">One&gt;],</span> <span class="pre">t=[0],</span> <span class="pre">Option=1</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/HasseDiagramLib.html#UpHasseDiagram"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#HasseDiagramLib.UpHasseDiagram" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<dl class="py method">
+<dt class="sig sig-object py" id="HasseDiagramLib.UpHasseDiagram.GetPolyFiab">
+<span class="sig-name descname"><span class="pre">GetPolyFiab</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/HasseDiagramLib.html#UpHasseDiagram.GetPolyFiab"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#HasseDiagramLib.UpHasseDiagram.GetPolyFiab" title="Permalink to this definition">¶</a></dt>
+<dd><p>The function GetPolyFiab() returns the reliability polynomial and the reliability function for a
+given system
+:return: The reliability polynomial and the reliability polynomial evaluated at the time points.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="HasseDiagramLib.UpHasseDiagram.NUpHasseDiagram">
+<span class="sig-name descname"><span class="pre">NUpHasseDiagram</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">0</span></em><a class="headerlink" href="#HasseDiagramLib.UpHasseDiagram.NUpHasseDiagram" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="HasseDiagramLib.UpHasseDiagram.ViewGraph">
+<span class="sig-name descname"><span class="pre">ViewGraph</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">Dir</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/HasseDiagramLib.html#UpHasseDiagram.ViewGraph"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#HasseDiagramLib.UpHasseDiagram.ViewGraph" title="Permalink to this definition">¶</a></dt>
+<dd><p>It takes a graph and draws it</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>Dir</strong> – the directory where the graph will be saved</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <div>
+    <h3><a href="../index.html">Table of Contents</a></h3>
+    <ul>
+<li><a class="reference internal" href="#">HasseDiagramLib module</a><ul>
+<li><a class="reference internal" href="#HasseDiagramLib.Cut"><code class="docutils literal notranslate"><span class="pre">Cut</span></code></a><ul>
+<li><a class="reference internal" href="#HasseDiagramLib.Cut.CollectCut"><code class="docutils literal notranslate"><span class="pre">Cut.CollectCut()</span></code></a></li>
+<li><a class="reference internal" href="#HasseDiagramLib.Cut.InOrder2"><code class="docutils literal notranslate"><span class="pre">Cut.InOrder2()</span></code></a></li>
+<li><a class="reference internal" href="#HasseDiagramLib.Cut.Leaves"><code class="docutils literal notranslate"><span class="pre">Cut.Leaves()</span></code></a></li>
+<li><a class="reference internal" href="#HasseDiagramLib.Cut.NCut"><code class="docutils literal notranslate"><span class="pre">Cut.NCut</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#HasseDiagramLib.DownHasseDiagram"><code class="docutils literal notranslate"><span class="pre">DownHasseDiagram</span></code></a><ul>
+<li><a class="reference internal" href="#HasseDiagramLib.DownHasseDiagram.GetPolyFiab"><code class="docutils literal notranslate"><span class="pre">DownHasseDiagram.GetPolyFiab()</span></code></a></li>
+<li><a class="reference internal" href="#HasseDiagramLib.DownHasseDiagram.NDownHasseDiagram"><code class="docutils literal notranslate"><span class="pre">DownHasseDiagram.NDownHasseDiagram</span></code></a></li>
+<li><a class="reference internal" href="#HasseDiagramLib.DownHasseDiagram.ViewGraph"><code class="docutils literal notranslate"><span class="pre">DownHasseDiagram.ViewGraph()</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#HasseDiagramLib.Link"><code class="docutils literal notranslate"><span class="pre">Link</span></code></a><ul>
+<li><a class="reference internal" href="#HasseDiagramLib.Link.CollectLink"><code class="docutils literal notranslate"><span class="pre">Link.CollectLink()</span></code></a></li>
+<li><a class="reference internal" href="#HasseDiagramLib.Link.InOrder2"><code class="docutils literal notranslate"><span class="pre">Link.InOrder2()</span></code></a></li>
+<li><a class="reference internal" href="#HasseDiagramLib.Link.NLink"><code class="docutils literal notranslate"><span class="pre">Link.NLink</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#HasseDiagramLib.Links"><code class="docutils literal notranslate"><span class="pre">Links</span></code></a></li>
+<li><a class="reference internal" href="#HasseDiagramLib.One"><code class="docutils literal notranslate"><span class="pre">One()</span></code></a></li>
+<li><a class="reference internal" href="#HasseDiagramLib.UpHasseDiagram"><code class="docutils literal notranslate"><span class="pre">UpHasseDiagram</span></code></a><ul>
+<li><a class="reference internal" href="#HasseDiagramLib.UpHasseDiagram.GetPolyFiab"><code class="docutils literal notranslate"><span class="pre">UpHasseDiagram.GetPolyFiab()</span></code></a></li>
+<li><a class="reference internal" href="#HasseDiagramLib.UpHasseDiagram.NUpHasseDiagram"><code class="docutils literal notranslate"><span class="pre">UpHasseDiagram.NUpHasseDiagram</span></code></a></li>
+<li><a class="reference internal" href="#HasseDiagramLib.UpHasseDiagram.ViewGraph"><code class="docutils literal notranslate"><span class="pre">UpHasseDiagram.ViewGraph()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+  </div>
+  <div>
+    <h4>Previous topic</h4>
+    <p class="topless"><a href="FaultTreeRLib.html"
+                          title="previous chapter">FaultTreeRLib module</a></p>
+  </div>
+  <div>
+    <h4>Next topic</h4>
+    <p class="topless"><a href="LogicDoorLib.html"
+                          title="next chapter">LogicDoorLib module</a></p>
+  </div>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="../_sources/docs/HasseDiagramLib.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="LogicDoorLib.html" title="LogicDoorLib module"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="FaultTreeRLib.html" title="FaultTreeRLib module"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">DFT2HD2ReliabilityR 1.0.0 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="modules.html" >source</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">HasseDiagramLib module</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2023, ARDIS4SD.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 5.3.0.
+    </div>
+  </body>
+</html>

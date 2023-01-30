@@ -1,0 +1,247 @@
+
+<!DOCTYPE html>
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+    <title>FaultTreeLib module &#8212; DFT2HD2ReliabilityR 1.0.0 documentation</title>
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/classic.css" />
+    
+    <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+    <script src="../_static/jquery.js"></script>
+    <script src="../_static/underscore.js"></script>
+    <script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
+    <script src="../_static/doctools.js"></script>
+    <script src="../_static/sphinx_highlight.js"></script>
+    
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="FaultTreeRLib module" href="FaultTreeRLib.html" />
+    <link rel="prev" title="source" href="modules.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="FaultTreeRLib.html" title="FaultTreeRLib module"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="modules.html" title="source"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">DFT2HD2ReliabilityR 1.0.0 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="modules.html" accesskey="U">source</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">FaultTreeLib module</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <section id="module-FaultTreeLib">
+<span id="faulttreelib-module"></span><h1>FaultTreeLib module<a class="headerlink" href="#module-FaultTreeLib" title="Permalink to this heading">¶</a></h1>
+<p>Bibliothèques utiles</p>
+<dl class="py class">
+<dt class="sig sig-object py" id="FaultTreeLib.FaultTree">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">FaultTreeLib.</span></span><span class="sig-name descname"><span class="pre">FaultTree</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">n</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/FaultTreeLib.html#FaultTree"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#FaultTreeLib.FaultTree" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<dl class="py method">
+<dt class="sig sig-object py" id="FaultTreeLib.FaultTree.IdxNode">
+<span class="sig-name descname"><span class="pre">IdxNode</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">Indices</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/FaultTreeLib.html#FaultTree.IdxNode"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#FaultTreeLib.FaultTree.IdxNode" title="Permalink to this definition">¶</a></dt>
+<dd><p>It returns the index of the node in the list of nodes</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>Indices</strong> – The index of the node you want to find</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>The index of the node in the list of nodes.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="FaultTreeLib.FaultTree.InOrder2">
+<span class="sig-name descname"><span class="pre">InOrder2</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">xx</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">[1,</span> <span class="pre">3,</span> <span class="pre">2]</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">yy</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">[1,</span> <span class="pre">2,</span> <span class="pre">30]</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/FaultTreeLib.html#FaultTree.InOrder2"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#FaultTreeLib.FaultTree.InOrder2" title="Permalink to this definition">¶</a></dt>
+<dd><p>The function <cite>InOrder2</cite> takes two lists of numbers as input and returns <cite>True</cite> if the first list
+is in ascending order and the second list is in descending order</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>xx</strong> – the list of x-coordinates of the points in the first polygon</p></li>
+<li><p><strong>yy</strong> – the list of the values of the nodes in the tree</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>True or False</p>
+</dd>
+</dl>
+<section id="examples">
+<h2>Examples:<a class="headerlink" href="#examples" title="Permalink to this heading">¶</a></h2>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="bp">self</span><span class="o">=</span><span class="p">(</span><span class="mi">1</span><span class="p">),</span><span class="n">xx</span><span class="o">=</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="mi">3</span><span class="p">,</span><span class="mi">2</span><span class="p">],</span><span class="n">yy</span><span class="o">=</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">30</span><span class="p">]</span>
+<span class="go">False</span>
+</pre></div>
+</div>
+</section>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="FaultTreeLib.FaultTree.Leaves">
+<span class="sig-name descname"><span class="pre">Leaves</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/FaultTreeLib.html#FaultTree.Leaves"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#FaultTreeLib.FaultTree.Leaves" title="Permalink to this definition">¶</a></dt>
+<dd><p>The function <cite>Leaves</cite> returns a list of all the leaf nodes in the graph
+:return: The function <cite>Leaves</cite> returns a list of all the leaf nodes in the graph.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="FaultTreeLib.FaultTree.NFaultTree">
+<span class="sig-name descname"><span class="pre">NFaultTree</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">0</span></em><a class="headerlink" href="#FaultTreeLib.FaultTree.NFaultTree" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="FaultTreeLib.FaultTree.NewRelation">
+<span class="sig-name descname"><span class="pre">NewRelation</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">Port</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">IndicesIn</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">IndicesOut</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">Orders</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">Times</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">IndicesPrincipal</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/FaultTreeLib.html#FaultTree.NewRelation"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#FaultTreeLib.FaultTree.NewRelation" title="Permalink to this definition">¶</a></dt>
+<dd><p>It takes in a list of lists, and appends a list to the end of the list of lists</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>Port</strong> – The port number of the relation, defaults to 1 (optional)</p></li>
+<li><p><strong>IndicesIn</strong> – The indices of the nodes that are input to the relation</p></li>
+<li><p><strong>IndicesOut</strong> – The indices of the output nodes</p></li>
+<li><p><strong>Orders</strong> – a list of the orders of the relations</p></li>
+<li><p><strong>Times</strong> – The time at which the relation is applied</p></li>
+<li><p><strong>IndicesPrincipal</strong> – This is a list of indices that are the principal indices of the relation</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="FaultTreeLib.FaultTree.Root">
+<span class="sig-name descname"><span class="pre">Root</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/FaultTreeLib.html#FaultTree.Root"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#FaultTreeLib.FaultTree.Root" title="Permalink to this definition">¶</a></dt>
+<dd><p>It returns the roots of the graph.
+:return: The roots of the graph.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="FaultTreeLib.FaultTree.Sort">
+<span class="sig-name descname"><span class="pre">Sort</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/FaultTreeLib.html#FaultTree.Sort"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#FaultTreeLib.FaultTree.Sort" title="Permalink to this definition">¶</a></dt>
+<dd><p>It sorts the relations in the order of the nodes in the graph</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="FaultTreeLib.FaultTree.Update">
+<span class="sig-name descname"><span class="pre">Update</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ID_P</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/FaultTreeLib.html#FaultTree.Update"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#FaultTreeLib.FaultTree.Update" title="Permalink to this definition">¶</a></dt>
+<dd><p>If the number of nodes is less than the maximum number of nodes, then add the new node to the
+list of nodes</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="FaultTreeLib.FaultTree.ViewGraph">
+<span class="sig-name descname"><span class="pre">ViewGraph</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ID_P</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">Dir</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/FaultTreeLib.html#FaultTree.ViewGraph"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#FaultTreeLib.FaultTree.ViewGraph" title="Permalink to this definition">¶</a></dt>
+<dd><p>It takes a graph and returns a graph with the same nodes and edges, but with the nodes labeled
+with their index in the original graph.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>Dir</strong> – the directory where the graph will be saved</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <div>
+    <h3><a href="../index.html">Table of Contents</a></h3>
+    <ul>
+<li><a class="reference internal" href="#">FaultTreeLib module</a><ul>
+<li><a class="reference internal" href="#FaultTreeLib.FaultTree"><code class="docutils literal notranslate"><span class="pre">FaultTree</span></code></a><ul>
+<li><a class="reference internal" href="#FaultTreeLib.FaultTree.IdxNode"><code class="docutils literal notranslate"><span class="pre">FaultTree.IdxNode()</span></code></a></li>
+<li><a class="reference internal" href="#FaultTreeLib.FaultTree.InOrder2"><code class="docutils literal notranslate"><span class="pre">FaultTree.InOrder2()</span></code></a></li>
+<li><a class="reference internal" href="#FaultTreeLib.FaultTree.Leaves"><code class="docutils literal notranslate"><span class="pre">FaultTree.Leaves()</span></code></a></li>
+<li><a class="reference internal" href="#FaultTreeLib.FaultTree.NFaultTree"><code class="docutils literal notranslate"><span class="pre">FaultTree.NFaultTree</span></code></a></li>
+<li><a class="reference internal" href="#FaultTreeLib.FaultTree.NewRelation"><code class="docutils literal notranslate"><span class="pre">FaultTree.NewRelation()</span></code></a></li>
+<li><a class="reference internal" href="#FaultTreeLib.FaultTree.Root"><code class="docutils literal notranslate"><span class="pre">FaultTree.Root()</span></code></a></li>
+<li><a class="reference internal" href="#FaultTreeLib.FaultTree.Sort"><code class="docutils literal notranslate"><span class="pre">FaultTree.Sort()</span></code></a></li>
+<li><a class="reference internal" href="#FaultTreeLib.FaultTree.Update"><code class="docutils literal notranslate"><span class="pre">FaultTree.Update()</span></code></a></li>
+<li><a class="reference internal" href="#FaultTreeLib.FaultTree.ViewGraph"><code class="docutils literal notranslate"><span class="pre">FaultTree.ViewGraph()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+  </div>
+  <div>
+    <h4>Previous topic</h4>
+    <p class="topless"><a href="modules.html"
+                          title="previous chapter">source</a></p>
+  </div>
+  <div>
+    <h4>Next topic</h4>
+    <p class="topless"><a href="FaultTreeRLib.html"
+                          title="next chapter">FaultTreeRLib module</a></p>
+  </div>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="../_sources/docs/FaultTreeLib.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="FaultTreeRLib.html" title="FaultTreeRLib module"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="modules.html" title="source"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">DFT2HD2ReliabilityR 1.0.0 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="modules.html" >source</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">FaultTreeLib module</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2023, ARDIS4SD.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 5.3.0.
+    </div>
+  </body>
+</html>
