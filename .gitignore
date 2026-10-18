@@ -1,0 +1,18 @@
+# Artefacts de build / publication (sur PyPI, pas dans le dépôt)
+build/
+dist/
+*.egg-info/
+
+# Sorties de build Sphinx (régénérables via 'make html')
+_build/
+
+# Python
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.ruff_cache/
+.venv/
+
+# Environnement / éditeurs
+.vscode/
+.idea/

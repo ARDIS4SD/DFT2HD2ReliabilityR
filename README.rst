@@ -17,7 +17,7 @@ satisfiability method (cut, link, reliability polynomial).
 
 
 Pourquoi ce projet est-il utile ?
-===============================
+=================================
 
 L'évaluation de la fiabilité est un enjeux majeur de la maintenance qui elle même
 est indispensable pour la productivité des entreprises. Le fait est que la maintenance 
@@ -36,6 +36,24 @@ a playful way, the cutting-edge software tools for maintenance.
 Comment démarrer ?
 ====================
 
+Installation (dépendance dure : sympy)::
+
+    pip install dft2hd2reliabilityr            # version publiée sur PyPI
+    pip install "dft2hd2reliabilityr[viz]"     # + matplotlib/networkx (ViewGraph)
+    # ou depuis ce dépôt :
+    pip install .                              # dépendance sympy uniquement
+    pip install -e ".[test]"                   # mode développement + pytest
+
+Utilisation minimale — fiabilité d'un système OR 2 composants::
+
+    from dft2hd2reliabilityr import FaultTree, DownHasseDiagram, One
+    import sympy
+
+    tree = FaultTree(3)
+    tree.NewRelation(3, [1, 1, 0], [0, 0, 1])          # OR(c0, c1)
+    h = DownHasseDiagram(tree, [0, 1], [sympy.Symbol("R1"), sympy.Symbol("R2")],
+                         [[1], [1]], [One, One], [0], 1)
+    print(h.GetPolyFiab())                             # -> poly de fiabilité
 
 Où puis-je obtenir plus d'aide, si j'en ai besoin?
 ====================================================

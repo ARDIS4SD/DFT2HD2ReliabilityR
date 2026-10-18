@@ -1,0 +1,53 @@
+# CORRECTION-12 (cf. CORRECTIONS.md) : intégration continue minimale.
+# - test : lint ruff (baseline minimale, cf. pyproject.toml) + tests unitaires
+#   + doctests réels sur le package (exemples executes, plus d'exemples morts).
+# - package : build sdist/wheel + verification des metadonnees (twine check).
+
+name: CI
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: ["3.9", "3.10", "3.11", "3.12"]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+      - name: Install
+        run: |
+          python -m pip install --upgrade pip
+          pip install -e ".[test,viz]"
+      - name: Lint (ruff, cf. pyproject.toml)
+        run: |
+          pip install ruff
+          ruff check src tests
+      - name: Unit tests
+        run: pytest -q
+      - name: Doctests
+        run: pytest --doctest-modules src -q
+
+  package:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Build sdist & wheel
+        run: |
+          python -m pip install --upgrade pip build twine
+          python -m build
+      - name: Check distribution metadata
+        run: twine check dist/*
+      - name: Smoke test the wheel
+        run: |
+          pip install dist/*.whl
+          python -c "import dft2hd2reliabilityr; print(dft2hd2reliabilityr.__version__)"
